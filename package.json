@@ -1,0 +1,17 @@
+{
+  "name": "cms-bb2",
+  "version": "1.0.0",
+  "description": "An sdk used for interacting with the CMS Blue Button 2.0 API",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bb2",
+    "cms",
+    "medicare",
+    "claims"
+  ],
+  "author": "",
+  "license": "ISC"
+}
