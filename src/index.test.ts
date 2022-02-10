@@ -48,3 +48,29 @@ test("expect bb sdk to be created the appropriate baseUrl that corresponds to th
   expect(bb.version).toBe("2");
   expect(bb.baseUrl).toBe(`https://api.bluebutton.cms.gov`);
 });
+
+test("empty constructor should use top level .bluebutton-config.json file", () => {
+  const CLIENT_ID = "foo";
+  const CLIENT_SECRET = "bar";
+  const VERSION = "1";
+
+  const bb = new BlueButton();
+
+  expect(bb.clientId).toBe(CLIENT_ID);
+  expect(bb.clientSecret).toBe(CLIENT_SECRET);
+  expect(bb.version).toBe(VERSION);
+  expect(bb.baseUrl).toBe(`https://api.bluebutton.cms.gov`);
+});
+
+test("string constructor arg should be the path to a json config file it should load that", () => {
+  const CLIENT_ID = "hello";
+  const CLIENT_SECRET = "world";
+  const VERSION = "1";
+
+  const bb = new BlueButton("./.custom-bluebutton-config.json");
+
+  expect(bb.clientId).toBe(CLIENT_ID);
+  expect(bb.clientSecret).toBe(CLIENT_SECRET);
+  expect(bb.version).toBe(VERSION);
+  expect(bb.baseUrl).toBe(`https://api.bluebutton.cms.gov`);
+});

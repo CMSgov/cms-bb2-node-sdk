@@ -1,0 +1,6 @@
+{
+  "clientId": "foo",
+  "clientSecret": "bar",
+  "version": "1",
+  "environment": "PRODUCTION"
+}
