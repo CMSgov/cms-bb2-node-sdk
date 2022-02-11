@@ -9,6 +9,7 @@ const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
 type BlueButtonJsonConfig = {
   clientId: string;
   clientSecret: string;
+  callbackUrl: string;
   version?: string;
   environment?: Environments;
 };
@@ -17,6 +18,7 @@ type BlueButtonConfig = string | BlueButtonJsonConfig;
 export default class BlueButton {
   clientId: string;
   clientSecret: string;
+  callbackUrl: string;
   version: string;
   baseUrl: string;
 
@@ -52,8 +54,13 @@ export default class BlueButton {
       throw new Error("clientSecret is required");
     }
 
+    if (!bbJsonConfig.callbackUrl) {
+      throw new Error("callbackUrl is required");
+    }
+
     this.baseUrl = bbJsonConfig.baseUrl;
     this.clientId = bbJsonConfig.clientId;
+    this.callbackUrl = bbJsonConfig.callbackUrl;
     this.clientSecret = bbJsonConfig.clientSecret;
     this.version = bbJsonConfig.version;
   }
@@ -62,6 +69,7 @@ export default class BlueButton {
     return {
       clientId: config.clientId,
       clientSecret: config.clientSecret,
+      callbackUrl: config.callbackUrl,
       version: config.version ? config.version : "2",
       baseUrl:
         config.environment === Environments.PRODUCTION

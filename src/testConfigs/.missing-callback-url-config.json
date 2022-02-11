@@ -1,6 +1,6 @@
 {
   "clientId": "hello",
-  "callbackUrl": "https://www.fake.com/",
+  "clientSecret": "world",
   "version": "1",
   "environment": "PRODUCTION"
 }

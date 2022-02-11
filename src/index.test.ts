@@ -6,10 +6,12 @@ import { Environments } from "./enums/environments";
 test("expect bb sdk to be created with appropriate defaults", () => {
   const CLIENT_ID = "foo";
   const CLIENT_SECRET = "bar";
+  const CALLBACK_URL = "https://www.fake.com/";
 
   const bb = new BlueButton({
     clientId: CLIENT_ID,
     clientSecret: CLIENT_SECRET,
+    callbackUrl: CALLBACK_URL,
   });
 
   expect(bb.clientId).toBe(CLIENT_ID);
@@ -21,11 +23,13 @@ test("expect bb sdk to be created with appropriate defaults", () => {
 test("expect bb sdk to be created with the supplied version", () => {
   const CLIENT_ID = "foo";
   const CLIENT_SECRET = "bar";
+  const CALLBACK_URL = "https://www.fake.com/";
   const VERSION = "1";
 
   const bb = new BlueButton({
     clientId: CLIENT_ID,
     clientSecret: CLIENT_SECRET,
+    callbackUrl: CALLBACK_URL,
     version: VERSION,
   });
 
@@ -38,10 +42,12 @@ test("expect bb sdk to be created with the supplied version", () => {
 test("expect bb sdk to be created the appropriate baseUrl that corresponds to the provided environment", () => {
   const CLIENT_ID = "foo";
   const CLIENT_SECRET = "bar";
+  const CALLBACK_URL = "https://www.fake.com/";
 
   const bb = new BlueButton({
     clientId: CLIENT_ID,
     clientSecret: CLIENT_SECRET,
+    callbackUrl: CALLBACK_URL,
     environment: Environments.PRODUCTION,
   });
 
@@ -123,5 +129,15 @@ test("should throw a helpful error if no client secret is provided", () => {
     );
   } catch (e) {
     expect(e).toEqual(new Error(`clientSecret is required`));
+  }
+});
+
+test("should throw a helpful error if no callbackUrl is provided", () => {
+  try {
+    new BlueButton(
+      `${__dirname}/testConfigs/.missing-callback-url-config.json`
+    );
+  } catch (e) {
+    expect(e).toEqual(new Error(`callbackUrl is required`));
   }
 });
