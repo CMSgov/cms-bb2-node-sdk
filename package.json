@@ -13,7 +13,7 @@
     "build": "rollup -c",
     "build:types": "tsc -p ./tsconfig.json --outDir build --declaration true && api-extractor run",
     "docs": "typedoc src --out docs",
-    "test": "jest",
+    "test": "jest --coverage",
     "prepare": "husky install"
   },
   "lint-staged": {
