@@ -1,3 +1,5 @@
+import fs from "fs";
+import { cwd } from "process";
 import BlueButton from ".";
 import { Environments } from "./enums/environments";
 
@@ -49,10 +51,25 @@ test("expect bb sdk to be created the appropriate baseUrl that corresponds to th
   expect(bb.baseUrl).toBe(`https://api.bluebutton.cms.gov`);
 });
 
-test("empty constructor should use top level .bluebutton-config.json file", () => {
+test("empty constructor should use top level .bluebutton-config.json file (if exists)", () => {
   const CLIENT_ID = "foo";
   const CLIENT_SECRET = "bar";
   const VERSION = "1";
+
+  const pathToFile = `${cwd()}/.bluebutton-config.json`;
+
+  try {
+    new BlueButton();
+  } catch (e) {
+    expect(e).toEqual(
+      new Error(`Failed to load config file at: ${pathToFile}`)
+    );
+  }
+
+  fs.copyFileSync(
+    __dirname + "/testConfigs/.bluebutton-config.json",
+    pathToFile
+  );
 
   const bb = new BlueButton();
 
@@ -60,6 +77,8 @@ test("empty constructor should use top level .bluebutton-config.json file", () =
   expect(bb.clientSecret).toBe(CLIENT_SECRET);
   expect(bb.version).toBe(VERSION);
   expect(bb.baseUrl).toBe(`https://api.bluebutton.cms.gov`);
+
+  fs.unlinkSync(pathToFile);
 });
 
 test("string constructor arg should be the path to a json config file it should load that", () => {
@@ -67,10 +86,42 @@ test("string constructor arg should be the path to a json config file it should 
   const CLIENT_SECRET = "world";
   const VERSION = "1";
 
-  const bb = new BlueButton("./.custom-bluebutton-config.json");
+  const bb = new BlueButton(
+    `${__dirname}/testConfigs/.custom-bluebutton-config.json`
+  );
 
   expect(bb.clientId).toBe(CLIENT_ID);
   expect(bb.clientSecret).toBe(CLIENT_SECRET);
   expect(bb.version).toBe(VERSION);
   expect(bb.baseUrl).toBe(`https://api.bluebutton.cms.gov`);
+});
+
+test("should throw a helpful error if there a string constructor is used that cant be resolved to a file location", () => {
+  const pathToFile = `${__dirname}/notRealDirectory/.bluebutton-config.json`;
+
+  try {
+    new BlueButton(pathToFile);
+  } catch (e) {
+    expect(e).toEqual(
+      new Error(`Failed to load config file at: ${pathToFile}`)
+    );
+  }
+});
+
+test("should throw a helpful error if no client id is provided", () => {
+  try {
+    new BlueButton(`${__dirname}/testConfigs/.missing-client-id-config.json`);
+  } catch (e) {
+    expect(e).toEqual(new Error(`clientId is required`));
+  }
+});
+
+test("should throw a helpful error if no client secret is provided", () => {
+  try {
+    new BlueButton(
+      `${__dirname}/testConfigs/.missing-client-secret-config.json`
+    );
+  } catch (e) {
+    expect(e).toEqual(new Error(`clientSecret is required`));
+  }
 });

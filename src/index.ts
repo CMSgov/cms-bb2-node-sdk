@@ -1,3 +1,4 @@
+import fs from "fs";
 import { cwd } from "process";
 import { Environments } from "./enums/environments";
 
@@ -23,22 +24,32 @@ export default class BlueButton {
     let bbJsonConfig;
     if (!config) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const jsonConfig = require(DEFAULT_CONFIG_FILE_LOCATION);
+        const rawdata = fs.readFileSync(DEFAULT_CONFIG_FILE_LOCATION);
+        const jsonConfig = JSON.parse(rawdata.toString());
         bbJsonConfig = this.normalizeConfig(jsonConfig);
       } catch (e) {
-        throw new Error(`Failed to load config file at: ${config}`);
+        throw new Error(
+          `Failed to load config file at: ${DEFAULT_CONFIG_FILE_LOCATION}`
+        );
       }
     } else if (typeof config === "string") {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const jsonConfig = require(config);
+        const rawdata = fs.readFileSync(config);
+        const jsonConfig = JSON.parse(rawdata.toString());
         bbJsonConfig = this.normalizeConfig(jsonConfig);
       } catch (e) {
         throw new Error(`Failed to load config file at: ${config}`);
       }
     } else {
       bbJsonConfig = this.normalizeConfig(config);
+    }
+
+    if (!bbJsonConfig.clientId) {
+      throw new Error("clientId is required");
+    }
+
+    if (!bbJsonConfig.clientSecret) {
+      throw new Error("clientSecret is required");
     }
 
     this.baseUrl = bbJsonConfig.baseUrl;
