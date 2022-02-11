@@ -1,15 +1,20 @@
 import { cwd } from "process";
 import { Environments } from "./enums/environments";
+import { setCallBackUrl, setUsePKCE, generateAuthorizeUrl } from "./auth";
+import { CodeChallenge, generateCodeChallenge } from "./utils/generatePKCE";
 
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
 const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
+const CALLBACK_URL = "http://localhost/callback/";
 
 type BlueButtonJsonConfig = {
   clientId: string;
   clientSecret: string;
   version?: string;
   environment?: Environments;
+  usePKCE?: boolean;
+  callBackUrl?: string;
 };
 
 type BlueButtonConfig = string | BlueButtonJsonConfig;
@@ -18,6 +23,13 @@ export default class BlueButton {
   clientSecret: string;
   version: string;
   baseUrl: string;
+
+  // AUTH props
+  usePKCE: boolean;
+  callBackUrl: string;
+  state: string;
+  codeChallenge: CodeChallenge;
+  authorizeUrl: string;
 
   constructor(config?: BlueButtonConfig) {
     let bbJsonConfig;
@@ -45,6 +57,14 @@ export default class BlueButton {
     this.clientId = bbJsonConfig.clientId;
     this.clientSecret = bbJsonConfig.clientSecret;
     this.version = bbJsonConfig.version;
+
+    // AUTH constructs
+    this.usePKCE = bbJsonConfig.usePKCE;
+    this.callBackUrl = bbJsonConfig.callBackUrl;
+    this.state = "";
+    this.codeChallenge = generateCodeChallenge();
+    this.usePKCE = true;
+    this.authorizeUrl = "";
   }
 
   normalizeConfig(config: BlueButtonJsonConfig) {
@@ -56,6 +76,12 @@ export default class BlueButton {
         config.environment === Environments.PRODUCTION
           ? PRODUCTION_BASE_URL
           : SANDBOX_BASE_URL,
+      usePKCE: config.usePKCE ? config.usePKCE : true,
+      callBackUrl: config.callBackUrl ? config.callBackUrl : CALLBACK_URL,
     };
   }
+
+  public setCallBackUrl = setCallBackUrl;
+  public setUsePKCE = setUsePKCE;
+  public generateAuthorizeUrl = generateAuthorizeUrl;
 }
