@@ -1,45 +1,61 @@
 /*
 auth.ts - Provides auth related methods for the Bluebutton class
 */
+import crypto from "crypto";
 
-import BlueButton from "./index";
-import {
-  generateCodeChallenge,
-  generateRandomState,
-} from "./utils/generatePKCE";
+import BlueButton from ".";
 
-export function setCallBackUrl(this: BlueButton, callBackUrl: string): any {
-  this.callBackUrl = callBackUrl;
+export type authData = {
+  codeChallenge: string;
+  verifier: string;
+  state: string;
+};
+
+type pkceData = {
+  codeChallenge: string;
+  verifier: string;
+};
+
+function base64URLEncode(buffer: Buffer): string {
+  return buffer
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
 }
 
-export function setUsePKCE(this: BlueButton, usePKCE: boolean): any {
-  this.usePKCE = usePKCE;
+function sha256(str: string): Buffer {
+  return crypto.createHash("sha256").update(str).digest();
 }
 
-export function generateAuthorizeUrl(this: BlueButton): any {
+function generatePkceData(): pkceData {
+  var verifier = base64URLEncode(crypto.randomBytes(32));
+  return {
+    codeChallenge: base64URLEncode(sha256(verifier)),
+    verifier: verifier,
+  };
+}
+
+function generateRandomState(): string {
+  return base64URLEncode(crypto.randomBytes(32));
+}
+
+export function generateAuthData(): authData {
+  const pkceData = generatePkceData();
+  return {
+    codeChallenge: pkceData.codeChallenge,
+    verifier: pkceData.verifier,
+    state: generateRandomState(),
+  };
+}
+
+export function generateAuthorizeUrl(
+  this: BlueButton,
+  authData: authData
+): any {
   const BB2_AUTH_URL = this.baseUrl + "/" + this.version + "/o/authorize";
 
-  let pkceParams = "";
-  this.state = generateRandomState();
+  const pkceParams = `code_challenge_method=S256&code_challenge=${authData.codeChallenge}`;
 
-  if (this.usePKCE) {
-    this.codeChallenge = generateCodeChallenge();
-    pkceParams =
-      "&code_challenge_method=S256" +
-      "&code_challenge=" +
-      this.codeChallenge.codeChallenge;
-  }
-
-  this.authorizeUrl =
-    BB2_AUTH_URL +
-    "?client_id=" +
-    this.clientId +
-    "&redirect_uri=" +
-    this.callBackUrl +
-    "&state=" +
-    this.state +
-    "&response_type=code" +
-    pkceParams;
-
-  return this;
+  return `${BB2_AUTH_URL}?client_id=${this.clientId}&redirect_uri=${this.callBackUrl}&state=${authData.state}&response_type=code&${pkceParams}`;
 }
