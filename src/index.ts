@@ -1,6 +1,6 @@
 import { cwd } from "process";
 import { Environments } from "./enums/environments";
-import { generateAuthData, generateAuthorizeUrl } from "./auth";
+import { authData, generateAuthData, generateAuthorizeUrl } from "./auth";
 
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
@@ -65,5 +65,8 @@ export default class BlueButton {
   }
 
   public generateAuthData = generateAuthData;
-  public generateAuthorizeUrl = generateAuthorizeUrl;
+
+  public generateAuthorizeUrl(authData: authData): string {
+    return generateAuthorizeUrl(this, authData);
+  }
 }

@@ -50,12 +50,12 @@ export function generateAuthData(): authData {
 }
 
 export function generateAuthorizeUrl(
-  this: BlueButton,
+  bb: BlueButton,
   authData: authData
-): any {
-  const BB2_AUTH_URL = this.baseUrl + "/" + this.version + "/o/authorize";
+): string {
+  const BB2_AUTH_URL = bb.baseUrl + "/" + bb.version + "/o/authorize";
 
   const pkceParams = `code_challenge_method=S256&code_challenge=${authData.codeChallenge}`;
 
-  return `${BB2_AUTH_URL}?client_id=${this.clientId}&redirect_uri=${this.callBackUrl}&state=${authData.state}&response_type=code&${pkceParams}`;
+  return `${BB2_AUTH_URL}?client_id=${bb.clientId}&redirect_uri=${bb.callBackUrl}&state=${authData.state}&response_type=code&${pkceParams}`;
 }
