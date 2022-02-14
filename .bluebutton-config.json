@@ -1,0 +1,8 @@
+{
+    "baseUrl": "https://sandbox.bluebutton.cms.gov",
+    "clientId": "foo",
+    "clientSecret": "bar",
+    "callbackUrl": "http://localhost:3001/api/bluebutton/callback/",
+    "version": "v2",
+    "pkce": true
+}
