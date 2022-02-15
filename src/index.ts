@@ -64,7 +64,9 @@ export default class BlueButton {
     };
   }
 
-  public generateAuthData = generateAuthData;
+  public generateAuthData(): authData {
+    return generateAuthData();
+  }
 
   public generateAuthorizeUrl(authData: authData): string {
     return generateAuthorizeUrl(this, authData);
