@@ -1,7 +1,7 @@
 {
     "baseUrl": "https://sandbox.bluebutton.cms.gov",
-    "clientId": "gwDRY2iUsPU3RbTAZYQfzja4laa51BoTCh0249y5",
-    "clientSecret": "oS6oQdL3pHZnQQJGFu7GOMMZARzAwZzU252B1XpMCgjYMDNrrwJRz14VlKrNoAO4YsvxklTnezJJv0T9RSV0upXXPuZBP5itKKO5NnyaB8iCqiytGEgrDklQDbZd1nHO",
+    "clientId": "foo",
+    "clientSecret": "bar",
     "callbackUrl": "http://localhost:3001/api/bluebutton/callback/",
     "version": "v2",
     "pkce": true
