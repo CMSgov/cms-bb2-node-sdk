@@ -8,7 +8,6 @@ import StatusCodes from 'http-status-codes';
 import 'express-async-errors';
 
 import BlueButton from './BB2';
-import logger from '@shared/Logger';
 
 const app = express();
 const { BAD_REQUEST } = StatusCodes;
@@ -20,16 +19,6 @@ const { BAD_REQUEST } = StatusCodes;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-// Show routes called in console during development
-if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'sandbox') {
-  app.use(morgan('dev'));
-}
-
-// Security
-if (process.env.NODE_ENV === 'production') {
-  app.use(helmet());
-}
 
 // dispatch to SDK
 const bb2Router = Router();
@@ -56,7 +45,7 @@ app.use('/api', bb2Router);
 
 // Print API errors
 app.use((err: Error, _req: Request, res: Response) => {
-  logger.err(err, true);
+  console.log(err);
   return res.status(BAD_REQUEST).json({
     error: err.message,
   });

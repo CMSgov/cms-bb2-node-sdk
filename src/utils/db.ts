@@ -1,6 +1,6 @@
 import moment from 'moment';
 import AuthorizationToken from '../entities/AuthorizationToken';
-import Settings from '../entities/Settings';
+// import Settings from '../entities/Settings';
 import { CodeChallenge } from './generatePKCE';
 
 /* DEVELOPER NOTES:
@@ -64,26 +64,11 @@ export interface DB {
     [key: string]: CodeChallenge
   },
   codeChallenge: CodeChallenge,
-  settings: Settings
+  settings: any
 }
 
 const db: DB = {
   patients: {},
-  /*
-    * DEVELOPER NOTES:
-    *
-    * We are hard coding a Mock 'User' here of our demo application to save time
-    * creating/demoing a user logging into the application.
-    *
-    * This user will then need to linked to the Medicare.gov login
-    * to approve of having their medicare data accessed by the application
-    * these login's will be linked/related so anytime they login to the
-    * application, the application will be able to pull their medicare data.
-    *
-    * Just for ease of getting and displaying the data
-    * we are expecting this user to be linked to the
-    * BB2 Sandbox User BBUser29999
-    */
   users: [new User({
       name: 'John Doe',
       userName: 'jdoe29999',
@@ -95,7 +80,17 @@ const db: DB = {
     codeChallenge: '',
     verifier: '',
   },
-  settings: new Settings(undefined),
+  settings: [],
 };
 
+export function getLoggedInUser(db : DB) {
+  return db.users[0];
+}
+  
+export function clearBB2Data(user: IUser) {
+  const userRef = user;
+  userRef.authToken = undefined;
+  userRef.eobData = undefined;
+}
+  
 export default db;

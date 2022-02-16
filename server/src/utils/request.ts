@@ -1,6 +1,5 @@
 import axios from 'axios';
 import FormData from 'form-data';
-import logger from '../shared/Logger';
 
 function sleep(time: number) {
   return new Promise((resolve) => {
@@ -29,19 +28,19 @@ async function doRetry(config: any) {
   /* eslint-disable no-await-in-loop */
   for (let i = 0; i < maxAttempts; i += 1) {
     const waitInSec = interval * (2 ** i);
-    logger.info(`wait ${waitInSec} seconds...`);
+    console.log(`wait ${waitInSec} seconds...`);
     await sleep(waitInSec * 1000);
-    logger.info(`retry attempts: ${i + 1}`);
+    console.log(`retry attempts: ${i + 1}`);
     try {
       resp = await axios(config);
-      logger.info('retry successful:');
-      logger.info(resp.data);
+      console.log('retry successful:');
+      console.log(resp.data);
       break;
     } catch (error: any) {
-      logger.info(`retry error: [${JSON.stringify(error.message)}]`);
+      console.log(`retry error: [${JSON.stringify(error.message)}]`);
       if (error.response) {
-        logger.info(`response code: ${String(error.response.status)}`);
-        logger.info(`response data: ${JSON.stringify(error.response.data)}`);
+        console.log(`response code: ${String(error.response.status)}`);
+        console.log(`response data: ${JSON.stringify(error.response.data)}`);
         resp = error.response;
       }
     }
@@ -58,14 +57,14 @@ export async function request(config: any, retryFlag: boolean) {
   } catch (error: any) {
     // DEVELOPER NOTES:
     // here handle errors per ErrorResponses.md
-    logger.info(`Error message: [${JSON.stringify(error.message)}]`);
+    console.log(`Error message: [${JSON.stringify(error.message)}]`);
     if (error.response) {
-      logger.info(`response code: ${String(error.response?.status)}`);
-      logger.info(`response text: ${JSON.stringify(error.response.data)}`);
+      console.log(`response code: ${String(error.response?.status)}`);
+      console.log(`response text: ${JSON.stringify(error.response.data)}`);
       // DEVELOPER NOTES:
       // check for retryable (e.g. 500 & fhir) errors and do retrying...
       if (retryFlag && isRetryable(error)) {
-        logger.info('Request failed and is retryable, entering retry process...');
+        console.log('Request failed and is retryable, entering retry process...');
         const retryResp = await doRetry(config);
         if (retryResp) {
           resp = retryResp;
@@ -77,7 +76,7 @@ export async function request(config: any, retryFlag: boolean) {
       // something went wrong on sender side, not retryable
       // error.request is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      logger.info(`error.request: ${String(error.request)}`);
+      console.log(`error.request: ${String(error.request)}`);
     }
   }
   /* eslint-disable-next-line @typescript-eslint/no-unsafe-return */
