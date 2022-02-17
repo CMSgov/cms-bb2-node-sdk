@@ -60,9 +60,9 @@ export function generateAuthorizeUrl(
 
   Usage example for Axios:
 
-    const postData = bb.generateFormData(authData, callBackCode, callBackState);
+    const postData = bb.generateTokenPostData(authData, callBackCode, callBackState);
 
-    response = await axios.post(bb.getAccessTokenUrl(), postData, postHeaders);
+    const response = await axios.post(bb.getAccessTokenUrl(), postData, postHeaders);
 */
 export function generateTokenPostData({
   bb,
