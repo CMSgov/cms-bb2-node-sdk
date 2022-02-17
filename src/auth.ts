@@ -4,17 +4,7 @@ auth.ts - Provides auth related methods for the Bluebutton class
 import crypto from "crypto";
 
 import BlueButton from ".";
-
-export type authData = {
-  codeChallenge: string;
-  verifier: string;
-  state: string;
-};
-
-type pkceData = {
-  codeChallenge: string;
-  verifier: string;
-};
+import { authData, tokenPostData } from "./types/auth";
 
 function base64URLEncode(buffer: Buffer): string {
   return buffer
@@ -27,6 +17,11 @@ function base64URLEncode(buffer: Buffer): string {
 function sha256(str: string): Buffer {
   return crypto.createHash("sha256").update(str).digest();
 }
+
+type pkceData = {
+  codeChallenge: string;
+  verifier: string;
+};
 
 function generatePkceData(): pkceData {
   var verifier = base64URLEncode(crypto.randomBytes(32));
@@ -58,4 +53,42 @@ export function generateAuthorizeUrl(
   const pkceParams = `code_challenge_method=S256&code_challenge=${authData.codeChallenge}`;
 
   return `${BB2_AUTH_URL}?client_id=${bb.clientId}&redirect_uri=${bb.callBackUrl}&state=${authData.state}&response_type=code&${pkceParams}`;
+}
+
+/*
+  Generates post data for call to access token URL
+
+  Usage example for Axios:
+
+    const postData = bb.generateFormData(authData, callBackCode, callBackState);
+
+    response = await axios.post(bb.getAccessTokenUrl(), postData, postHeaders);
+*/
+export function generateTokenPostData({
+  bb,
+  authData,
+  code,
+  callBackState,
+}: {
+  bb: BlueButton;
+  authData: authData;
+  code: string;
+  callBackState: string;
+}): tokenPostData {
+  // Check state from callback here?
+  if (callBackState != authData.state) {
+    throw new Error("Provided callback state does not match authData state.");
+  }
+
+  const BB2_ACCESS_TOKEN_URL = bb.baseUrl + "/" + bb.version + "/o/token/";
+
+  return {
+    client_id: bb.clientId,
+    client_secret: bb.clientSecret,
+    code: code,
+    grant_type: "authorization_code",
+    redirect_uri: bb.callBackUrl,
+    code_verifier: authData.verifier,
+    code_challenge: authData.codeChallenge,
+  };
 }

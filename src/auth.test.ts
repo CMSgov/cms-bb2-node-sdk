@@ -1,4 +1,3 @@
-import { createImportEqualsDeclaration } from "typescript";
 import BlueButton from ".";
 
 // Setup BlueButton class instance
@@ -34,4 +33,35 @@ test("expect auth method generateAuthorizeUrl()", () => {
   const url = bb.generateAuthorizeUrl(authData);
 
   expect(url).toBe(expectedUrl);
+});
+
+test("expect auth method generateTokenPostData()", () => {
+  const authData = bb.generateAuthData();
+
+  const expectedPostData = {
+    client_id: "foo",
+    client_secret: "bar",
+    code: "test-code",
+    code_challenge: authData.codeChallenge,
+    code_verifier: authData.verifier,
+    grant_type: "authorization_code",
+    redirect_uri: "http://localhost/callback/",
+  };
+
+  const postData = bb.generateTokenPostData(
+    authData,
+    "test-code",
+    authData.state
+  );
+
+  expect(postData).toStrictEqual(expectedPostData);
+
+  // Test if state does not match thows Error
+  expect(() => {
+    bb.generateTokenPostData(
+      authData,
+      "test-code",
+      "test-state-does-not-match"
+    );
+  }).toThrow("Provided callback state does not match authData state.");
 });

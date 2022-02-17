@@ -1,6 +1,11 @@
 import { cwd } from "process";
 import { Environments } from "./enums/environments";
-import { authData, generateAuthData, generateAuthorizeUrl } from "./auth";
+import { authData, tokenPostData } from "./types/auth";
+import {
+  generateAuthData,
+  generateAuthorizeUrl,
+  generateTokenPostData,
+} from "./auth";
 
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
@@ -70,5 +75,13 @@ export default class BlueButton {
 
   public generateAuthorizeUrl(authData: authData): string {
     return generateAuthorizeUrl(this, authData);
+  }
+
+  public generateTokenPostData(
+    authData: authData,
+    code: string,
+    callBackState: string
+  ): tokenPostData {
+    return generateTokenPostData({ bb: this, authData, code, callBackState });
   }
 }
