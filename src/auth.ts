@@ -55,26 +55,13 @@ export function generateAuthorizeUrl(
   return `${BB2_AUTH_URL}?client_id=${bb.clientId}&redirect_uri=${bb.callBackUrl}&state=${authData.state}&response_type=code&${pkceParams}`;
 }
 
-/*
-  Generates post data for call to access token URL
-
-  Usage example for Axios:
-
-    const postData = bb.generateTokenPostData(authData, callBackCode, callBackState);
-
-    const response = await axios.post(bb.getAccessTokenUrl(), postData, postHeaders);
-*/
-export function generateTokenPostData({
-  bb,
-  authData,
-  code,
-  callBackState,
-}: {
-  bb: BlueButton;
-  authData: authData;
-  code: string;
-  callBackState: string;
-}): tokenPostData {
+//  Generates post data for call to access token URL
+export function generateTokenPostData(
+  bb: BlueButton,
+  authData: authData,
+  code: string,
+  callBackState: string
+): tokenPostData {
   // Check state from callback here?
   if (callBackState != authData.state) {
     throw new Error("Provided callback state does not match authData state.");

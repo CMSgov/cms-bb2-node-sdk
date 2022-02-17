@@ -82,6 +82,6 @@ export default class BlueButton {
     code: string,
     callBackState: string
   ): tokenPostData {
-    return generateTokenPostData({ bb: this, authData, code, callBackState });
+    return generateTokenPostData(this, authData, code, callBackState);
   }
 }
