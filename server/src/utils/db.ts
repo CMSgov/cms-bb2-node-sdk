@@ -1,5 +1,4 @@
 import moment from 'moment';
-import { CodeChallenge } from './generatePKCE';
 
 export interface IAuthorizationToken {
     accessToken: string,
@@ -11,22 +10,16 @@ export interface IAuthorizationToken {
     expiresAt: number
   }
   
-  export class AuthorizationToken implements IAuthorizationToken {
-    public accessToken: string;
+export class AuthorizationToken implements IAuthorizationToken {
+  public accessToken: string;
+  public expiresIn: number;
+  public expiresAt: number;
+  public tokenType: string;
+  public scope: [string];
+  public refreshToken: string;
+  public patient: string;
   
-    public expiresIn: number;
-  
-    public expiresAt: number;
-  
-    public tokenType: string;
-  
-    public scope: [string];
-  
-    public refreshToken: string;
-  
-    public patient: string;
-  
-    constructor(authToken: any) {
+  constructor(authToken: any) {
       this.accessToken = authToken.access_token;
       this.expiresIn = authToken.expires_in;
       this.expiresAt = authToken.expires_at;
@@ -34,8 +27,8 @@ export interface IAuthorizationToken {
       this.refreshToken = authToken.refresh_token;
       this.scope = authToken.scope;
       this.tokenType = authToken.token_type;
-    }
   }
+}
   
 export interface UserInfo {
   name: string,
@@ -47,35 +40,48 @@ export interface UserInfo {
 export interface IUser {
   authToken?: AuthorizationToken,
   userInfo: UserInfo,
-  eobData?: any,
-  errors?: string[],
+  fhirData?: Map<string, any>,
+  errors?: Map<string, any>,
   accessTokenExpired(): boolean,
-  setData(data: any): void,
-  getData(): any,
+  setData(data: Map<string, any>): void,
+  getData(): Map<string, any>,
+  getErrors(): Map<string, any>,
+  setErrors(errors: Map<string, any>): void,
   getAuthorizationToken(): AuthorizationToken | undefined,
   setAuthorizationToken(authToken: AuthorizationToken): void,
+  reset(): void,
 }
 
 export class User implements IUser {
     public authToken?: AuthorizationToken | undefined;
     public userInfo: UserInfo;
-    public eobData?: any;
-    public errors?: string[];
+    public fhirData: Map<string, any>;
+    public errors: Map<string, any>;
 
     constructor(userInfo: UserInfo) {
         this.userInfo = userInfo;
+        this.fhirData = new Map<string, any>();
+        this.errors = new Map<string, any>();
     }
 
     accessTokenExpired(): boolean {
       return moment(this.authToken?.expiresAt).isBefore(moment());
     }
 
-    setData(data: any): void {
-        this.eobData = data;
+    setData(data: Map<string, any>): void {
+        this.fhirData = data;
     }
 
-    getData(): any {
-        return this.eobData;
+    getData(): Map<string, any> {
+        return this.fhirData;
+    }
+
+    getErrors(): Map<string, any> {
+      return this.errors;        
+    }
+
+    setErrors(errors: Map<string, any>): void {
+      this.errors = errors;  
     }
 
     getAuthorizationToken(): AuthorizationToken | undefined {
@@ -85,42 +91,9 @@ export class User implements IUser {
     setAuthorizationToken(authToken: AuthorizationToken): void {
         this.authToken = authToken;
     }
-}
 
-export interface DB {
-  patients: any,
-  users: IUser[],
-  codeChallenges: {
-    [key: string]: CodeChallenge
-  },
-  codeChallenge: CodeChallenge,
-  settings: any
+    reset(): void {
+        this.authToken = undefined;
+        this.fhirData = new Map<string, any>();
+    }
 }
-
-const db: DB = {
-  patients: {},
-  users: [new User({
-      name: 'John Doe',
-      userName: 'jdoe29999',
-      pcp: 'Dr. Hibbert',
-      primaryFacility: 'Springfield General Hospital',
-    })],
-  codeChallenges: {},
-  codeChallenge: {
-    codeChallenge: '',
-    verifier: '',
-  },
-  settings: [],
-};
-
-export function getLoggedInUser(db : DB) {
-  return db.users[0];
-}
-  
-export function clearBB2Data(user: IUser) {
-  const userRef = user;
-  userRef.authToken = undefined;
-  userRef.eobData = undefined;
-}
-  
-export default db;
