@@ -8,6 +8,7 @@ test("expect bb sdk to be created with appropriate defaults", () => {
   const bb = new BlueButton({
     clientId: CLIENT_ID,
     clientSecret: CLIENT_SECRET,
+    callbackUrl: "callbackUrl",
   });
 
   expect(bb.clientId).toBe(CLIENT_ID);
@@ -24,6 +25,7 @@ test("expect bb sdk to be created with the supplied version", () => {
   const bb = new BlueButton({
     clientId: CLIENT_ID,
     clientSecret: CLIENT_SECRET,
+    callbackUrl: "callbackUrl",
     version: VERSION,
   });
 
@@ -40,6 +42,7 @@ test("expect bb sdk to be created the appropriate baseUrl that corresponds to th
   const bb = new BlueButton({
     clientId: CLIENT_ID,
     clientSecret: CLIENT_SECRET,
+    callbackUrl: "",
     environment: Environments.PRODUCTION,
   });
 

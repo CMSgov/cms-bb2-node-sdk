@@ -1,0 +1,14 @@
+FROM node:14.17.1
+
+LABEL version="1.0"
+LABEL description="Test for SDK"
+
+WORKDIR /
+
+COPY . . 
+
+RUN yarn install
+
+EXPOSE 3001
+
+CMD ["yarn","start"]
