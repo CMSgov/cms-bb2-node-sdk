@@ -43,10 +43,10 @@ export interface IUser {
   fhirData?: Map<string, any>,
   errors?: Map<string, any>,
   accessTokenExpired(): boolean,
-  setData(data: Map<string, any>): void,
-  getData(): Map<string, any>,
-  getErrors(): Map<string, any>,
-  setErrors(errors: Map<string, any>): void,
+  setData(data: any): void,
+  getData(): any,
+  getErrors(): any,
+  setErrors(errors: any): void,
   getAuthorizationToken(): AuthorizationToken | undefined,
   setAuthorizationToken(authToken: AuthorizationToken): void,
   reset(): void,
@@ -55,32 +55,32 @@ export interface IUser {
 export class User implements IUser {
     public authToken?: AuthorizationToken | undefined;
     public userInfo: UserInfo;
-    public fhirData: Map<string, any>;
-    public errors: Map<string, any>;
+    public fhirData?: any;
+    public errors?: any;
 
     constructor(userInfo: UserInfo) {
         this.userInfo = userInfo;
-        this.fhirData = new Map<string, any>();
-        this.errors = new Map<string, any>();
+        this.fhirData = {};
+        this.errors = {};
     }
 
     accessTokenExpired(): boolean {
       return moment(this.authToken?.expiresAt).isBefore(moment());
     }
 
-    setData(data: Map<string, any>): void {
+    setData(data: any): void {
         this.fhirData = data;
     }
 
-    getData(): Map<string, any> {
+    getData(): any {
         return this.fhirData;
     }
 
-    getErrors(): Map<string, any> {
+    getErrors(): any {
       return this.errors;        
     }
 
-    setErrors(errors: Map<string, any>): void {
+    setErrors(errors: any): void {
       this.errors = errors;  
     }
 

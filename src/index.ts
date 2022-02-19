@@ -7,7 +7,7 @@ import { get, post, postWithConfig } from './utils/request';
 import { User, IUser, AuthorizationToken } from './utils/db';
 import { CodeChallenge, generateCodeChallenge, generateRandomState } from './utils/generatePKCE';
 
-// MyApp imports: remove after test
+// MyApp imports: remove after test BB2-1091
 import express, { Router } from 'express';
 import cookieParser from 'cookie-parser';
 import StatusCodes from 'http-status-codes';
@@ -113,10 +113,12 @@ export default class BlueButton {
     };
   }
 
+  // remove after BB2-1091
   async authroize(req: Request, res: Response, ctx: IAppContext) {
     await res.send(generateAuthorizeUrl(ctx));
   }
 
+  // remove after BB2-1091
   async callback(req: Request, res: Response, ctx: IAppContext) {
     try {
         const loggedInUser = ctx.getUser();
@@ -191,6 +193,7 @@ async function getResource(fhirUrl: string, tokenUrl: string, req: Request, res:
     return fhir_data;
 }
 
+// remove after BB2-1091
 function generateAuthorizeUrl(ctx: IAppContext): string {
     let pkceParams = '';
     const state = generateRandomState();
@@ -210,6 +213,7 @@ function generateAuthorizeUrl(ctx: IAppContext): string {
       pkceParams}`;
   }
   
+  // remove after BB2-1091
   async function getAccessToken(code: string, state: string | undefined, ctx: IAppContext) {
     const form = new FormData();
     form.append('client_id', ctx.getBlueButton().clientId);
@@ -226,6 +230,7 @@ function generateAuthorizeUrl(ctx: IAppContext): string {
     return post(ctx.getBlueButton().BB2_AUTH_TOKEN_URL, form, form.getHeaders());
   }
   
+  // remove after BB2-1091
   async function accessTokenRefresh(tokenUrl: string, ctx: IAppContext) {
       const tokenResponse = await postWithConfig({
         method: 'post',
@@ -246,7 +251,8 @@ function generateAuthorizeUrl(ctx: IAppContext): string {
       return authToken;
   }
 
-// test harness
+// test code: test app;
+// remove after BB2-1091
 export interface DB {
     patients: any,
     users: IUser[],
@@ -306,17 +312,17 @@ class AppCtx implements IAppContext {
 
     donePatient(res: Response, data: any) {
       console.log("Patient query done!");
-      this.getUser().getData().set("patient", data);
+      this.getUser().setData({'patient': data});
     }
   
     doneCoverage(res: Response, data: any) {
       console.log("Coverage query done!");
-      this.getUser().getData().set("coverage", data);
+      this.getUser().setData({'coverage': data});
     }
     
     doneEOB(res: Response, data: any) {
       console.log("EOB query done, redirect FE!");
-      this.getUser().getData().set("eobData", data);
+      this.getUser().setData({'eobData': data});
     }
 }
 
@@ -360,3 +366,4 @@ app.use((err: Error, _req: Request, res: Response) => {
 app.listen(Number(3001), () => {
   console.log("Express server started on port: 3001");
 });
+// end test code
