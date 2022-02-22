@@ -16,10 +16,6 @@ function isRetryable(error: any) {
   return false;
 }
 
-// retry init-interval = 5 sec, max attempt 3,
-// with retry interval = init-interval * (2 ** n)
-// where n retry attempted
-// TODO: move into config
 async function doRetry(config: any) {
   const interval = 5;
   const maxAttempts = 3;

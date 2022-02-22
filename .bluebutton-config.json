@@ -4,5 +4,11 @@
     "clientSecret": "bar",
     "callbackUrl": "http://localhost:3001/api/bluebutton/callback/",
     "version": "v2",
-    "pkce": true
+    "pkce": true,
+    "retryConfig": {
+        "enabled": true,
+        "initInterval": 5,
+        "maxAttempts": 3,
+        "backOffExpr": "i * ( 2 ** n )"
+    }
 }
