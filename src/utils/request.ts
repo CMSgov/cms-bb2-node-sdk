@@ -1,5 +1,6 @@
 import axios from 'axios';
 import FormData from 'form-data';
+import { RetryConfig } from "../index";
 
 function sleep(time: number) {
   return new Promise((resolve) => {
@@ -7,21 +8,23 @@ function sleep(time: number) {
   });
 }
 
-function isRetryable(error: any) {
+function isRetryable(error: any, retryConfig: RetryConfig) {
   if (error.response && error.response.status === 500) {
-    if (error.request.path && error.request.path.match('^/v[12]/fhir/.*')) {
+    if (error.request.path && error.request.path.match(retryConfig.endpointPattern)) {
       return true;
     }
   }
   return false;
 }
 
-async function doRetry(config: any) {
-  const interval = 5;
-  const maxAttempts = 3;
+async function doRetry(config: any, retryConfig: RetryConfig) {
+  const interval = retryConfig.initInterval;
+  const maxAttempts = retryConfig.maxAttempts;
+
   let resp = null;
+
   for (let i = 0; i < maxAttempts; i += 1) {
-    const waitInSec = interval * (2 ** i);
+    const waitInSec = eval(retryConfig.backOffExpr);
     console.log(`wait ${waitInSec} seconds...`);
     await sleep(waitInSec * 1000);
     console.log(`retry attempts: ${i + 1}`);
@@ -42,7 +45,7 @@ async function doRetry(config: any) {
   return resp;
 }
 
-export async function request(config: any, retryFlag: boolean) {
+async function request(config: any, retryConfig?: RetryConfig) {
   let resp = null;
   try {
     resp = await axios(config);
@@ -51,9 +54,9 @@ export async function request(config: any, retryFlag: boolean) {
     if (error.response) {
       console.log(`response code: ${String(error.response?.status)}`);
       console.log(`response text: ${JSON.stringify(error.response.data)}`);
-      if (retryFlag && isRetryable(error)) {
+      if (retryConfig && retryConfig.enabled && isRetryable(error, retryConfig)) {
         console.log('Request failed and is retryable, entering retry process...');
-        const retryResp = await doRetry(config);
+        const retryResp = await doRetry(config, retryConfig);
         if (retryResp) {
           resp = retryResp;
         }
@@ -73,14 +76,14 @@ export async function post(endpoint_url: string, data: FormData, headers: any) {
     url: endpoint_url,
     data,
     headers,
-  }, true);
+  });
 }
 
 export async function postWithConfig(config: any) {
-  return request(config, false);
+  return request(config);
 }
 
-export async function get(endpointUrl: string, params: any, authToken: string) {
+export async function get(endpointUrl: string, params: any, authToken: string, retryConfig?: RetryConfig) {
   return request({
     method: 'get',
     url: endpointUrl,
@@ -88,5 +91,5 @@ export async function get(endpointUrl: string, params: any, authToken: string) {
     headers: {
       Authorization: `Bearer ${authToken}`,
     },
-  }, true);
+  }, retryConfig);
 }

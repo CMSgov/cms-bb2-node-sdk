@@ -23,11 +23,12 @@ type BlueButtonJsonConfig = {
   environment?: Environments;
 };
 
-type RetryConfig = {
+export type RetryConfig = {
   enabled: boolean;
   initInterval: number;
   maxAttempts: number;
   backOffExpr: string;
+  endpointPattern: string;
 };
   
 export interface IAuthorizationToken {
@@ -52,7 +53,7 @@ export class AuthorizationToken implements IAuthorizationToken {
   constructor(authToken: any) {
     this.accessToken = authToken.access_token;
     this.expiresIn = authToken.expires_in;
-    this.expiresAt = authToken.expires_at;
+    this.expiresAt = authToken.expires_at ? authToken.expires_at : moment().add(this.expiresIn).valueOf();
     this.patient = authToken.patient;
     this.refreshToken = authToken.refresh_token;
     this.scope = authToken.scope;
@@ -230,7 +231,7 @@ async function getResource(fhirUrl: string, tokenUrl: string, req: Request, res:
         accessToken = await accessTokenRefresh(tokenUrl, ctx);
     }
 
-    const response = await get(fhirUrl, req.query, `${accessToken?.accessToken}`);
+    const response = await get(fhirUrl, req.query, `${accessToken?.accessToken}`, ctx.getBlueButton().retryConfig);
 
     let fhir_data = undefined;
     if (response.status === 200) {
@@ -242,7 +243,7 @@ async function getResource(fhirUrl: string, tokenUrl: string, req: Request, res:
     return fhir_data;
 }
 
-// remove after BB2-1091
+// remove before merge BB2-1091
 function generateAuthorizeUrl(ctx: IAppContext): string {
     let pkceParams = '';
     const state = generateRandomState();
@@ -262,7 +263,7 @@ function generateAuthorizeUrl(ctx: IAppContext): string {
       pkceParams}`;
   }
   
-  // remove after BB2-1091
+  // remove before merge BB2-1091
   async function getAccessToken(code: string, state: string | undefined, ctx: IAppContext) {
     const form = new FormData();
     form.append('client_id', ctx.getBlueButton().clientId);
@@ -279,7 +280,7 @@ function generateAuthorizeUrl(ctx: IAppContext): string {
     return post(ctx.getBlueButton().BB2_AUTH_TOKEN_URL, form, form.getHeaders());
   }
   
-  // remove after BB2-1091
+  // remove before merge BB2-1091
   async function accessTokenRefresh(tokenUrl: string, ctx: IAppContext) {
       const tokenResponse = await postWithConfig({
         method: 'post',
@@ -301,7 +302,7 @@ function generateAuthorizeUrl(ctx: IAppContext): string {
   }
 
 // test code: test app;
-// remove after BB2-1091
+// remove before merge BB2-1091
 // MyApp imports: remove after test BB2-1091
 import express, { Router } from 'express';
 import cookieParser from 'cookie-parser';

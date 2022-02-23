@@ -9,6 +9,7 @@
         "enabled": true,
         "initInterval": 5,
         "maxAttempts": 3,
-        "backOffExpr": "i * ( 2 ** n )"
+        "backOffExpr": "interval * ( 2 ** i )",
+        "endpoints": "^/v[12]/fhir/.*"
     }
 }
