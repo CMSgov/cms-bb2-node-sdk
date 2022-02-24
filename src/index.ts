@@ -1,3 +1,4 @@
+import fs from "fs";
 import { cwd } from "process";
 import { Environments } from "./enums/environments";
 
@@ -8,6 +9,7 @@ const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
 type BlueButtonJsonConfig = {
   clientId: string;
   clientSecret: string;
+  callbackUrl: string;
   version?: string;
   environment?: Environments;
 };
@@ -16,6 +18,7 @@ type BlueButtonConfig = string | BlueButtonJsonConfig;
 export default class BlueButton {
   clientId: string;
   clientSecret: string;
+  callbackUrl: string;
   version: string;
   baseUrl: string;
 
@@ -23,16 +26,18 @@ export default class BlueButton {
     let bbJsonConfig;
     if (!config) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const jsonConfig = require(DEFAULT_CONFIG_FILE_LOCATION);
+        const rawdata = fs.readFileSync(DEFAULT_CONFIG_FILE_LOCATION);
+        const jsonConfig = JSON.parse(rawdata.toString());
         bbJsonConfig = this.normalizeConfig(jsonConfig);
       } catch (e) {
-        throw new Error(`Failed to load config file at: ${config}`);
+        throw new Error(
+          `Failed to load config file at: ${DEFAULT_CONFIG_FILE_LOCATION}`
+        );
       }
     } else if (typeof config === "string") {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const jsonConfig = require(config);
+        const rawdata = fs.readFileSync(config);
+        const jsonConfig = JSON.parse(rawdata.toString());
         bbJsonConfig = this.normalizeConfig(jsonConfig);
       } catch (e) {
         throw new Error(`Failed to load config file at: ${config}`);
@@ -41,8 +46,21 @@ export default class BlueButton {
       bbJsonConfig = this.normalizeConfig(config);
     }
 
+    if (!bbJsonConfig.clientId) {
+      throw new Error("clientId is required");
+    }
+
+    if (!bbJsonConfig.clientSecret) {
+      throw new Error("clientSecret is required");
+    }
+
+    if (!bbJsonConfig.callbackUrl) {
+      throw new Error("callbackUrl is required");
+    }
+
     this.baseUrl = bbJsonConfig.baseUrl;
     this.clientId = bbJsonConfig.clientId;
+    this.callbackUrl = bbJsonConfig.callbackUrl;
     this.clientSecret = bbJsonConfig.clientSecret;
     this.version = bbJsonConfig.version;
   }
@@ -51,6 +69,7 @@ export default class BlueButton {
     return {
       clientId: config.clientId,
       clientSecret: config.clientSecret,
+      callbackUrl: config.callbackUrl,
       version: config.version ? config.version : "2",
       baseUrl:
         config.environment === Environments.PRODUCTION
