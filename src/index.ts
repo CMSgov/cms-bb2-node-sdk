@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import fs from "fs";
 import { cwd } from "process";
 import { Environments } from "./enums/environments";
-import { get, postWithConfig } from './utils/request';
+import { get, postWithConfig } from './request';
 
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
@@ -21,12 +21,12 @@ type BlueButtonJsonConfig = {
 };
 
 export type RetryConfig = {
-  enabled: boolean;
-  initInterval: number;
-  maxAttempts: number;
-  backOffExpr: string;
-  endpointPattern: string;
-};
+    enabled: boolean;
+    initInterval: number;
+    maxAttempts: number;
+    backOffExpr: string;
+    endpointPattern: string;
+  };
   
 export interface IAuthorizationToken {
   accessToken: string,
