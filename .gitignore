@@ -4,15 +4,6 @@ docs
 # dependencies
 node_modules
 
-# build trash
-server/dist
-
-server/node_modules
-
-client/dist
-
-client/node_modules
-
 # testing
 coverage
 
