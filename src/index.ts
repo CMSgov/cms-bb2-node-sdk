@@ -172,9 +172,9 @@ export default class BlueButton {
       throw new Error("clientSecret is required");
     }
 
-    if (!bbJsonConfig.callbackUrl) {
-      throw new Error("callbackUrl is required");
-    }
+    // if (!bbJsonConfig.callbackUrl) {
+    //   throw new Error("callbackUrl is required");
+    // }
 
     this.baseUrl = bbJsonConfig.baseUrl;
     this.clientId = bbJsonConfig.clientId;

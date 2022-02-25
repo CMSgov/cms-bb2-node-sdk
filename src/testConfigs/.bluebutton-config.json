@@ -10,6 +10,6 @@
         "initInterval": 5,
         "maxAttempts": 3,
         "backOffExpr": "interval * ( 2 ** i )",
-        "endpoints": "^/v[12]/fhir/.*"
+        "endpointPattern": "^\/v[12]\/fhir\/.*"
     }
 }
