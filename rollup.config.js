@@ -17,7 +17,7 @@ export default [
 //       commonjs(),
 //       typescript({
 //           tsconfig: "./tsconfig.json",
-//           exclude: ["server/**", "client/**", "**/node_modules/**"]
+//           exclude: ["**/node_modules/**"]
 //         }),
 //     ],
 //   },
@@ -37,7 +37,7 @@ export default [
     plugins: [
         typescript({
             tsconfig: "./tsconfig.json",
-            exclude: ["server/**", "client/**", "**/node_modules/**"]
+            exclude: ["**/node_modules/**"]
         })
     ],
   },

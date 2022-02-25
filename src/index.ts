@@ -1,18 +1,20 @@
-import FormData from 'form-data';
 import moment from 'moment';
 import { Request, Response } from 'express';
 import fs from "fs";
 import { cwd } from "process";
 import { Environments } from "./enums/environments";
-import { get, post, postWithConfig } from './utils/request';
-import { CodeChallenge, generateCodeChallenge, generateRandomState } from './utils/generatePKCE';
+import { get, postWithConfig } from './utils/request';
 
-const BENE_DENIED_ACCESS = 'access_denied';
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
 const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
 const GENERAL_DATA_ERR = '{"message": "Unable to load data - query FHIR resource error."}';
 
+type CodeChallenge = {
+  codeChallenge: string,
+  verifier: string
+};
+  
 type BlueButtonJsonConfig = {
   clientId: string;
   clientSecret: string;
