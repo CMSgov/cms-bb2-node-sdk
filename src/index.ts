@@ -10,11 +10,6 @@ const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
 const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
 const GENERAL_DATA_ERR = '{"message": "Unable to load data - query FHIR resource error."}';
 
-type CodeChallenge = {
-  codeChallenge: string,
-  verifier: string
-};
-  
 type BlueButtonJsonConfig = {
   clientId: string;
   clientSecret: string;
@@ -81,8 +76,6 @@ export interface IUser {
 export interface IAppContext {
   getUser(): IUser,
   getBlueButton(): BlueButton,
-  getCodeChallenge(): CodeChallenge,
-  getCodeChallenges(): {[key: string]: CodeChallenge},
   doneAuthorize(res: Response): void,
   doneFhirResource(fhirReq: FhirRequest, data: any): void,
 }
