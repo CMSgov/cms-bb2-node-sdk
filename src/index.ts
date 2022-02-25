@@ -63,7 +63,7 @@ export class AuthorizationToken implements IAuthorizationToken {
     
 export interface IUser {
   authToken?: AuthorizationToken,
-  userInfo: UserInfo,
+  userInfo: any,
   fhirData?: Map<string, any>,
   errors?: Map<string, any>,
   accessTokenExpired(): boolean,
@@ -82,12 +82,48 @@ export interface IAppContext {
   getCodeChallenge(): CodeChallenge,
   getCodeChallenges(): {[key: string]: CodeChallenge},
   doneAuthorize(res: Response): void,
-  donePatient(res: Response, data: any): void,
-  doneCoverage(res: Response, data: any): void,
-  doneEOB(res: Response, data: any): void,
+  doneFhirResource(fhirReq: FhirRequest, data: any): void,
 }
 
 type BlueButtonConfig = string | BlueButtonJsonConfig;
+
+export enum FhirResourceType {
+  Patient = "Patient",
+  Coverage = "Coverage",
+  Profile = "Profile",
+  ExplanationOfBenefit = "ExplanationOfBenefit",
+}
+  
+export class FhirRequest {
+  private fhirResourceType: FhirResourceType;
+  private request: Request;
+  private response: Response;
+  private appCtx: IAppContext;
+
+  constructor(fhirResourceType: FhirResourceType, req: Request, res: Response, ctx: IAppContext) {
+    this.fhirResourceType = fhirResourceType;
+    this.request = req;
+    this.response = res;
+    this.appCtx = ctx;
+  }
+
+  getRequest(): Request {
+    return this.request;
+  }
+
+  getResponse(): Response {
+    return this.response;
+  }
+
+  getAppContext(): IAppContext {
+    return this.appCtx;
+  }
+
+  getFhirResourceType(): FhirResourceType {
+      return this.fhirResourceType;
+  }
+}
+
 export default class BlueButton {
   clientId: string;
   clientSecret: string;
@@ -163,318 +199,65 @@ export default class BlueButton {
     };
   }
 
-  // remove after BB2-1091
-  async authroize(req: Request, res: Response, ctx: IAppContext) {
-    await res.send(generateAuthorizeUrl(ctx));
-  }
-
-  // remove after BB2-1091
-  async callback(req: Request, res: Response, ctx: IAppContext) {
-    try {
-        const loggedInUser = ctx.getUser();
-        if (req.query.error === BENE_DENIED_ACCESS) {
-          loggedInUser.reset();
-          loggedInUser.getErrors().set("message", BENE_DENIED_ACCESS);
-          throw new Error('Beneficiary denied application access to their data');
-        }
-    
-        if (!req.query.code) {
-          throw new Error('Response was missing access code');
-        }
-        if (ctx.getBlueButton().pkce && !req.query.state) {
-          throw new Error('State is required when using PKCE');
-        }
-    
-        const response = await getAccessToken(req.query.code?.toString(), req.query.state?.toString(), ctx);
-    
-        if (!response.data) {
-          throw new Error('Error get access token');
-        }
-    
-        if (response.status === 200) {
-          ctx.getUser().setAuthorizationToken(new AuthorizationToken(response.data));
-        } else {
-          const general_err = '{"message": "Authorization failed."}';
-          loggedInUser.setData(JSON.parse(general_err));
-        }
-      } catch (e) {
-        console.log(e);
-      }
-      ctx.doneAuthorize(res);
-  }
-
-  async getPatient(req: Request, res: Response, ctx: IAppContext) {
-    const ret = await getResource(ctx.getBlueButton().BB2_PATIENT_URL, ctx.getBlueButton().BB2_AUTH_TOKEN_URL, req, res, ctx);
-    ctx.donePatient(res, ret);
-    res.json(ctx.getUser().getData());
-  }
- 
-  async getCoverage(req: Request, res: Response, ctx: IAppContext) {
-    const ret = await getResource(ctx.getBlueButton().BB2_COVERAGE_URL, ctx.getBlueButton().BB2_AUTH_TOKEN_URL, req, res, ctx);
-    ctx.doneCoverage(res, ret);
-    res.json(ctx.getUser().getData());
-  }
-
-  async getExplanationOfBenefit(req: Request, res: Response, ctx: IAppContext) {
-    const ret = await getResource(ctx.getBlueButton().BB2_EOB_URL, ctx.getBlueButton().BB2_AUTH_TOKEN_URL, req, res, ctx);
-    ctx.doneEOB(res, ret);
-    res.json(ctx.getUser().getData());
-  }
-}
-
-async function getResource(fhirUrl: string, tokenUrl: string, req: Request, res: Response, ctx: IAppContext) {
-    const user = ctx.getUser();
+  async getResource(fhirReq: FhirRequest) {
+    const user = fhirReq.getAppContext().getUser();
 
     let accessToken = user.getAuthorizationToken();
 
     if ( user.accessTokenExpired() ) {
-        accessToken = await accessTokenRefresh(tokenUrl, ctx);
+        accessToken = await accessTokenRefresh(fhirReq.getAppContext());
     }
 
-    const response = await get(fhirUrl, req.query, `${accessToken?.accessToken}`, ctx.getBlueButton().retryConfig);
+    let fhirUrl;
+
+    switch (fhirReq.getFhirResourceType()) {
+        case FhirResourceType.Patient:
+            fhirUrl = fhirReq.getAppContext().getBlueButton().BB2_PATIENT_URL;
+            break;
+        case FhirResourceType.Coverage:
+            fhirUrl = fhirReq.getAppContext().getBlueButton().BB2_COVERAGE_URL;
+            break;
+        case FhirResourceType.ExplanationOfBenefit:
+            fhirUrl = fhirReq.getAppContext().getBlueButton().BB2_EOB_URL;
+            break;
+        default:
+            throw Error(`Unknown Fhir Resource Type --> ${fhirReq.getFhirResourceType()}`)
+    }
+
+    const response = await get(fhirUrl, fhirReq.getRequest().query, 
+                            `${accessToken?.accessToken}`,
+                            fhirReq.getAppContext().getBlueButton().retryConfig);
 
     let fhir_data = undefined;
+
     if (response.status === 200) {
         fhir_data = response.data;
     }
     else {
         fhir_data = JSON.parse(GENERAL_DATA_ERR);
     }
-    return fhir_data;
+
+    fhirReq.getAppContext().doneFhirResource(fhirReq, fhir_data);
+    fhirReq.getResponse().json(fhirReq.getAppContext().getUser().getData());
+  }
 }
 
-// remove before merge BB2-1091
-function generateAuthorizeUrl(ctx: IAppContext): string {
-    let pkceParams = '';
-    const state = generateRandomState();
-  
-    if (ctx.getBlueButton().pkce) {
-      const cc = generateCodeChallenge();
-      pkceParams = `${'&code_challenge_method=S256'
-              + '&code_challenge='}${cc.codeChallenge}`;
-      ctx.getCodeChallenges()[state] = cc;
-    }
-  
-    return `${ctx.getBlueButton().BB2_AUTH_REQ_URL
-    }?client_id=${ctx.getBlueButton().clientId
-    }&redirect_uri=${ctx.getBlueButton().callbackUrl
-    }&state=${state
-    }&response_type=code${
-      pkceParams}`;
-  }
-  
-  // remove before merge BB2-1091
-  async function getAccessToken(code: string, state: string | undefined, ctx: IAppContext) {
-    const form = new FormData();
-    form.append('client_id', ctx.getBlueButton().clientId);
-    form.append('client_secret', ctx.getBlueButton().clientSecret);
-    form.append('code', code);
-    form.append('grant_type', 'authorization_code');
-    form.append('redirect_uri', ctx.getBlueButton().callbackUrl);
-  
-    if (ctx.getBlueButton().pkce && state) {
-      const cc = ctx.getCodeChallenges()[state];
-      form.append('code_verifier', cc.verifier);
-      form.append('code_challenge', cc.codeChallenge);
-    }
-    return post(ctx.getBlueButton().BB2_AUTH_TOKEN_URL, form, form.getHeaders());
-  }
-  
-  // remove before merge BB2-1091
-  async function accessTokenRefresh(tokenUrl: string, ctx: IAppContext) {
-      const tokenResponse = await postWithConfig({
-        method: 'post',
-        url: tokenUrl,
-        auth: {
-          username: ctx.getBlueButton().clientId,
-          password: ctx.getBlueButton().clientSecret,
-        },
-        params: {
-          grant_type: 'refresh_token',
-          client_id: ctx.getBlueButton().clientId,
-          refresh_token: ctx.getUser().authToken?.refreshToken,
-        },
-      });
-    
-      const authToken = new AuthorizationToken(tokenResponse.data);
-      ctx.getUser().setAuthorizationToken(authToken);
-      return authToken;
-  }
-
-// test code: test app;
-// remove before merge BB2-1091
-// MyApp imports: remove after test BB2-1091
-import express, { Router } from 'express';
-import cookieParser from 'cookie-parser';
-import StatusCodes from 'http-status-codes';
-import 'express-async-errors';
-// end MyApp imports
-
-export interface UserInfo {
-  name: string,
-  userName: string,
-  pcp: string,
-  primaryFacility: string
-}
-  
-class User implements IUser {
-    public authToken?: AuthorizationToken | undefined;
-    public userInfo: UserInfo;
-    public fhirData?: any;
-    public errors?: any;
-
-    constructor(userInfo: UserInfo) {
-        this.userInfo = userInfo;
-        this.fhirData = {};
-        this.errors = {};
-    }
-
-    accessTokenExpired(): boolean {
-      return moment(this.authToken?.expiresAt).isBefore(moment());
-    }
-
-    setData(data: any): void {
-        this.fhirData = data;
-    }
-
-    getData(): any {
-        return this.fhirData;
-    }
-
-    getErrors(): any {
-      return this.errors;        
-    }
-
-    setErrors(errors: any): void {
-      this.errors = errors;  
-    }
-
-    getAuthorizationToken(): AuthorizationToken | undefined {
-        return this.authToken;
-    }
-
-    setAuthorizationToken(authToken: AuthorizationToken): void {
-        this.authToken = authToken;
-    }
-
-    reset(): void {
-        this.authToken = undefined;
-        this.fhirData = new Map<string, any>();
-    }
-}
-
-export interface DB {
-    patients: any,
-    users: IUser[],
-    codeChallenges: {
-      [key: string]: CodeChallenge
+async function accessTokenRefresh(ctx: IAppContext) {
+    const tokenResponse = await postWithConfig({
+    method: 'post',
+    url: ctx.getBlueButton().BB2_AUTH_TOKEN_URL,
+    auth: {
+        username: ctx.getBlueButton().clientId,
+        password: ctx.getBlueButton().clientSecret,
     },
-    codeChallenge: CodeChallenge,
-    settings: any
-  }
-  
-const db: DB = {
-  patients: {},
-  users: [new User({
-    name: 'John Doe',
-    userName: 'jdoe29999',
-    pcp: 'Dr. Hibbert',
-    primaryFacility: 'Springfield General Hospital',
-    })],
-  codeChallenges: {},
-  codeChallenge: {
-    codeChallenge: '',
-    verifier: '',
-  },
-  settings: [],
-};
-  
-class AppCtx implements IAppContext {
-    db: DB;
-    sdk: BlueButton;
+    params: {
+        grant_type: 'refresh_token',
+        client_id: ctx.getBlueButton().clientId,
+        refresh_token: ctx.getUser().authToken?.refreshToken,
+    },
+    });
 
-    constructor(db: DB, sdk: BlueButton) {
-        this.db = db;
-        this.sdk = sdk;
-    }
-
-    getUser() {
-        return this.db.users[0];
-    }
-
-    getBlueButton() {
-        return this.sdk;
-    }
-
-    getCodeChallenge(): CodeChallenge {
-        return this.db.codeChallenge;
-    }
-
-    getCodeChallenges(): {[key: string]: CodeChallenge} {
-        return this.db.codeChallenges;
-    }
-
-    doneAuthorize(res: Response) {
-        console.log("AUthorize done!")
-        // redirect to FE
-        res.redirect("http://localhost:3000");
-    }
-
-    donePatient(res: Response, data: any) {
-      console.log("Patient query done!");
-      this.getUser().setData({'patient': data});
-    }
-  
-    doneCoverage(res: Response, data: any) {
-      console.log("Coverage query done!");
-      this.getUser().setData({'coverage': data});
-    }
-    
-    doneEOB(res: Response, data: any) {
-      console.log("EOB query done, redirect FE!");
-      this.getUser().setData({'eobData': data});
-    }
+    const authToken = new AuthorizationToken(tokenResponse.data);
+    ctx.getUser().setAuthorizationToken(authToken);
+    return authToken;
 }
-
-const app = express();
-const { BAD_REQUEST } = StatusCodes;
-
-// dispatch to SDK
-const bb2Router = Router();
-const bb2SDK = new BlueButton();
-const appContext = new AppCtx(db, bb2SDK);
-
-bb2Router.get('/bluebutton/callback', async (req: Request, res: Response) => {
-    return await bb2SDK.callback(req, res, appContext);
-});
-bb2Router.get('/authorize/authurl', async (req: Request, res: Response) => {
-    return await bb2SDK.authroize(req, res, appContext);
-});
-bb2Router.get('/data/benefit', async (req: Request, res: Response) => {
-    return await bb2SDK.getExplanationOfBenefit(req, res, appContext);
-});
-bb2Router.get('/data/coverage', async (req: Request, res: Response) => {
-    return await bb2SDK.getCoverage(req, res, appContext);
-});
-bb2Router.get('/data/patient', async (req: Request, res: Response) => {
-    return await bb2SDK.getPatient(req, res, appContext);
-});
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-
-app.use('/api', bb2Router);
-
-app.use((err: Error, _req: Request, res: Response) => {
-  console.log(err);
-  return res.status(BAD_REQUEST).json({
-    error: err.message,
-  });
-});
-
-app.listen(Number(3001), () => {
-  console.log("Express server started on port: 3001");
-});
-// end test code
-

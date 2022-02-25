@@ -25,19 +25,13 @@ async function doRetry(config: any, retryConfig: RetryConfig) {
 
   for (let i = 0; i < maxAttempts; i += 1) {
     const waitInSec = eval(retryConfig.backOffExpr);
-    console.log(`wait ${waitInSec} seconds...`);
     await sleep(waitInSec * 1000);
-    console.log(`retry attempts: ${i + 1}`);
     try {
       resp = await axios(config);
-      console.log('retry successful:');
       console.log(resp.data);
       break;
     } catch (error: any) {
-      console.log(`retry error: [${JSON.stringify(error.message)}]`);
       if (error.response) {
-        console.log(`response code: ${String(error.response.status)}`);
-        console.log(`response data: ${JSON.stringify(error.response.data)}`);
         resp = error.response;
       }
     }
@@ -50,12 +44,8 @@ async function request(config: any, retryConfig?: RetryConfig) {
   try {
     resp = await axios(config);
   } catch (error: any) {
-    console.log(`Error message: [${JSON.stringify(error.message)}]`);
     if (error.response) {
-      console.log(`response code: ${String(error.response?.status)}`);
-      console.log(`response text: ${JSON.stringify(error.response.data)}`);
       if (retryConfig && retryConfig.enabled && isRetryable(error, retryConfig)) {
-        console.log('Request failed and is retryable, entering retry process...');
         const retryResp = await doRetry(config, retryConfig);
         if (retryResp) {
           resp = retryResp;
