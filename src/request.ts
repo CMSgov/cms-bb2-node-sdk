@@ -45,7 +45,11 @@ export class FhirRequest {
     private data: any;
     private error: any;
     private status_code: number;
-
+    readonly BB2_PATIENT_URL;
+    readonly BB2_COVERAGE_URL;
+    readonly BB2_EOB_URL;
+    readonly BB2_AUTH_TOKEN_URL;
+  
     constructor(fhirResourceType: FhirResourceType, queryParams: any, authToken: AuthorizationToken, bb2: BlueButton) {
       this.fhirResourceType = fhirResourceType;
       this.queryParams = queryParams;
@@ -54,7 +58,11 @@ export class FhirRequest {
       this.data = {};
       this.error = {};
       this.status_code = 0;
-    }
+      this.BB2_PATIENT_URL = `${String(bb2.baseUrl)}/${bb2.version}/fhir/Patient/`;
+      this.BB2_COVERAGE_URL = `${String(bb2.baseUrl)}/${bb2.version}/fhir/Coverage/`;
+      this.BB2_EOB_URL = `${String(bb2.baseUrl)}/${bb2.version}/fhir/ExplanationOfBenefit/`;
+      this.BB2_AUTH_TOKEN_URL = `${String(bb2.baseUrl)}/${bb2.version}/o/token/`;
+      }
   
     getBlueButton(): BlueButton {
       return this.bb2;
@@ -187,7 +195,7 @@ export async function get(endpointUrl: string, params: any, authToken: string, r
 async function authTokenRefresh(fhirReq: FhirRequest) {
     const tokenResponse = await postWithConfig({
     method: 'post',
-    url: fhirReq.getBlueButton().BB2_AUTH_TOKEN_URL,
+    url: fhirReq.BB2_AUTH_TOKEN_URL,
     auth: {
         username: fhirReq.getBlueButton().clientId,
         password: fhirReq.getBlueButton().clientSecret,
@@ -215,13 +223,13 @@ export async function getResource(fhirReq: FhirRequest) {
 
     switch (fhirReq.getFhirResourceType()) {
         case FhirResourceType.Patient:
-            fhirUrl = fhirReq.getBlueButton().BB2_PATIENT_URL;
+            fhirUrl = fhirReq.BB2_PATIENT_URL;
             break;
         case FhirResourceType.Coverage:
-            fhirUrl = fhirReq.getBlueButton().BB2_COVERAGE_URL;
+            fhirUrl = fhirReq.BB2_COVERAGE_URL;
             break;
         case FhirResourceType.ExplanationOfBenefit:
-            fhirUrl = fhirReq.getBlueButton().BB2_EOB_URL;
+            fhirUrl = fhirReq.BB2_EOB_URL;
             break;
         default:
             throw Error(`Unknown Fhir Resource Type --> ${fhirReq.getFhirResourceType()}`)

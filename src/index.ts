@@ -35,11 +35,6 @@ export default class BlueButton {
   pkce: boolean;
   baseUrl: string;
   retryConfig?: RetryConfig;
-  readonly BB2_PATIENT_URL;
-  readonly BB2_COVERAGE_URL;
-  readonly BB2_EOB_URL;
-  readonly BB2_AUTH_REQ_URL;
-  readonly BB2_AUTH_TOKEN_URL;
 
   constructor(config?: BlueButtonConfig) {
     let bbJsonConfig;
@@ -85,11 +80,6 @@ export default class BlueButton {
     this.version = bbJsonConfig.version;
     this.pkce = bbJsonConfig.pkce;
     this.retryConfig = bbJsonConfig.retryConfig;
-    this.BB2_PATIENT_URL = `${String(this.baseUrl)}/${this.version}/fhir/Patient/`;
-    this.BB2_COVERAGE_URL = `${String(this.baseUrl)}/${this.version}/fhir/Coverage/`;
-    this.BB2_EOB_URL = `${String(this.baseUrl)}/${this.version}/fhir/ExplanationOfBenefit/`;
-    this.BB2_AUTH_REQ_URL = `${String(this.baseUrl)}/${this.version}/o/authorize`;
-    this.BB2_AUTH_TOKEN_URL = `${String(this.baseUrl)}/${this.version}/o/token/`;
   }
 
   normalizeConfig(config: BlueButtonJsonConfig) {
