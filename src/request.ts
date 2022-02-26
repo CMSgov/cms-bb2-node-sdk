@@ -1,7 +1,106 @@
 import axios from 'axios';
+import moment from 'moment';
 import FormData from 'form-data';
+import BlueButton from './index';
 import { RetryConfig } from "./index";
 
+const GENERAL_DATA_ERR = '{"message": "Unable to load data - query FHIR resource error."}';
+
+export enum FhirResourceType {
+    Patient = "Patient",
+    Coverage = "Coverage",
+    Profile = "Profile",
+    ExplanationOfBenefit = "ExplanationOfBenefit",
+}
+    
+export class AuthorizationToken {
+    public accessToken: string;
+    public expiresIn: number;
+    public expiresAt: number;
+    public tokenType: string;
+    public scope: [string];
+    public refreshToken: string;
+    public patient: string;
+    
+    constructor(authToken: any) {
+      this.accessToken = authToken.access_token;
+      this.expiresIn = authToken.expires_in;
+      this.expiresAt = authToken.expires_at ? authToken.expires_at : moment().add(this.expiresIn).valueOf();
+      this.patient = authToken.patient;
+      this.refreshToken = authToken.refresh_token;
+      this.scope = authToken.scope;
+      this.tokenType = authToken.token_type;
+    }
+    
+    isExpired(): boolean {
+        return moment(this.expiresAt).isBefore(moment());
+    }
+}
+      
+export class FhirRequest {
+    private fhirResourceType: FhirResourceType;
+    private queryParams: any;
+    private authToken: AuthorizationToken;
+    private bb2: BlueButton;
+    private data: any;
+    private error: any;
+    private status_code: number;
+
+    constructor(fhirResourceType: FhirResourceType, queryParams: any, authToken: AuthorizationToken, bb2: BlueButton) {
+      this.fhirResourceType = fhirResourceType;
+      this.queryParams = queryParams;
+      this.authToken = authToken;
+      this.bb2 = bb2;
+      this.data = {};
+      this.error = {};
+      this.status_code = 0;
+    }
+  
+    getBlueButton(): BlueButton {
+      return this.bb2;
+    }
+  
+    getFhirResourceType(): FhirResourceType {
+        return this.fhirResourceType;
+    }
+
+    getQueryParams(): any {
+        return this.queryParams;
+    }
+
+    getAuthToken(): AuthorizationToken {
+        return this.authToken;
+    }
+
+    setAuthToken(authToken: AuthorizationToken) {
+        this.authToken = authToken;
+    }
+
+    getData(): any {
+        return this.data;
+    }
+
+    setData(data: any): void {
+        this.data = data;
+    }
+
+    getError(): any {
+        return this.error;
+    }
+
+    setError(error: any): void {
+        this.error = error;
+    }
+
+    getStatusCode(): number {
+        return this.status_code;
+    }
+
+    setStatusCode(status_code: number): void {
+        this.status_code = status_code;
+    }
+}
+  
 function sleep(time: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, time);
@@ -82,4 +181,62 @@ export async function get(endpointUrl: string, params: any, authToken: string, r
       Authorization: `Bearer ${authToken}`,
     },
   }, retryConfig);
+}
+
+
+async function authTokenRefresh(fhirReq: FhirRequest) {
+    const tokenResponse = await postWithConfig({
+    method: 'post',
+    url: fhirReq.getBlueButton().BB2_AUTH_TOKEN_URL,
+    auth: {
+        username: fhirReq.getBlueButton().clientId,
+        password: fhirReq.getBlueButton().clientSecret,
+    },
+    params: {
+        grant_type: 'refresh_token',
+        client_id: fhirReq.getBlueButton().clientId,
+        refresh_token: fhirReq.getAuthToken().refreshToken,
+    },
+    });
+
+    const authToken = new AuthorizationToken(tokenResponse.data);
+    fhirReq.setAuthToken(authToken);
+    return authToken;
+}
+
+export async function getResource(fhirReq: FhirRequest) {
+    let accessToken = fhirReq.getAuthToken();
+
+    if ( accessToken.isExpired() ) {
+        accessToken = await authTokenRefresh(fhirReq);
+    }
+
+    let fhirUrl;
+
+    switch (fhirReq.getFhirResourceType()) {
+        case FhirResourceType.Patient:
+            fhirUrl = fhirReq.getBlueButton().BB2_PATIENT_URL;
+            break;
+        case FhirResourceType.Coverage:
+            fhirUrl = fhirReq.getBlueButton().BB2_COVERAGE_URL;
+            break;
+        case FhirResourceType.ExplanationOfBenefit:
+            fhirUrl = fhirReq.getBlueButton().BB2_EOB_URL;
+            break;
+        default:
+            throw Error(`Unknown Fhir Resource Type --> ${fhirReq.getFhirResourceType()}`)
+    }
+
+    const response = await get(fhirUrl, fhirReq.getQueryParams(), 
+                            `${accessToken?.accessToken}`,
+                            fhirReq.getBlueButton().retryConfig);
+
+    fhirReq.setData(response.status);
+
+    if (response.status === 200) {
+        fhirReq.setData(response.data);
+    }
+    else {
+        fhirReq.setData(JSON.parse(GENERAL_DATA_ERR));
+    }
 }

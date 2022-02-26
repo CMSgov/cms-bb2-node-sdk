@@ -5,22 +5,22 @@ import pkg from "./package.json";
 
 export default [
   // browser-friendly UMD build
-//   {
-//     input: "src/index.ts",
-//     output: {
-//       name: "cms-bb2",
-//       file: pkg.browser,
-//       format: "umd",
-//     },
-//     plugins: [
-//       resolve(),
-//       commonjs(),
-//       typescript({
-//           tsconfig: "./tsconfig.json",
-//           exclude: ["**/node_modules/**"]
-//         }),
-//     ],
-//   },
+  {
+    input: "src/index.ts",
+    output: {
+      name: "cms-bb2",
+      file: pkg.browser,
+      format: "umd",
+    },
+    plugins: [
+      resolve(),
+      commonjs(),
+      typescript({
+          tsconfig: "./tsconfig.json",
+          exclude: ["**/node_modules/**"]
+        }),
+    ],
+  },
 
   // CommonJS (for Node) and ES module (for bundlers) build.
   // (We could have three entries in the configuration array
