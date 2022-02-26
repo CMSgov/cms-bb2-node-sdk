@@ -1,5 +1,6 @@
 import BlueButton from ".";
 
+// test for fhir resource queries
 test("expect bb sdk retry config has expected parameters", () => {
     const RETRY_ENABLED = true;
     const RETRY_INIT_INTERVAL = 5;
