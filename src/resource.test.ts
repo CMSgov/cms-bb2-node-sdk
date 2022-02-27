@@ -289,3 +289,68 @@ test("expect fhir queries with token refresh failed ...", async () => {
 
   await expect(getResource(fhirReqForProfile)).rejects.toThrow(Error);
 });
+
+test("expect fhir queries with malformed authToken throw Error ...", async () => {
+  const bb = new BlueButton(`${__dirname}/testConfigs/.bluebutton-config.json`);
+
+  const fhirReqForPatient = new FhirRequest(
+    FhirResourceType.Patient,
+    {},
+    new AuthorizationToken({}),
+    bb
+  );
+
+  const mock = new MockAdapter(axios);
+
+  mock.onGet(fhirReqForPatient.BB2_PATIENT_URL).reply(200, patient);
+
+  await expect(getResource(fhirReqForPatient)).rejects.toThrow(
+    "Invalid authorization token."
+  );
+});
+
+test("expect fhir queries error response 'Unable to load data - query FHIR resource error.' on 400 response from FHIR ...", async () => {
+  const bb = new BlueButton(`${__dirname}/testConfigs/.bluebutton-config.json`);
+
+  const fhirReqForPatient = new FhirRequest(
+    FhirResourceType.Patient,
+    {},
+    AUTH_TOKEN_MOCK,
+    bb
+  );
+
+  const mock = new MockAdapter(axios);
+
+  mock
+    .onGet(fhirReqForPatient.BB2_PATIENT_URL)
+    .reply(400, { details: "Not found" });
+
+  await getResource(fhirReqForPatient).then((response) => {
+    expect(response).toEqual({
+      message: "Unable to load data - query FHIR resource error.",
+    });
+  });
+});
+
+test("expect fhir queries trigger retry on 500 response ...", async () => {
+  const bb = new BlueButton(`${__dirname}/testConfigs/.bluebutton-config.json`);
+
+  const fhirReqForPatient = new FhirRequest(
+    FhirResourceType.Patient,
+    {},
+    AUTH_TOKEN_MOCK,
+    bb
+  );
+
+  const mock = new MockAdapter(axios);
+
+  mock
+    .onGet(fhirReqForPatient.BB2_PATIENT_URL)
+    .reply(500, { error: "unexpected error" });
+
+  await getResource(fhirReqForPatient).then((response) => {
+    expect(response).toEqual({
+      message: "Unable to load data - query FHIR resource error.",
+    });
+  });
+}, 50000);

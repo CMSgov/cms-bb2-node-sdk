@@ -45,6 +45,22 @@ export class AuthorizationToken {
   isExpired(): boolean {
     return moment(this.expiresAt).isBefore(moment());
   }
+
+  validate(): void {
+    if (
+      !(
+        this.accessToken &&
+        this.expiresIn &&
+        this.expiresAt &&
+        this.patient &&
+        this.refreshToken &&
+        this.scope &&
+        this.tokenType
+      )
+    ) {
+      throw new Error("Invalid authorization token.");
+    }
+  }
 }
 
 export class FhirRequest {
@@ -55,6 +71,7 @@ export class FhirRequest {
   private data: any;
   private error: any;
   private status_code: number;
+  private fhirUrls: string[];
   readonly BB2_PATIENT_URL;
   readonly BB2_COVERAGE_URL;
   readonly BB2_EOB_URL;
@@ -74,19 +91,25 @@ export class FhirRequest {
     this.data = {};
     this.error = {};
     this.status_code = 0;
-    this.BB2_PATIENT_URL = `${String(bb2.baseUrl)}/${
+    this.BB2_PATIENT_URL = `${String(bb2.baseUrl)}/v${
       bb2.version
     }/fhir/Patient/`;
-    this.BB2_COVERAGE_URL = `${String(bb2.baseUrl)}/${
+    this.BB2_COVERAGE_URL = `${String(bb2.baseUrl)}/v${
       bb2.version
     }/fhir/Coverage/`;
-    this.BB2_EOB_URL = `${String(bb2.baseUrl)}/${
+    this.BB2_EOB_URL = `${String(bb2.baseUrl)}/v${
       bb2.version
     }/fhir/ExplanationOfBenefit/`;
-    this.BB2_PROFILE_URL = `${String(bb2.baseUrl)}/${
+    this.BB2_PROFILE_URL = `${String(bb2.baseUrl)}/v${
       bb2.version
     }/connect/userinfo`;
-    this.BB2_AUTH_TOKEN_URL = `${String(bb2.baseUrl)}/${bb2.version}/o/token/`;
+    this.BB2_AUTH_TOKEN_URL = `${String(bb2.baseUrl)}/v${bb2.version}/o/token/`;
+    this.fhirUrls = [
+      this.BB2_PATIENT_URL,
+      this.BB2_COVERAGE_URL,
+      this.BB2_EOB_URL,
+      this.BB2_PROFILE_URL,
+    ];
   }
 
   getBlueButton(): BlueButton {
@@ -132,6 +155,10 @@ export class FhirRequest {
   setStatusCode(status_code: number): void {
     this.status_code = status_code;
   }
+
+  getFhirUrls(): string[] {
+    return this.fhirUrls;
+  }
 }
 
 function sleep(time: number) {
@@ -140,19 +167,33 @@ function sleep(time: number) {
   });
 }
 
-function isRetryable(error: any) {
+function isRetryable(error: any, fhirReq: FhirRequest) {
+  let retryOK = false;
+
   if (
     error.response &&
     retrySettings.retryableCodes.includes(error.response.status)
   ) {
+    const err_response = error.response;
     if (
+      error.request &&
       error.request.path &&
       error.request.path.match(retrySettings.endpointPattern)
     ) {
-      return true;
+      retryOK = true;
+    } else if (
+      err_response.config &&
+      err_response.request &&
+      err_response.request.responseURL
+    ) {
+      if (
+        fhirReq.getFhirUrls().includes(String(err_response.request.responseURL))
+      ) {
+        retryOK = true;
+      }
     }
   }
-  return false;
+  return retryOK;
 }
 
 async function doRetry(config: any) {
@@ -166,7 +207,6 @@ async function doRetry(config: any) {
     await sleep(waitInSec * 1000);
     try {
       resp = await axios(config);
-      console.log(resp.data);
       break;
     } catch (error: any) {
       if (error.response) {
@@ -177,13 +217,13 @@ async function doRetry(config: any) {
   return resp;
 }
 
-async function request(config: any) {
+async function request(config: any, fhirReq: FhirRequest) {
   let resp = null;
   try {
     resp = await axios(config);
   } catch (error: any) {
     if (error.response) {
-      if (isRetryable(error)) {
+      if (isRetryable(error, fhirReq)) {
         const retryResp = await doRetry(config);
         if (retryResp) {
           resp = retryResp;
@@ -198,35 +238,44 @@ async function request(config: any) {
   return resp;
 }
 
-async function post(config: any) {
-  return request(config);
+async function post(config: any, fhirReq: FhirRequest) {
+  return request(config, fhirReq);
 }
 
-async function get(endpointUrl: string, params: any, authToken: string) {
-  return request({
+async function get(
+  endpointUrl: string,
+  params: any,
+  authToken: string,
+  fhirReq: FhirRequest
+) {
+  const config = {
     method: "get",
     url: endpointUrl,
     params,
     headers: {
       Authorization: `Bearer ${authToken}`,
     },
-  });
+  };
+  return request(config, fhirReq);
 }
 
 async function authTokenRefresh(fhirReq: FhirRequest) {
-  const tokenResponse = await post({
-    method: "post",
-    url: fhirReq.BB2_AUTH_TOKEN_URL,
-    auth: {
-      username: fhirReq.getBlueButton().clientId,
-      password: fhirReq.getBlueButton().clientSecret,
+  const tokenResponse = await post(
+    {
+      method: "post",
+      url: fhirReq.BB2_AUTH_TOKEN_URL,
+      auth: {
+        username: fhirReq.getBlueButton().clientId,
+        password: fhirReq.getBlueButton().clientSecret,
+      },
+      params: {
+        grant_type: "refresh_token",
+        client_id: fhirReq.getBlueButton().clientId,
+        refresh_token: fhirReq.getAuthToken().refreshToken,
+      },
     },
-    params: {
-      grant_type: "refresh_token",
-      client_id: fhirReq.getBlueButton().clientId,
-      refresh_token: fhirReq.getAuthToken().refreshToken,
-    },
-  });
+    fhirReq
+  );
 
   if (tokenResponse.status !== 200) {
     throw new Error(
@@ -243,6 +292,10 @@ async function authTokenRefresh(fhirReq: FhirRequest) {
 
 export async function getResource(fhirReq: FhirRequest) {
   let accessToken = fhirReq.getAuthToken();
+
+  if (accessToken) {
+    accessToken.validate();
+  }
 
   if (accessToken.isExpired()) {
     accessToken = await authTokenRefresh(fhirReq);
@@ -272,7 +325,8 @@ export async function getResource(fhirReq: FhirRequest) {
   const response = await get(
     fhirUrl,
     fhirReq.getQueryParams(),
-    `${accessToken?.accessToken}`
+    `${accessToken?.accessToken}`,
+    fhirReq
   );
 
   fhirReq.setData(response.status);
