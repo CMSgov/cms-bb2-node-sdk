@@ -11,19 +11,8 @@ type BlueButtonJsonConfig = {
   clientSecret: string;
   callbackUrl: string;
   version?: string;
-  pkce?: boolean;
-  retryConfig?: RetryConfig;
   environment?: Environments;
 };
-
-export type RetryConfig = {
-    enabled: boolean;
-    initInterval: number;
-    maxAttempts: number;
-    backOffExpr: string;
-    endpointPattern: string;
-  };
-  
 
 type BlueButtonConfig = string | BlueButtonJsonConfig;
 
@@ -32,9 +21,7 @@ export default class BlueButton {
   clientSecret: string;
   callbackUrl: string;
   version: string;
-  pkce: boolean;
   baseUrl: string;
-  retryConfig?: RetryConfig;
 
   constructor(config?: BlueButtonConfig) {
     let bbJsonConfig;
@@ -78,8 +65,6 @@ export default class BlueButton {
     this.clientSecret = bbJsonConfig.clientSecret;
     this.callbackUrl = bbJsonConfig.callbackUrl;
     this.version = bbJsonConfig.version;
-    this.pkce = bbJsonConfig.pkce;
-    this.retryConfig = bbJsonConfig.retryConfig;
   }
 
   normalizeConfig(config: BlueButtonJsonConfig) {
@@ -92,9 +77,6 @@ export default class BlueButton {
         config.environment === Environments.PRODUCTION
           ? PRODUCTION_BASE_URL
           : SANDBOX_BASE_URL,
-      pkce: config.pkce ? config.pkce : true,
-      retryConfig: config.retryConfig,
     };
   }
-
 }

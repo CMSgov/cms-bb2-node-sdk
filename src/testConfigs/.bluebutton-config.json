@@ -1,15 +1,7 @@
 {
-    "clientId": "foo",
-    "clientSecret": "bar",
-    "callbackUrl": "https://www.fake.com/",
-    "version": "1",
-    "environment": "PRODUCTION",
-    "pkce": true,
-    "retryConfig": {
-        "enabled": true,
-        "initInterval": 5,
-        "maxAttempts": 3,
-        "backOffExpr": "interval * ( 2 ** i )",
-        "endpointPattern": "^\/v[12]\/fhir\/.*"
-    }
+  "clientId": "foo",
+  "clientSecret": "bar",
+  "callbackUrl": "https://www.fake.com/",
+  "version": "1",
+  "environment": "PRODUCTION"
 }

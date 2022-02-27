@@ -1,12 +1,18 @@
 import axios from "axios";
 import moment from "moment";
-import FormData from "form-data";
 import BlueButton from "./index";
-import { RetryConfig } from "./index";
 
 // generic error message
 const GENERAL_DATA_ERR =
   '{"message": "Unable to load data - query FHIR resource error."}';
+
+const retrySettings = {
+  initInterval: 5,
+  maxAttempts: 3,
+  backOffExpr: "interval * ( 2 ** i )",
+  endpointPattern: "^/v[12]/fhir/.*",
+  retryableCodes: [500, 502, 503, 504],
+};
 
 export enum FhirResourceType {
   Patient = "Patient",
@@ -52,6 +58,7 @@ export class FhirRequest {
   readonly BB2_PATIENT_URL;
   readonly BB2_COVERAGE_URL;
   readonly BB2_EOB_URL;
+  readonly BB2_PROFILE_URL;
   readonly BB2_AUTH_TOKEN_URL;
 
   constructor(
@@ -76,6 +83,9 @@ export class FhirRequest {
     this.BB2_EOB_URL = `${String(bb2.baseUrl)}/${
       bb2.version
     }/fhir/ExplanationOfBenefit/`;
+    this.BB2_PROFILE_URL = `${String(bb2.baseUrl)}/${
+      bb2.version
+    }/connect/userinfo`;
     this.BB2_AUTH_TOKEN_URL = `${String(bb2.baseUrl)}/${bb2.version}/o/token/`;
   }
 
@@ -130,11 +140,14 @@ function sleep(time: number) {
   });
 }
 
-function isRetryable(error: any, retryConfig: RetryConfig) {
-  if (error.response && error.response.status === 500) {
+function isRetryable(error: any) {
+  if (
+    error.response &&
+    retrySettings.retryableCodes.includes(error.response.status)
+  ) {
     if (
       error.request.path &&
-      error.request.path.match(retryConfig.endpointPattern)
+      error.request.path.match(retrySettings.endpointPattern)
     ) {
       return true;
     }
@@ -142,14 +155,14 @@ function isRetryable(error: any, retryConfig: RetryConfig) {
   return false;
 }
 
-async function doRetry(config: any, retryConfig: RetryConfig) {
-  const interval = retryConfig.initInterval;
-  const maxAttempts = retryConfig.maxAttempts;
+async function doRetry(config: any) {
+  const interval = retrySettings.initInterval;
+  const maxAttempts = retrySettings.maxAttempts;
 
   let resp = null;
 
   for (let i = 0; i < maxAttempts; i += 1) {
-    const waitInSec = eval(retryConfig.backOffExpr);
+    const waitInSec = eval(retrySettings.backOffExpr);
     await sleep(waitInSec * 1000);
     try {
       resp = await axios(config);
@@ -164,18 +177,14 @@ async function doRetry(config: any, retryConfig: RetryConfig) {
   return resp;
 }
 
-async function request(config: any, retryConfig?: RetryConfig) {
+async function request(config: any) {
   let resp = null;
   try {
     resp = await axios(config);
   } catch (error: any) {
     if (error.response) {
-      if (
-        retryConfig &&
-        retryConfig.enabled &&
-        isRetryable(error, retryConfig)
-      ) {
-        const retryResp = await doRetry(config, retryConfig);
+      if (isRetryable(error)) {
+        const retryResp = await doRetry(config);
         if (retryResp) {
           resp = retryResp;
         }
@@ -189,40 +198,23 @@ async function request(config: any, retryConfig?: RetryConfig) {
   return resp;
 }
 
-export async function post(endpoint_url: string, data: FormData, headers: any) {
-  return request({
-    method: "post",
-    url: endpoint_url,
-    data,
-    headers,
-  });
-}
-
-export async function postWithConfig(config: any) {
+async function post(config: any) {
   return request(config);
 }
 
-export async function get(
-  endpointUrl: string,
-  params: any,
-  authToken: string,
-  retryConfig?: RetryConfig
-) {
-  return request(
-    {
-      method: "get",
-      url: endpointUrl,
-      params,
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+async function get(endpointUrl: string, params: any, authToken: string) {
+  return request({
+    method: "get",
+    url: endpointUrl,
+    params,
+    headers: {
+      Authorization: `Bearer ${authToken}`,
     },
-    retryConfig
-  );
+  });
 }
 
 async function authTokenRefresh(fhirReq: FhirRequest) {
-  const tokenResponse = await postWithConfig({
+  const tokenResponse = await post({
     method: "post",
     url: fhirReq.BB2_AUTH_TOKEN_URL,
     auth: {
@@ -236,8 +228,16 @@ async function authTokenRefresh(fhirReq: FhirRequest) {
     },
   });
 
+  if (tokenResponse.status !== 200) {
+    throw new Error(
+      `Failed to refresh access token, status: ${tokenResponse.status}, error: ${tokenResponse.data}.`
+    );
+  }
+
   const authToken = new AuthorizationToken(tokenResponse.data);
+
   fhirReq.setAuthToken(authToken);
+
   return authToken;
 }
 
@@ -260,6 +260,9 @@ export async function getResource(fhirReq: FhirRequest) {
     case FhirResourceType.ExplanationOfBenefit:
       fhirUrl = fhirReq.BB2_EOB_URL;
       break;
+    case FhirResourceType.Profile:
+      fhirUrl = fhirReq.BB2_PROFILE_URL;
+      break;
     default:
       throw Error(
         `Unknown Fhir Resource Type --> ${fhirReq.getFhirResourceType()}`
@@ -269,15 +272,17 @@ export async function getResource(fhirReq: FhirRequest) {
   const response = await get(
     fhirUrl,
     fhirReq.getQueryParams(),
-    `${accessToken?.accessToken}`,
-    fhirReq.getBlueButton().retryConfig
+    `${accessToken?.accessToken}`
   );
 
   fhirReq.setData(response.status);
 
+  // set data and also return data
   if (response.status === 200) {
     fhirReq.setData(response.data);
+    return response.data;
   } else {
     fhirReq.setData(JSON.parse(GENERAL_DATA_ERR));
+    return JSON.parse(GENERAL_DATA_ERR);
   }
 }
