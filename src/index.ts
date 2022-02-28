@@ -1,6 +1,6 @@
 import { cwd } from "process";
 import { Environments } from "./enums/environments";
-import { AuthData, TokenPostData } from "./types/auth";
+import { AuthData, TokenPostData } from "./auth";
 import {
   generateAuthData,
   generateAuthorizeUrl,

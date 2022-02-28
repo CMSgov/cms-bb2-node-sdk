@@ -7,7 +7,10 @@ import BlueButton from ".";
 
 import { Errors } from "./enums/error_codes";
 
-import { AuthData, TokenPostData } from "./types/auth";
+type PkceData = {
+  codeChallenge: string;
+  verifier: string;
+};
 
 function base64URLEncode(buffer: Buffer): string {
   return buffer
@@ -21,11 +24,6 @@ function sha256(str: string): Buffer {
   return crypto.createHash("sha256").update(str).digest();
 }
 
-type PkceData = {
-  codeChallenge: string;
-  verifier: string;
-};
-
 function generatePkceData(): PkceData {
   var verifier = base64URLEncode(crypto.randomBytes(32));
   return {
@@ -37,6 +35,22 @@ function generatePkceData(): PkceData {
 function generateRandomState(): string {
   return base64URLEncode(crypto.randomBytes(32));
 }
+
+export type AuthData = {
+  codeChallenge: string;
+  verifier: string;
+  state: string;
+};
+
+export type TokenPostData = {
+  client_id: string;
+  client_secret: string;
+  code: string;
+  grant_type: string;
+  redirect_uri: string;
+  code_verifier: string;
+  code_challenge: string;
+};
 
 export function generateAuthData(): AuthData {
   const PkceData = generatePkceData();
@@ -51,7 +65,7 @@ export function generateAuthorizeUrl(
   bb: BlueButton,
   AuthData: AuthData
 ): string {
-  const BB2_AUTH_URL = bb.baseUrl + "/" + bb.version + "/o/authorize";
+  const BB2_AUTH_URL = `${bb.baseUrl}/${bb.version}/o/authorize`;
 
   const pkceParams = `code_challenge_method=S256&code_challenge=${AuthData.codeChallenge}`;
 
