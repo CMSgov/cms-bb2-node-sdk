@@ -277,10 +277,12 @@ async function authTokenRefresh(fhirReq: FhirRequest) {
     fhirReq
   );
 
+  fhirReq.setStatusCode(tokenResponse.status);
+
   if (tokenResponse.status !== 200) {
-    throw new Error(
-      `Failed to refresh access token, status: ${tokenResponse.status}, error: ${tokenResponse.data}.`
-    );
+    const msg = `Failed to refresh access token, status: ${tokenResponse.status}, error: ${tokenResponse.data}.`;
+    fhirReq.setError({ error: msg });
+    throw new Error(msg);
   }
 
   const authToken = new AuthorizationToken(tokenResponse.data);
@@ -329,7 +331,7 @@ export async function getResource(fhirReq: FhirRequest) {
     fhirReq
   );
 
-  fhirReq.setData(response.status);
+  fhirReq.setStatusCode(response.status);
 
   // set data and also return data
   if (response.status === 200) {
