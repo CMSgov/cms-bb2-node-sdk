@@ -17,43 +17,43 @@ const BASE_AUTH_URL: string =
   "https://sandbox.bluebutton.cms.gov/2/o/authorize";
 
 test("expect auth method generateAuthData() returns values", () => {
-  const authData = bb.generateAuthData();
+  const AuthData = bb.generateAuthData();
 
-  expect(authData.codeChallenge).not.toHaveLength(0);
-  expect(authData.verifier).not.toHaveLength(0);
-  expect(authData.state).not.toHaveLength(0);
+  expect(AuthData.codeChallenge).not.toHaveLength(0);
+  expect(AuthData.verifier).not.toHaveLength(0);
+  expect(AuthData.state).not.toHaveLength(0);
 });
 
 test("expect auth method generateAuthorizeUrl()", () => {
-  const authData = bb.generateAuthData();
+  const AuthData = bb.generateAuthData();
 
   const expectedUrl: string =
     `${BASE_AUTH_URL}?client_id=${CLIENT_ID}` +
-    `&redirect_uri=${CALLBACK_URL}&state=${authData.state}` +
-    `&response_type=code&code_challenge_method=S256&code_challenge=${authData.codeChallenge}`;
+    `&redirect_uri=${CALLBACK_URL}&state=${AuthData.state}` +
+    `&response_type=code&code_challenge_method=S256&code_challenge=${AuthData.codeChallenge}`;
 
-  const url = bb.generateAuthorizeUrl(authData);
+  const url = bb.generateAuthorizeUrl(AuthData);
 
   expect(url).toBe(expectedUrl);
 });
 
 test("expect auth method generateTokenPostData()", () => {
-  const authData = bb.generateAuthData();
+  const AuthData = bb.generateAuthData();
 
   const expectedPostData = {
     client_id: "foo",
     client_secret: "bar",
     code: "test-code",
-    code_challenge: authData.codeChallenge,
-    code_verifier: authData.verifier,
+    code_challenge: AuthData.codeChallenge,
+    code_verifier: AuthData.verifier,
     grant_type: "authorization_code",
     redirect_uri: "http://localhost/callback/",
   };
 
   const postData = bb.generateTokenPostData(
-    authData,
+    AuthData,
     "test-code",
-    authData.state
+    AuthData.state
   );
 
   expect(postData).toStrictEqual(expectedPostData);
@@ -61,11 +61,11 @@ test("expect auth method generateTokenPostData()", () => {
   // Test if state does not match
   expect(() => {
     bb.generateTokenPostData(
-      authData,
+      AuthData,
       "test-code",
       "test-state-does-not-match"
     );
-  }).toThrow("Provided callback state does not match authData state.");
+  }).toThrow("Provided callback state does not match AuthData state.");
 });
 
 test("expect auth method validateCallBackRequestQueryParams()", () => {

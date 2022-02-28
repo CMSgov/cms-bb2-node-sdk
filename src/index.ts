@@ -1,6 +1,6 @@
 import { cwd } from "process";
 import { Environments } from "./enums/environments";
-import { authData, tokenPostData } from "./types/auth";
+import { AuthData, TokenPostData } from "./types/auth";
 import {
   generateAuthData,
   generateAuthorizeUrl,
@@ -70,20 +70,20 @@ export default class BlueButton {
     };
   }
 
-  public generateAuthData(): authData {
+  public generateAuthData(): AuthData {
     return generateAuthData();
   }
 
-  public generateAuthorizeUrl(authData: authData): string {
-    return generateAuthorizeUrl(this, authData);
+  public generateAuthorizeUrl(AuthData: AuthData): string {
+    return generateAuthorizeUrl(this, AuthData);
   }
 
   public generateTokenPostData(
-    authData: authData,
+    AuthData: AuthData,
     code: string,
     callBackState: string
-  ): tokenPostData {
-    return generateTokenPostData(this, authData, code, callBackState);
+  ): TokenPostData {
+    return generateTokenPostData(this, AuthData, code, callBackState);
   }
 
   public validateCallBackRequestQueryParams(

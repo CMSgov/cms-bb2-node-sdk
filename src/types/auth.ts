@@ -1,12 +1,12 @@
 /* Types for Auth related methods */
 
-export type authData = {
+export type AuthData = {
   codeChallenge: string;
   verifier: string;
   state: string;
 };
 
-export type tokenPostData = {
+export type TokenPostData = {
   client_id: string;
   client_secret: string;
   code: string;
