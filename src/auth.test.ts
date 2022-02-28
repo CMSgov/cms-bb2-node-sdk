@@ -1,5 +1,7 @@
 import BlueButton from ".";
 
+import { generateTokenPostData } from "./auth";
+
 import { Errors } from "./enums/error_codes";
 
 // Setup BlueButton class instance
@@ -37,7 +39,7 @@ test("expect auth method generateAuthorizeUrl()", () => {
   expect(url).toBe(expectedUrl);
 });
 
-test("expect auth method generateTokenPostData()", () => {
+test("expect auth method generateTokenPostData() function", () => {
   const AuthData = bb.generateAuthData();
 
   const expectedPostData = {
@@ -50,59 +52,46 @@ test("expect auth method generateTokenPostData()", () => {
     redirect_uri: "http://localhost/callback/",
   };
 
-  const postData = bb.generateTokenPostData(
-    AuthData,
-    "test-code",
-    AuthData.state
-  );
+  const postData = generateTokenPostData(bb, AuthData, "test-code");
 
   expect(postData).toStrictEqual(expectedPostData);
-
-  // Test if state does not match
-  expect(() => {
-    bb.generateTokenPostData(
-      AuthData,
-      "test-code",
-      "test-state-does-not-match"
-    );
-  }).toThrow("Provided callback state does not match AuthData state.");
 });
 
-test("expect auth method validateCallbackRequestQueryParams()", () => {
+test("expect auth method getAccessToken method validate request params", () => {
+  const authData = bb.generateAuthData();
+
   // Test valid values does not thow an error
   expect(() => {
-    bb.validateCallbackRequestQueryParams(
-      "test-code",
-      "test-state",
-      "test-error"
-    );
+    bb.getAccessToken(authData, "test-code", authData.state, "test-error");
   }).not.toThrow(Error);
 
   // Test valid values & missing error does not thow an error
   expect(() => {
-    bb.validateCallbackRequestQueryParams("test-code", "test-state", undefined);
+    bb.getAccessToken(authData, "test-code", authData.state, undefined);
   }).not.toThrow(Error);
 
   // Test missing code parameter
   expect(() => {
-    bb.validateCallbackRequestQueryParams(
-      undefined,
-      "test-state",
-      "test-error"
-    );
+    bb.getAccessToken(authData, undefined, "test-state", "test-error");
   }).toThrow(Errors.CALLBACK_ACCESS_CODE_MISSING);
 
   // Test missing state parameter
   expect(() => {
-    bb.validateCallbackRequestQueryParams("test-code", undefined, "test-error");
+    bb.getAccessToken(authData, "test-code", undefined, "test-error");
   }).toThrow(Errors.CALLBACK_STATE_MISSING);
 
-  // Test valid values does not thow an error
+  // Test if state does not match
   expect(() => {
-    bb.validateCallbackRequestQueryParams(
+    bb.getAccessToken(
+      authData,
       "test-code",
-      "test-state",
-      "access_denied"
+      "test-state-does-not-match",
+      "test-error"
     );
+  }).toThrow("Provided callback state does not match AuthData state");
+
+  // Test access denied error value
+  expect(() => {
+    bb.getAccessToken(authData, "test-code", "test-state", "access_denied");
   }).toThrow(Errors.CALLBACK_ACCESS_DENIED);
 });

@@ -45,7 +45,7 @@ export type AuthData = {
 export type TokenPostData = {
   client_id: string;
   client_secret: string;
-  code: string;
+  code: string | undefined;
   grant_type: string;
   redirect_uri: string;
   code_verifier: string;
@@ -76,20 +76,12 @@ export function generateAuthorizeUrl(
 export function generateTokenPostData(
   bb: BlueButton,
   AuthData: AuthData,
-  code: string,
-  callbackState: string
+  callbackCode: string | undefined
 ): TokenPostData {
-  // Check state from callback here?
-  if (callbackState != AuthData.state) {
-    throw new Error("Provided callback state does not match AuthData state.");
-  }
-
-  const BB2_ACCESS_TOKEN_URL = bb.baseUrl + "/" + bb.version + "/o/token/";
-
   return {
     client_id: bb.clientId,
     client_secret: bb.clientSecret,
-    code: code,
+    code: callbackCode,
     grant_type: "authorization_code",
     redirect_uri: bb.callbackUrl,
     code_verifier: AuthData.verifier,
@@ -97,20 +89,50 @@ export function generateTokenPostData(
   };
 }
 
-export function validateCallbackRequestQueryParams(
-  code: string | undefined,
-  state: string | undefined,
-  error: string | undefined
+function validateCallbackRequestQueryParams(
+  AuthData: AuthData,
+  callbackCode: string | undefined,
+  callbackState: string | undefined,
+  callbackError: string | undefined
 ) {
-  if (error === "access_denied") {
+  // Check state from callback here?
+  if (callbackError === "access_denied") {
     throw new Error(Errors.CALLBACK_ACCESS_DENIED);
   }
 
-  if (!code) {
+  if (!callbackCode) {
     throw new Error(Errors.CALLBACK_ACCESS_CODE_MISSING);
   }
 
-  if (!state) {
+  if (!callbackState) {
     throw new Error(Errors.CALLBACK_STATE_MISSING);
   }
+
+  if (callbackState != AuthData.state) {
+    throw new Error(Errors.CALLBACK_STATE_DOES_NOT_MATCH);
+  }
+}
+
+// Get an access token from callback code & state
+export function getAccessToken(
+  bb: BlueButton,
+  AuthData: AuthData,
+  callbackRequestCode: string | undefined,
+  callbackRequestState: string | undefined,
+  callbackRequestError: string | undefined
+): String {
+  const BB2_ACCESS_TOKEN_URL = bb.baseUrl + "/" + bb.version + "/o/token/";
+
+  validateCallbackRequestQueryParams(
+    AuthData,
+    callbackRequestCode,
+    callbackRequestState,
+    callbackRequestError
+  );
+
+  const postData = generateTokenPostData(bb, AuthData, callbackRequestCode);
+
+  // return await axios.post(BB2_ACCESS_TOKEN_URL, form, { headers: form.getHeaders() });
+
+  return "change-me-later";
 }

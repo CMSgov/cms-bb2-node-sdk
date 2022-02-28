@@ -1,13 +1,8 @@
 import fs from "fs";
 import { cwd } from "process";
 import { Environments } from "./enums/environments";
-import { AuthData, TokenPostData } from "./auth";
-import {
-  generateAuthData,
-  generateAuthorizeUrl,
-  generateTokenPostData,
-  validateCallbackRequestQueryParams,
-} from "./auth";
+import { AuthData } from "./auth";
+import { generateAuthData, generateAuthorizeUrl, getAccessToken } from "./auth";
 
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
@@ -94,19 +89,19 @@ export default class BlueButton {
     return generateAuthorizeUrl(this, AuthData);
   }
 
-  public generateTokenPostData(
+  // Get an access token from callback code & state
+  public getAccessToken(
     AuthData: AuthData,
-    code: string,
-    callbackState: string
-  ): TokenPostData {
-    return generateTokenPostData(this, AuthData, code, callbackState);
-  }
-
-  public validateCallbackRequestQueryParams(
-    code: string | undefined,
-    state: string | undefined,
-    error: string | undefined
-  ) {
-    return validateCallbackRequestQueryParams(code, state, error);
+    callbackRequestCode: string | undefined,
+    callbackRequestState: string | undefined,
+    callbackRequestError: string | undefined
+  ): String {
+    return getAccessToken(
+      this,
+      AuthData,
+      callbackRequestCode,
+      callbackRequestState,
+      callbackRequestError
+    );
   }
 }
