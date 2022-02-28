@@ -6,7 +6,7 @@ import {
   generateAuthData,
   generateAuthorizeUrl,
   generateTokenPostData,
-  validateCallBackRequestQueryParams,
+  validateCallbackRequestQueryParams,
 } from "./auth";
 
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
@@ -102,11 +102,11 @@ export default class BlueButton {
     return generateTokenPostData(this, AuthData, code, callbackState);
   }
 
-  public validateCallBackRequestQueryParams(
+  public validateCallbackRequestQueryParams(
     code: string | undefined,
     state: string | undefined,
     error: string | undefined
   ) {
-    return validateCallBackRequestQueryParams(code, state, error);
+    return validateCallbackRequestQueryParams(code, state, error);
   }
 }

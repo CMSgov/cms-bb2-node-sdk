@@ -97,7 +97,7 @@ export function generateTokenPostData(
   };
 }
 
-export function validateCallBackRequestQueryParams(
+export function validateCallbackRequestQueryParams(
   code: string | undefined,
   state: string | undefined,
   error: string | undefined

@@ -68,10 +68,10 @@ test("expect auth method generateTokenPostData()", () => {
   }).toThrow("Provided callback state does not match AuthData state.");
 });
 
-test("expect auth method validateCallBackRequestQueryParams()", () => {
+test("expect auth method validateCallbackRequestQueryParams()", () => {
   // Test valid values does not thow an error
   expect(() => {
-    bb.validateCallBackRequestQueryParams(
+    bb.validateCallbackRequestQueryParams(
       "test-code",
       "test-state",
       "test-error"
@@ -80,12 +80,12 @@ test("expect auth method validateCallBackRequestQueryParams()", () => {
 
   // Test valid values & missing error does not thow an error
   expect(() => {
-    bb.validateCallBackRequestQueryParams("test-code", "test-state", undefined);
+    bb.validateCallbackRequestQueryParams("test-code", "test-state", undefined);
   }).not.toThrow(Error);
 
   // Test missing code parameter
   expect(() => {
-    bb.validateCallBackRequestQueryParams(
+    bb.validateCallbackRequestQueryParams(
       undefined,
       "test-state",
       "test-error"
@@ -94,12 +94,12 @@ test("expect auth method validateCallBackRequestQueryParams()", () => {
 
   // Test missing state parameter
   expect(() => {
-    bb.validateCallBackRequestQueryParams("test-code", undefined, "test-error");
+    bb.validateCallbackRequestQueryParams("test-code", undefined, "test-error");
   }).toThrow(Errors.CALLBACK_STATE_MISSING);
 
   // Test valid values does not thow an error
   expect(() => {
-    bb.validateCallBackRequestQueryParams(
+    bb.validateCallbackRequestQueryParams(
       "test-code",
       "test-state",
       "access_denied"
