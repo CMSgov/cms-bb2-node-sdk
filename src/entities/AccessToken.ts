@@ -1,6 +1,6 @@
 import moment from "moment";
 
-export interface IAuthorizationToken {
+export interface IAccessToken {
   access_token: string;
   expires_in: number;
   token_type: string;
@@ -10,7 +10,7 @@ export interface IAuthorizationToken {
   expires_at?: number;
 }
 
-export default class AuthorizationToken implements IAuthorizationToken {
+export default class AccessToken implements IAccessToken {
   public access_token: string;
   public expires_in: number;
   public expires_at: number;
@@ -19,7 +19,7 @@ export default class AuthorizationToken implements IAuthorizationToken {
   public refresh_token: string;
   public patient: string;
 
-  constructor(authToken: IAuthorizationToken) {
+  constructor(authToken: IAccessToken) {
     this.access_token = authToken.access_token;
     this.expires_in = authToken.expires_in;
     this.expires_at = authToken.expires_at
