@@ -9,7 +9,7 @@ const CALLBACK_URL = "http://localhost/callback/";
 const bb = new BlueButton({
   clientId: CLIENT_ID,
   clientSecret: CLIENT_SECRET,
-  callBackUrl: CALLBACK_URL,
+  callbackUrl: CALLBACK_URL,
 });
 
 // TEST CONSTANTS

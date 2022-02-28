@@ -69,7 +69,7 @@ export function generateAuthorizeUrl(
 
   const pkceParams = `code_challenge_method=S256&code_challenge=${AuthData.codeChallenge}`;
 
-  return `${BB2_AUTH_URL}?client_id=${bb.clientId}&redirect_uri=${bb.callBackUrl}&state=${AuthData.state}&response_type=code&${pkceParams}`;
+  return `${BB2_AUTH_URL}?client_id=${bb.clientId}&redirect_uri=${bb.callbackUrl}&state=${AuthData.state}&response_type=code&${pkceParams}`;
 }
 
 //  Generates post data for call to access token URL
@@ -77,10 +77,10 @@ export function generateTokenPostData(
   bb: BlueButton,
   AuthData: AuthData,
   code: string,
-  callBackState: string
+  callbackState: string
 ): TokenPostData {
   // Check state from callback here?
-  if (callBackState != AuthData.state) {
+  if (callbackState != AuthData.state) {
     throw new Error("Provided callback state does not match AuthData state.");
   }
 
@@ -91,7 +91,7 @@ export function generateTokenPostData(
     client_secret: bb.clientSecret,
     code: code,
     grant_type: "authorization_code",
-    redirect_uri: bb.callBackUrl,
+    redirect_uri: bb.callbackUrl,
     code_verifier: AuthData.verifier,
     code_challenge: AuthData.codeChallenge,
   };
