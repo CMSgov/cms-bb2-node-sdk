@@ -1,5 +1,7 @@
 import BlueButton from ".";
 
+import { Errors } from "./enums/error_codes";
+
 // Setup BlueButton class instance
 const CLIENT_ID = "foo";
 const CLIENT_SECRET = "bar";
@@ -56,7 +58,7 @@ test("expect auth method generateTokenPostData()", () => {
 
   expect(postData).toStrictEqual(expectedPostData);
 
-  // Test if state does not match thows Error
+  // Test if state does not match
   expect(() => {
     bb.generateTokenPostData(
       authData,
@@ -64,4 +66,43 @@ test("expect auth method generateTokenPostData()", () => {
       "test-state-does-not-match"
     );
   }).toThrow("Provided callback state does not match authData state.");
+});
+
+test("expect auth method validateCallBackRequestQueryParams()", () => {
+  // Test valid values does not thow an error
+  expect(() => {
+    bb.validateCallBackRequestQueryParams(
+      "test-code",
+      "test-state",
+      "test-error"
+    );
+  }).not.toThrow(Error);
+
+  // Test valid values & missing error does not thow an error
+  expect(() => {
+    bb.validateCallBackRequestQueryParams("test-code", "test-state", undefined);
+  }).not.toThrow(Error);
+
+  // Test missing code parameter
+  expect(() => {
+    bb.validateCallBackRequestQueryParams(
+      undefined,
+      "test-state",
+      "test-error"
+    );
+  }).toThrow(Errors.CALLBACK_ACCESS_CODE_MISSING);
+
+  // Test missing state parameter
+  expect(() => {
+    bb.validateCallBackRequestQueryParams("test-code", undefined, "test-error");
+  }).toThrow(Errors.CALLBACK_STATE_MISSING);
+
+  // Test valid values does not thow an error
+  expect(() => {
+    bb.validateCallBackRequestQueryParams(
+      "test-code",
+      "test-state",
+      "access_denied"
+    );
+  }).toThrow(Errors.CALLBACK_ACCESS_DENIED);
 });

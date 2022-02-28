@@ -4,6 +4,9 @@ auth.ts - Provides auth related methods for the Bluebutton class
 import crypto from "crypto";
 
 import BlueButton from ".";
+
+import { Errors } from "./enums/error_codes";
+
 import { authData, tokenPostData } from "./types/auth";
 
 function base64URLEncode(buffer: Buffer): string {
@@ -78,4 +81,22 @@ export function generateTokenPostData(
     code_verifier: authData.verifier,
     code_challenge: authData.codeChallenge,
   };
+}
+
+export function validateCallBackRequestQueryParams(
+  code: string | undefined,
+  state: string | undefined,
+  error: string | undefined
+) {
+  if (error === "access_denied") {
+    throw new Error(Errors.CALLBACK_ACCESS_DENIED);
+  }
+
+  if (!code) {
+    throw new Error(Errors.CALLBACK_ACCESS_CODE_MISSING);
+  }
+
+  if (!state) {
+    throw new Error(Errors.CALLBACK_STATE_MISSING);
+  }
 }
