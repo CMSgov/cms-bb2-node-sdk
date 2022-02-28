@@ -338,7 +338,8 @@ export async function getResource(fhirReq: FhirRequest) {
     fhirReq.setData(response.data);
     return response.data;
   } else {
-    fhirReq.setData(JSON.parse(GENERAL_DATA_ERR));
+    fhirReq.setData({});
+    fhirReq.setError(JSON.parse(GENERAL_DATA_ERR));
     return JSON.parse(GENERAL_DATA_ERR);
   }
 }
