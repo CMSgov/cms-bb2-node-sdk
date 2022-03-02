@@ -1,11 +1,12 @@
 /*
 auth.ts - Provides auth related methods for the Bluebutton class
 */
+import axios from "axios";
 import crypto from "crypto";
 
 import BlueButton from ".";
-
-import { Errors } from "./enums/error_codes";
+import { AuthorizationToken } from "./entities/AuthorizationToken";
+import { Errors } from "./enums/errors";
 
 type PkceData = {
   codeChallenge: string;
@@ -114,25 +115,31 @@ function validateCallbackRequestQueryParams(
 }
 
 // Get an access token from callback code & state
-export function getAccessToken(
+export async function getAuthorizationToken(
   bb: BlueButton,
   AuthData: AuthData,
   callbackRequestCode: string | undefined,
   callbackRequestState: string | undefined,
   callbackRequestError: string | undefined
-): String {
-  const BB2_ACCESS_TOKEN_URL = bb.baseUrl + "/" + bb.version + "/o/token/";
+) {
+  try {
+    const BB2_ACCESS_TOKEN_URL = bb.baseUrl + "/" + bb.version + "/o/token/";
 
-  validateCallbackRequestQueryParams(
-    AuthData,
-    callbackRequestCode,
-    callbackRequestState,
-    callbackRequestError
-  );
+    validateCallbackRequestQueryParams(
+      AuthData,
+      callbackRequestCode,
+      callbackRequestState,
+      callbackRequestError
+    );
 
-  const postData = generateTokenPostData(bb, AuthData, callbackRequestCode);
+    const postData = generateTokenPostData(bb, AuthData, callbackRequestCode);
 
-  // return await axios.post(BB2_ACCESS_TOKEN_URL, form, { headers: form.getHeaders() });
+    const resp = await axios.post(BB2_ACCESS_TOKEN_URL, postData);
 
-  return "change-me-later";
+    const authToken = new AuthorizationToken(resp.data);
+
+    return authToken;
+  } catch (e) {
+    throw e;
+  }
 }

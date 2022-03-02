@@ -1,8 +1,13 @@
+import axios from "axios";
+
+jest.mock("axios");
+
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
 import BlueButton from ".";
-
 import { generateTokenPostData } from "./auth";
-
-import { Errors } from "./enums/error_codes";
+import { AuthorizationToken } from "./entities/AuthorizationToken";
+import { Errors } from "./enums/errors";
 
 // Setup BlueButton class instance
 const CLIENT_ID = "foo";
@@ -18,12 +23,20 @@ const bb = new BlueButton({
 const BASE_AUTH_URL: string =
   "https://sandbox.bluebutton.cms.gov/2/o/authorize";
 
-test("expect auth method generateAuthData() returns values", () => {
+describe("auth method generateAuthData()", () => {
   const AuthData = bb.generateAuthData();
 
-  expect(AuthData.codeChallenge).not.toHaveLength(0);
-  expect(AuthData.verifier).not.toHaveLength(0);
-  expect(AuthData.state).not.toHaveLength(0);
+  it("expect codeChallenge length != 0", () => {
+    expect(AuthData.codeChallenge).not.toHaveLength(0);
+  });
+
+  it("expect verifier length != 0", () => {
+    expect(AuthData.verifier).not.toHaveLength(0);
+  });
+
+  it("expect state length != 0", () => {
+    expect(AuthData.state).not.toHaveLength(0);
+  });
 });
 
 test("expect auth method generateAuthorizeUrl()", () => {
@@ -57,41 +70,150 @@ test("expect auth method generateTokenPostData() function", () => {
   expect(postData).toStrictEqual(expectedPostData);
 });
 
-test("expect auth method getAccessToken method validate request params", () => {
+describe("auth method getAuthorizationToken", () => {
   const authData = bb.generateAuthData();
 
-  // Test valid values does not thow an error
-  expect(() => {
-    bb.getAccessToken(authData, "test-code", authData.state, "test-error");
-  }).not.toThrow(Error);
+  const BB2_ACCESS_TOKEN_URL = bb.baseUrl + "/" + bb.version + "/o/token/";
 
-  // Test valid values & missing error does not thow an error
-  expect(() => {
-    bb.getAccessToken(authData, "test-code", authData.state, undefined);
-  }).not.toThrow(Error);
+  const mockResponse = {
+    status: 200,
+    data: {
+      access_token: "66ClP4JCjpdxmkC6bEKYQFLOWXnraJ",
+      expires_in: 36000,
+      token_type: "Bearer",
+      scope: [
+        "introspection",
+        "patient/Coverage.read",
+        "patient/ExplanationOfBenefit.read",
+        "patient/Patient.read",
+        "profile",
+      ],
+      refresh_token: "jV3knA4xmZ1enK8Rg1Lub5hmIsc9Ad",
+      patient: "-20140000000051",
+      expires_at: 1646195004.3654683,
+    },
+  };
 
-  // Test missing code parameter
-  expect(() => {
-    bb.getAccessToken(authData, undefined, "test-state", "test-error");
-  }).toThrow(Errors.CALLBACK_ACCESS_CODE_MISSING);
+  const mockResponseMissingExpiresAt = {
+    status: 200,
+    data: {
+      access_token: "66ClP4JCjpdxmkC6bEKYQFLOWXnraJ",
+      expires_in: 36000,
+      token_type: "Bearer",
+      scope: [
+        "introspection",
+        "patient/Coverage.read",
+        "patient/ExplanationOfBenefit.read",
+        "patient/Patient.read",
+        "profile",
+      ],
+      refresh_token: "jV3knA4xmZ1enK8Rg1Lub5hmIsc9Ad",
+      patient: "-20140000000051",
+    },
+  };
 
-  // Test missing state parameter
-  expect(() => {
-    bb.getAccessToken(authData, "test-code", undefined, "test-error");
-  }).toThrow(Errors.CALLBACK_STATE_MISSING);
+  it("expect successful response", async () => {
+    mockedAxios.post.mockResolvedValueOnce(mockResponse);
 
-  // Test if state does not match
-  expect(() => {
-    bb.getAccessToken(
-      authData,
-      "test-code",
-      "test-state-does-not-match",
-      "test-error"
+    await expect(async () => {
+      const expectedAuthToken = new AuthorizationToken(mockResponse.data);
+
+      const ret = await bb.getAuthorizationToken(
+        authData,
+        "test-code",
+        authData.state,
+        "test-error"
+      );
+
+      expect(ret).toEqual(expectedAuthToken);
+    }).not.toThrow(Error);
+
+    expect(axios.post).toHaveBeenCalledWith(
+      BB2_ACCESS_TOKEN_URL,
+      expect.anything()
     );
-  }).toThrow("Provided callback state does not match AuthData state");
+  });
 
-  // Test access denied error value
-  expect(() => {
-    bb.getAccessToken(authData, "test-code", "test-state", "access_denied");
-  }).toThrow(Errors.CALLBACK_ACCESS_DENIED);
+  it("expect successful response with missing expires_at", async () => {
+    mockedAxios.post.mockResolvedValueOnce(mockResponseMissingExpiresAt);
+
+    await expect(async () => {
+      const expectedAuthToken = new AuthorizationToken(
+        mockResponseMissingExpiresAt.data
+      );
+
+      const ret = await bb.getAuthorizationToken(
+        authData,
+        "test-code",
+        authData.state,
+        "test-error"
+      );
+    }).not.toThrow(Error);
+
+    expect(axios.post).toHaveBeenCalledWith(
+      BB2_ACCESS_TOKEN_URL,
+      expect.anything()
+    );
+  });
+
+  it("expect missing error param does not error", async () => {
+    mockedAxios.post.mockResolvedValueOnce(mockResponse);
+
+    await expect(async () => {
+      const ret = await bb.getAuthorizationToken(
+        authData,
+        "test-code",
+        authData.state,
+        undefined
+      );
+    }).not.toThrow(Error);
+  });
+
+  it("expect missing code param has error", async () => {
+    mockedAxios.post.mockResolvedValueOnce(mockResponse);
+    await expect(async () => {
+      const ret = await bb.getAuthorizationToken(
+        authData,
+        undefined,
+        "test-state",
+        "test-error"
+      );
+    }).rejects.toThrow(Errors.CALLBACK_ACCESS_CODE_MISSING);
+  });
+
+  it("expect missing state param has error", async () => {
+    mockedAxios.post.mockResolvedValueOnce(mockResponse);
+    await expect(async () => {
+      const ret = await bb.getAuthorizationToken(
+        authData,
+        "test-code",
+        undefined,
+        "test-error"
+      );
+    }).rejects.toThrow(Errors.CALLBACK_STATE_MISSING);
+  });
+
+  it("expect state param does not match AuthData state", async () => {
+    mockedAxios.post.mockResolvedValueOnce(mockResponse);
+    await expect(async () => {
+      const ret = await bb.getAuthorizationToken(
+        authData,
+        "test-code",
+        "test-state-does-not-match",
+        "test-error"
+      );
+    }).rejects.toThrow(Errors.CALLBACK_STATE_DOES_NOT_MATCH);
+  });
+
+  it("expect access denied error", async () => {
+    mockedAxios.post.mockResolvedValueOnce(mockResponse);
+    await expect(async () => {
+      const ret = await bb.getAuthorizationToken(
+        authData,
+        "test-code",
+        "test-state",
+        "access_denied"
+      );
+    }).rejects.toThrow(Errors.CALLBACK_ACCESS_DENIED);
+  });
 });
