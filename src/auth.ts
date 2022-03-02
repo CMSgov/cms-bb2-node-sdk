@@ -123,8 +123,6 @@ export async function getAuthorizationToken(
   callbackRequestError: string | undefined
 ) {
   try {
-    const BB2_ACCESS_TOKEN_URL = bb.baseUrl + "/" + bb.version + "/o/token/";
-
     validateCallbackRequestQueryParams(
       AuthData,
       callbackRequestCode,
@@ -134,7 +132,7 @@ export async function getAuthorizationToken(
 
     const postData = generateTokenPostData(bb, AuthData, callbackRequestCode);
 
-    const resp = await axios.post(BB2_ACCESS_TOKEN_URL, postData);
+    const resp = await axios.post(bb.getAccessTokenUrl(), postData);
 
     const authToken = new AuthorizationToken(resp.data);
 
