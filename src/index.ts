@@ -90,6 +90,10 @@ export default class BlueButton {
     return this.baseUrl + "/" + this.version + "/o/token/";
   }
 
+  public getAuthorizationUrl(): string {
+    return `${this.baseUrl}/${this.version}/o/authorize`;
+  }
+
   public generateAuthData(): AuthData {
     return generateAuthData();
   }
