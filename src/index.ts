@@ -28,6 +28,7 @@ export default class BlueButton {
   callbackUrl: string;
   version: string;
   baseUrl: string;
+  private _authResponseStatusCode: number;
 
   constructor(config?: BlueButtonConfig) {
     let bbJsonConfig;
@@ -71,6 +72,7 @@ export default class BlueButton {
     this.clientSecret = bbJsonConfig.clientSecret;
     this.version = bbJsonConfig.version;
     this.callbackUrl = bbJsonConfig.callbackUrl;
+    this._authResponseStatusCode = 0;
   }
 
   normalizeConfig(config: BlueButtonJsonConfig) {
@@ -100,6 +102,14 @@ export default class BlueButton {
 
   public generateAuthorizeUrl(AuthData: AuthData): string {
     return generateAuthorizeUrl(this, AuthData);
+  }
+
+  public getAuthResponseStatusCode(): number {
+    return this._authResponseStatusCode;
+  }
+
+  public setAuthResponseStatusCode(statusCode: number) {
+    this._authResponseStatusCode = statusCode;
   }
 
   public async getAuthorizationToken(

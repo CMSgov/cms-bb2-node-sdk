@@ -71,45 +71,54 @@ test("expect auth method generateTokenPostData() function", () => {
 });
 
 describe("auth method getAuthorizationToken", () => {
+  // Reset mocks after each test.
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   const authData = bb.generateAuthData();
 
   const BB2_ACCESS_TOKEN_URL = bb.baseUrl + "/" + bb.version + "/o/token/";
 
+  const mockResponseData = {
+    access_token: "66ClP4JCjpdxmkC6bEKYQFLOWXnraJ",
+    expires_in: 36000,
+    token_type: "Bearer",
+    scope: [
+      "introspection",
+      "patient/Coverage.read",
+      "patient/ExplanationOfBenefit.read",
+      "patient/Patient.read",
+      "profile",
+    ],
+    refresh_token: "jV3knA4xmZ1enK8Rg1Lub5hmIsc9Ad",
+    patient: "-20140000000051",
+    expires_at: 1646195004.3654683,
+  };
+
   const mockResponse = {
     status: 200,
-    data: {
-      access_token: "66ClP4JCjpdxmkC6bEKYQFLOWXnraJ",
-      expires_in: 36000,
-      token_type: "Bearer",
-      scope: [
-        "introspection",
-        "patient/Coverage.read",
-        "patient/ExplanationOfBenefit.read",
-        "patient/Patient.read",
-        "profile",
-      ],
-      refresh_token: "jV3knA4xmZ1enK8Rg1Lub5hmIsc9Ad",
-      patient: "-20140000000051",
-      expires_at: 1646195004.3654683,
-    },
+    data: mockResponseData,
+  };
+
+  const mockResponseDataMissingExpiresAt = {
+    access_token: "66ClP4JCjpdxmkC6bEKYQFLOWXnraJ",
+    expires_in: 36000,
+    token_type: "Bearer",
+    scope: [
+      "introspection",
+      "patient/Coverage.read",
+      "patient/ExplanationOfBenefit.read",
+      "patient/Patient.read",
+      "profile",
+    ],
+    refresh_token: "jV3knA4xmZ1enK8Rg1Lub5hmIsc9Ad",
+    patient: "-20140000000051",
   };
 
   const mockResponseMissingExpiresAt = {
     status: 200,
-    data: {
-      access_token: "66ClP4JCjpdxmkC6bEKYQFLOWXnraJ",
-      expires_in: 36000,
-      token_type: "Bearer",
-      scope: [
-        "introspection",
-        "patient/Coverage.read",
-        "patient/ExplanationOfBenefit.read",
-        "patient/Patient.read",
-        "profile",
-      ],
-      refresh_token: "jV3knA4xmZ1enK8Rg1Lub5hmIsc9Ad",
-      patient: "-20140000000051",
-    },
+    data: mockResponseDataMissingExpiresAt,
   };
 
   it("expect successful response", async () => {
@@ -168,7 +177,6 @@ describe("auth method getAuthorizationToken", () => {
       );
     }).not.toThrow(Error);
   });
-
   it("expect missing code param has error", async () => {
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
     await expect(async () => {
@@ -215,5 +223,130 @@ describe("auth method getAuthorizationToken", () => {
         "access_denied"
       );
     }).rejects.toThrow(Errors.CALLBACK_ACCESS_DENIED);
+  });
+
+  it("expect token endpoint 400 status", async () => {
+    const mockResponse = {
+      status: 400,
+      data: {},
+    };
+
+    mockedAxios.post.mockResolvedValueOnce(mockResponse);
+    await expect(async () => {
+      const ret = await bb.getAuthorizationToken(
+        authData,
+        "test-code",
+        authData.state,
+        undefined
+      );
+    }).rejects.toThrow(Errors.AUTH_TOKEN_URL_STATUS_400);
+    expect(bb.getAuthResponseStatusCode()).toEqual(400);
+  });
+
+  it("expect token endpoint 403 status", async () => {
+    const mockResponse = {
+      status: 403,
+      data: {},
+    };
+
+    mockedAxios.post.mockResolvedValueOnce(mockResponse);
+    await expect(async () => {
+      const ret = await bb.getAuthorizationToken(
+        authData,
+        "test-code",
+        authData.state,
+        undefined
+      );
+    }).rejects.toThrow(Errors.AUTH_TOKEN_URL_STATUS_403);
+    expect(bb.getAuthResponseStatusCode()).toEqual(403);
+  });
+
+  it("expect token endpoint 404 status", async () => {
+    const mockResponse = {
+      status: 404,
+      data: {},
+    };
+
+    mockedAxios.post.mockResolvedValueOnce(mockResponse);
+    await expect(async () => {
+      const ret = await bb.getAuthorizationToken(
+        authData,
+        "test-code",
+        authData.state,
+        undefined
+      );
+    }).rejects.toThrow(Errors.AUTH_TOKEN_URL_STATUS_404);
+    expect(bb.getAuthResponseStatusCode()).toEqual(404);
+  });
+
+  it("expect token endpoint 500 status", async () => {
+    const mockResponse = {
+      status: 500,
+      data: {},
+    };
+
+    mockedAxios.post.mockResolvedValueOnce(mockResponse);
+    await expect(async () => {
+      const ret = await bb.getAuthorizationToken(
+        authData,
+        "test-code",
+        authData.state,
+        undefined
+      );
+    }).rejects.toThrow(Errors.AUTH_TOKEN_URL_STATUS_500);
+    expect(bb.getAuthResponseStatusCode()).toEqual(500);
+  });
+
+  it("expect token endpoint 502 status", async () => {
+    const mockResponse = {
+      status: 502,
+      data: {},
+    };
+
+    mockedAxios.post.mockResolvedValueOnce(mockResponse);
+    await expect(async () => {
+      const ret = await bb.getAuthorizationToken(
+        authData,
+        "test-code",
+        authData.state,
+        undefined
+      );
+    }).rejects.toThrow(Errors.AUTH_TOKEN_URL_STATUS_502);
+    expect(bb.getAuthResponseStatusCode()).toEqual(502);
+  });
+
+  it("expect token endpoint 999 not expected status", async () => {
+    const mockResponse = {
+      status: 999,
+      data: {},
+    };
+
+    mockedAxios.post.mockResolvedValueOnce(mockResponse);
+    await expect(async () => {
+      const ret = await bb.getAuthorizationToken(
+        authData,
+        "test-code",
+        authData.state,
+        undefined
+      );
+    }).rejects.toThrow(Errors.AUTH_TOKEN_URL_STATUS_NOT_EXPECTED);
+    expect(bb.getAuthResponseStatusCode()).toEqual(999);
+  });
+
+  it("expect token response data missing ", async () => {
+    const mockResponse = {
+      status: 200,
+    };
+
+    mockedAxios.post.mockResolvedValueOnce(mockResponse);
+    await expect(async () => {
+      const ret = await bb.getAuthorizationToken(
+        authData,
+        "test-code",
+        authData.state,
+        undefined
+      );
+    }).rejects.toThrow(Errors.AUTH_TOKEN_URL_RESPONSE_DATA_MISSING);
+    expect(bb.getAuthResponseStatusCode()).toEqual(200);
   });
 });
