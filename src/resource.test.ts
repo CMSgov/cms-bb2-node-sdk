@@ -7,10 +7,11 @@ import {
   FhirResourceType,
   AuthorizationToken,
 } from "./resource";
-import { eob } from "./testFixtures/eob";
-import { patient } from "./testFixtures/patient";
-import { coverage } from "./testFixtures/coverage";
-import { profile } from "./testFixtures/profile";
+
+const eob = { resource: "EOB" };
+const patient = { resource: "Patient" };
+const coverage = { resource: "Coverage" };
+const profile = { resource: "Profile" };
 
 const AUTH_TOKEN_MOCK = new AuthorizationToken({
   access_token: "access_token_foo",
