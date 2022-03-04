@@ -6,6 +6,12 @@ const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
 const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
 
+type FhirRequestConfig = {
+  params?: {
+    [key in string]: string;
+  };
+};
+
 type BlueButtonJsonConfig = {
   clientId: string;
   clientSecret: string;
@@ -76,5 +82,29 @@ export default class BlueButton {
           ? PRODUCTION_BASE_URL
           : SANDBOX_BASE_URL,
     };
+  }
+
+  getExplanationOfBenefitData(config: FhirRequestConfig) {
+    // use config to make request
+  }
+
+  getSingleExplanationOfBenefit(id: string, config: FhirRequestConfig) {
+    // use config to make request
+  }
+
+  getPatientData(config: FhirRequestConfig) {
+    // use config to make request
+  }
+
+  getSinglePatient(id: string, config: FhirRequestConfig) {
+    // use config to make request
+  }
+
+  getCoverageData(config: FhirRequestConfig) {
+    // use config to make request
+  }
+
+  getSingleCoverage(id: string, config: FhirRequestConfig) {
+    // use config to make request
   }
 }
