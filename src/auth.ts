@@ -76,7 +76,7 @@ export function generateAuthorizeUrl(
 //  Generates post data for call to access token URL
 export function generateTokenPostData(
   bb: BlueButton,
-  AuthData: AuthData,
+  authData: AuthData,
   callbackCode: string | undefined
 ): TokenPostData {
   return {
@@ -85,8 +85,8 @@ export function generateTokenPostData(
     code: callbackCode,
     grant_type: "authorization_code",
     redirect_uri: bb.callbackUrl,
-    code_verifier: AuthData.verifier,
-    code_challenge: AuthData.codeChallenge,
+    code_verifier: authData.verifier,
+    code_challenge: authData.codeChallenge,
   };
 }
 
@@ -132,6 +132,8 @@ export async function getAuthorizationToken(
 
     const postData = generateTokenPostData(bb, AuthData, callbackRequestCode);
     const resp = await axios.post(bb.getAccessTokenUrl(), postData);
+
+    bb.setAuthResponseStatusCode(-1);
 
     if (resp.status) {
       bb.setAuthResponseStatusCode(resp.status);

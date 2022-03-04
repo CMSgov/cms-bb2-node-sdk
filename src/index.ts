@@ -71,7 +71,6 @@ export default class BlueButton {
     this.callbackUrl = bbJsonConfig.callbackUrl;
     this.clientSecret = bbJsonConfig.clientSecret;
     this.version = bbJsonConfig.version;
-    this.callbackUrl = bbJsonConfig.callbackUrl;
     this._authResponseStatusCode = 0;
   }
 
@@ -89,11 +88,11 @@ export default class BlueButton {
   }
 
   public getAccessTokenUrl(): string {
-    return this.baseUrl + "/" + this.version + "/o/token/";
+    return `${this.baseUrl}/v${this.version}/o/token/`;
   }
 
   public getAuthorizationUrl(): string {
-    return `${this.baseUrl}/${this.version}/o/authorize`;
+    return `${this.baseUrl}/v${this.version}/o/authorize`;
   }
 
   public generateAuthData(): AuthData {

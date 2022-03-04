@@ -21,7 +21,7 @@ const bb = new BlueButton({
 
 // TEST CONSTANTS
 const BASE_AUTH_URL: string =
-  "https://sandbox.bluebutton.cms.gov/2/o/authorize";
+  "https://sandbox.bluebutton.cms.gov/v2/o/authorize";
 
 describe("auth method generateAuthData()", () => {
   const AuthData = bb.generateAuthData();
@@ -78,7 +78,7 @@ describe("auth method getAuthorizationToken", () => {
 
   const authData = bb.generateAuthData();
 
-  const BB2_ACCESS_TOKEN_URL = bb.baseUrl + "/" + bb.version + "/o/token/";
+  const BB2_ACCESS_TOKEN_URL = `${bb.baseUrl}/v${bb.version}/o/token/`;
 
   const mockResponseData = {
     access_token: "66ClP4JCjpdxmkC6bEKYQFLOWXnraJ",
@@ -121,22 +121,42 @@ describe("auth method getAuthorizationToken", () => {
     data: mockResponseDataMissingExpiresAt,
   };
 
+  const expectedAuthTokenJsonStringListBase = [
+    expect.stringContaining('"accessToken":"66ClP4JCjpdxmkC6bEKYQFLOWXnraJ"'),
+    expect.stringContaining('"expiresIn":36000,'),
+    expect.stringContaining('"patient":"-20140000000051",'),
+    expect.stringContaining('"refreshToken":"jV3knA4xmZ1enK8Rg1Lub5hmIsc9Ad",'),
+    expect.stringContaining(
+      '"scope":[' +
+        '"introspection",' +
+        '"patient/Coverage.read",' +
+        '"patient/ExplanationOfBenefit.read",' +
+        '"patient/Patient.read",' +
+        '"profile"],'
+    ),
+    expect.stringContaining('"tokenType":"Bearer"'),
+  ];
+
   it("expect successful response", async () => {
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
 
-    await expect(async () => {
-      const expectedAuthToken = new AuthorizationToken(mockResponse.data);
+    const ret = await bb.getAuthorizationToken(
+      authData,
+      "test-code",
+      authData.state,
+      "test-error"
+    );
 
-      const ret = await bb.getAuthorizationToken(
-        authData,
-        "test-code",
-        authData.state,
-        "test-error"
+    const expectedAuthTokenJsonStringList =
+      expectedAuthTokenJsonStringListBase.concat(
+        expect.stringContaining('"expiresAt":1646195004.3654683,')
       );
 
-      expect(ret).toEqual(expectedAuthToken);
-    }).not.toThrow(Error);
-
+    // Check json items are in response
+    expectedAuthTokenJsonStringList.forEach((item) => {
+      expect(JSON.stringify(ret)).toEqual(item);
+    });
+    expect(bb.getAuthResponseStatusCode()).toEqual(200);
     expect(axios.post).toHaveBeenCalledWith(
       BB2_ACCESS_TOKEN_URL,
       expect.anything()
@@ -146,19 +166,25 @@ describe("auth method getAuthorizationToken", () => {
   it("expect successful response with missing expires_at", async () => {
     mockedAxios.post.mockResolvedValueOnce(mockResponseMissingExpiresAt);
 
-    await expect(async () => {
-      const expectedAuthToken = new AuthorizationToken(
-        mockResponseMissingExpiresAt.data
+    const ret = await bb.getAuthorizationToken(
+      authData,
+      "test-code",
+      authData.state,
+      "test-error"
+    );
+
+    const expectedAuthTokenJsonStringList =
+      expectedAuthTokenJsonStringListBase.concat(
+        // Just match partial time since generated whole value is different each time.
+        expect.stringContaining('"expiresAt":1646')
       );
 
-      const ret = await bb.getAuthorizationToken(
-        authData,
-        "test-code",
-        authData.state,
-        "test-error"
-      );
-    }).not.toThrow(Error);
+    // Check json items are in response
+    expectedAuthTokenJsonStringList.forEach((item) => {
+      expect(JSON.stringify(ret)).toEqual(item);
+    });
 
+    expect(bb.getAuthResponseStatusCode()).toEqual(200);
     expect(axios.post).toHaveBeenCalledWith(
       BB2_ACCESS_TOKEN_URL,
       expect.anything()
@@ -168,17 +194,28 @@ describe("auth method getAuthorizationToken", () => {
   it("expect missing error param does not error", async () => {
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
 
-    await expect(async () => {
-      const ret = await bb.getAuthorizationToken(
-        authData,
-        "test-code",
-        authData.state,
-        undefined
+    const ret = await bb.getAuthorizationToken(
+      authData,
+      "test-code",
+      authData.state,
+      undefined
+    );
+
+    const expectedAuthTokenJsonStringList =
+      expectedAuthTokenJsonStringListBase.concat(
+        expect.stringContaining('"expiresAt":1646195004.3654683,')
       );
-    }).not.toThrow(Error);
+
+    // Check json items are in response
+    expectedAuthTokenJsonStringList.forEach((item) => {
+      expect(JSON.stringify(ret)).toEqual(item);
+    });
+    expect(bb.getAuthResponseStatusCode()).toEqual(200);
   });
+
   it("expect missing code param has error", async () => {
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
+
     await expect(async () => {
       const ret = await bb.getAuthorizationToken(
         authData,
@@ -191,6 +228,7 @@ describe("auth method getAuthorizationToken", () => {
 
   it("expect missing state param has error", async () => {
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
+
     await expect(async () => {
       const ret = await bb.getAuthorizationToken(
         authData,
@@ -203,6 +241,7 @@ describe("auth method getAuthorizationToken", () => {
 
   it("expect state param does not match AuthData state", async () => {
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
+
     await expect(async () => {
       const ret = await bb.getAuthorizationToken(
         authData,
@@ -215,6 +254,7 @@ describe("auth method getAuthorizationToken", () => {
 
   it("expect access denied error", async () => {
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
+
     await expect(async () => {
       const ret = await bb.getAuthorizationToken(
         authData,
@@ -230,8 +270,8 @@ describe("auth method getAuthorizationToken", () => {
       status: 400,
       data: {},
     };
-
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
+
     await expect(async () => {
       const ret = await bb.getAuthorizationToken(
         authData,
@@ -248,8 +288,8 @@ describe("auth method getAuthorizationToken", () => {
       status: 403,
       data: {},
     };
-
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
+
     await expect(async () => {
       const ret = await bb.getAuthorizationToken(
         authData,
@@ -266,8 +306,8 @@ describe("auth method getAuthorizationToken", () => {
       status: 404,
       data: {},
     };
-
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
+
     await expect(async () => {
       const ret = await bb.getAuthorizationToken(
         authData,
@@ -284,8 +324,8 @@ describe("auth method getAuthorizationToken", () => {
       status: 500,
       data: {},
     };
-
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
+
     await expect(async () => {
       const ret = await bb.getAuthorizationToken(
         authData,
@@ -302,8 +342,8 @@ describe("auth method getAuthorizationToken", () => {
       status: 502,
       data: {},
     };
-
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
+
     await expect(async () => {
       const ret = await bb.getAuthorizationToken(
         authData,
@@ -320,8 +360,8 @@ describe("auth method getAuthorizationToken", () => {
       status: 999,
       data: {},
     };
-
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
+
     await expect(async () => {
       const ret = await bb.getAuthorizationToken(
         authData,
@@ -337,8 +377,8 @@ describe("auth method getAuthorizationToken", () => {
     const mockResponse = {
       status: 200,
     };
-
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
+
     await expect(async () => {
       const ret = await bb.getAuthorizationToken(
         authData,
