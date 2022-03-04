@@ -46,6 +46,10 @@ const AUTH_TOKEN_EXPIRED_MOCK = new AuthorizationToken({
 
 const TOKEN_REFRESH_ERROR_MOCK = { text: "Unauthorized operation!" };
 
+const GENERAL_ERR_JSON = {
+  message: "Unable to load data - query FHIR resource error.",
+};
+
 test("expect fhir queries response with patient, eob, coverage, profile respectively, no token refresh ...", async () => {
   const bb = new BlueButton(`${__dirname}/testConfigs/.bluebutton-config.json`);
 
@@ -327,9 +331,9 @@ test("expect fhir queries error response 'Unable to load data - query FHIR resou
     .reply(400, { details: "Not found" });
 
   await getResource(fhirReqForPatient).then((response) => {
-    expect(response).toEqual({
-      message: "Unable to load data - query FHIR resource error.",
-    });
+    expect(response).toEqual(GENERAL_ERR_JSON);
+    expect(fhirReqForPatient.getStatusCode()).toEqual(400);
+    expect(fhirReqForPatient.getError()).toEqual(GENERAL_ERR_JSON);
   });
 });
 

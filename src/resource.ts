@@ -32,10 +32,12 @@ export class AuthorizationToken {
 
   constructor(authToken: any) {
     this.accessToken = authToken.access_token;
-    this.expiresIn = authToken.expires_in;
+    this.expiresIn = authToken.expires_in; // in seconds
     this.expiresAt = authToken.expires_at
       ? authToken.expires_at
-      : moment().add(this.expiresIn).valueOf();
+      : moment()
+          .add(this.expiresIn * 1000)
+          .valueOf();
     this.patient = authToken.patient;
     this.refreshToken = authToken.refresh_token;
     this.scope = authToken.scope;
@@ -231,8 +233,6 @@ async function request(config: any, fhirReq: FhirRequest) {
       } else {
         resp = error.response;
       }
-    } else if (error.request) {
-      console.log(`error.request: ${String(error.request)}`);
     }
   }
   return resp;
