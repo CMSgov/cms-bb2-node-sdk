@@ -46,7 +46,7 @@ export type AuthData = {
 export type TokenPostData = {
   client_id: string;
   client_secret: string;
-  code: string | undefined;
+  code?: string;
   grant_type: string;
   redirect_uri: string;
   code_verifier: string;
@@ -77,7 +77,7 @@ export function generateAuthorizeUrl(
 export function generateTokenPostData(
   bb: BlueButton,
   authData: AuthData,
-  callbackCode: string | undefined
+  callbackCode?: string
 ): TokenPostData {
   return {
     client_id: bb.clientId,
@@ -92,9 +92,9 @@ export function generateTokenPostData(
 
 function validateCallbackRequestQueryParams(
   AuthData: AuthData,
-  callbackCode: string | undefined,
-  callbackState: string | undefined,
-  callbackError: string | undefined
+  callbackCode?: string,
+  callbackState?: string,
+  callbackError?: string
 ) {
   // Check state from callback here?
   if (callbackError === "access_denied") {
@@ -118,9 +118,9 @@ function validateCallbackRequestQueryParams(
 export async function getAuthorizationToken(
   bb: BlueButton,
   AuthData: AuthData,
-  callbackRequestCode: string | undefined,
-  callbackRequestState: string | undefined,
-  callbackRequestError: string | undefined
+  callbackRequestCode?: string,
+  callbackRequestState?: string,
+  callbackRequestError?: string
 ) {
   try {
     validateCallbackRequestQueryParams(

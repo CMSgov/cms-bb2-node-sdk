@@ -113,9 +113,9 @@ export default class BlueButton {
 
   public async getAuthorizationToken(
     AuthData: AuthData,
-    callbackRequestCode: string | undefined,
-    callbackRequestState: string | undefined,
-    callbackRequestError: string | undefined
+    callbackRequestCode?: string,
+    callbackRequestState?: string,
+    callbackRequestError?: string
   ) {
     return getAuthorizationToken(
       this,
