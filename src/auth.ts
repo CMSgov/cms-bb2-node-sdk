@@ -122,54 +122,50 @@ export async function getAuthorizationToken(
   callbackRequestState?: string,
   callbackRequestError?: string
 ) {
-  try {
-    validateCallbackRequestQueryParams(
-      AuthData,
-      callbackRequestCode,
-      callbackRequestState,
-      callbackRequestError
-    );
+  validateCallbackRequestQueryParams(
+    AuthData,
+    callbackRequestCode,
+    callbackRequestState,
+    callbackRequestError
+  );
 
-    const postData = generateTokenPostData(bb, AuthData, callbackRequestCode);
-    const resp = await axios.post(bb.getAccessTokenUrl(), postData);
+  const postData = generateTokenPostData(bb, AuthData, callbackRequestCode);
+  const resp = await axios.post(bb.getAccessTokenUrl(), postData);
 
-    bb.setAuthResponseStatusCode(-1);
+  bb.setAuthResponseStatusCode(-1);
 
-    if (resp.status) {
-      bb.setAuthResponseStatusCode(resp.status);
+  if (resp.status) {
+    bb.setAuthResponseStatusCode(resp.status);
 
-      switch (resp.status) {
-        case 200: {
-          break;
-        }
-        case 400: {
-          throw Error(Errors.AUTH_TOKEN_URL_STATUS_400);
-        }
-        case 403: {
-          throw Error(Errors.AUTH_TOKEN_URL_STATUS_403);
-        }
-        case 404: {
-          throw Error(Errors.AUTH_TOKEN_URL_STATUS_404);
-        }
-        case 500: {
-          throw Error(Errors.AUTH_TOKEN_URL_STATUS_500);
-        }
-        case 502: {
-          throw Error(Errors.AUTH_TOKEN_URL_STATUS_502);
-        }
-        default: {
-          throw Error(Errors.AUTH_TOKEN_URL_STATUS_NOT_EXPECTED);
-        }
+    switch (resp.status) {
+      case 200: {
+        break;
+      }
+      case 400: {
+        throw Error(Errors.AUTH_TOKEN_URL_STATUS_400);
+      }
+      case 403: {
+        throw Error(Errors.AUTH_TOKEN_URL_STATUS_403);
+      }
+      case 404: {
+        throw Error(Errors.AUTH_TOKEN_URL_STATUS_404);
+      }
+      case 500: {
+        throw Error(Errors.AUTH_TOKEN_URL_STATUS_500);
+      }
+      case 502: {
+        throw Error(Errors.AUTH_TOKEN_URL_STATUS_502);
+      }
+      default: {
+        throw Error(Errors.AUTH_TOKEN_URL_STATUS_NOT_EXPECTED);
       }
     }
+  }
 
-    if (resp.data) {
-      const authToken = new AuthorizationToken(resp.data);
-      return authToken;
-    } else {
-      throw Error(Errors.AUTH_TOKEN_URL_RESPONSE_DATA_MISSING);
-    }
-  } catch (err) {
-    throw err;
+  if (resp.data) {
+    const authToken = new AuthorizationToken(resp.data);
+    return authToken;
+  } else {
+    throw Error(Errors.AUTH_TOKEN_URL_RESPONSE_DATA_MISSING);
   }
 }
