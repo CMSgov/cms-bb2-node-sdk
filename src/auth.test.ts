@@ -156,7 +156,6 @@ describe("auth method getAuthorizationToken", () => {
     expectedAuthTokenJsonStringList.forEach((item) => {
       expect(JSON.stringify(ret)).toEqual(item);
     });
-    expect(bb.getAuthResponseStatusCode()).toEqual(200);
     expect(axios.post).toHaveBeenCalledWith(
       BB2_ACCESS_TOKEN_URL,
       expect.anything()
@@ -184,7 +183,6 @@ describe("auth method getAuthorizationToken", () => {
       expect(JSON.stringify(ret)).toEqual(item);
     });
 
-    expect(bb.getAuthResponseStatusCode()).toEqual(200);
     expect(axios.post).toHaveBeenCalledWith(
       BB2_ACCESS_TOKEN_URL,
       expect.anything()
@@ -210,7 +208,6 @@ describe("auth method getAuthorizationToken", () => {
     expectedAuthTokenJsonStringList.forEach((item) => {
       expect(JSON.stringify(ret)).toEqual(item);
     });
-    expect(bb.getAuthResponseStatusCode()).toEqual(200);
   });
 
   it("expect missing code param has error", async () => {
@@ -265,114 +262,6 @@ describe("auth method getAuthorizationToken", () => {
     }).rejects.toThrow(Errors.CALLBACK_ACCESS_DENIED);
   });
 
-  it("expect token endpoint 400 status", async () => {
-    const mockResponse = {
-      status: 400,
-      data: {},
-    };
-    mockedAxios.post.mockResolvedValueOnce(mockResponse);
-
-    await expect(async () => {
-      const ret = await bb.getAuthorizationToken(
-        authData,
-        "test-code",
-        authData.state,
-        undefined
-      );
-    }).rejects.toThrow(Errors.AUTH_TOKEN_URL_STATUS_400);
-    expect(bb.getAuthResponseStatusCode()).toEqual(400);
-  });
-
-  it("expect token endpoint 403 status", async () => {
-    const mockResponse = {
-      status: 403,
-      data: {},
-    };
-    mockedAxios.post.mockResolvedValueOnce(mockResponse);
-
-    await expect(async () => {
-      const ret = await bb.getAuthorizationToken(
-        authData,
-        "test-code",
-        authData.state,
-        undefined
-      );
-    }).rejects.toThrow(Errors.AUTH_TOKEN_URL_STATUS_403);
-    expect(bb.getAuthResponseStatusCode()).toEqual(403);
-  });
-
-  it("expect token endpoint 404 status", async () => {
-    const mockResponse = {
-      status: 404,
-      data: {},
-    };
-    mockedAxios.post.mockResolvedValueOnce(mockResponse);
-
-    await expect(async () => {
-      const ret = await bb.getAuthorizationToken(
-        authData,
-        "test-code",
-        authData.state,
-        undefined
-      );
-    }).rejects.toThrow(Errors.AUTH_TOKEN_URL_STATUS_404);
-    expect(bb.getAuthResponseStatusCode()).toEqual(404);
-  });
-
-  it("expect token endpoint 500 status", async () => {
-    const mockResponse = {
-      status: 500,
-      data: {},
-    };
-    mockedAxios.post.mockResolvedValueOnce(mockResponse);
-
-    await expect(async () => {
-      const ret = await bb.getAuthorizationToken(
-        authData,
-        "test-code",
-        authData.state,
-        undefined
-      );
-    }).rejects.toThrow(Errors.AUTH_TOKEN_URL_STATUS_500);
-    expect(bb.getAuthResponseStatusCode()).toEqual(500);
-  });
-
-  it("expect token endpoint 502 status", async () => {
-    const mockResponse = {
-      status: 502,
-      data: {},
-    };
-    mockedAxios.post.mockResolvedValueOnce(mockResponse);
-
-    await expect(async () => {
-      const ret = await bb.getAuthorizationToken(
-        authData,
-        "test-code",
-        authData.state,
-        undefined
-      );
-    }).rejects.toThrow(Errors.AUTH_TOKEN_URL_STATUS_502);
-    expect(bb.getAuthResponseStatusCode()).toEqual(502);
-  });
-
-  it("expect token endpoint 999 not expected status", async () => {
-    const mockResponse = {
-      status: 999,
-      data: {},
-    };
-    mockedAxios.post.mockResolvedValueOnce(mockResponse);
-
-    await expect(async () => {
-      const ret = await bb.getAuthorizationToken(
-        authData,
-        "test-code",
-        authData.state,
-        undefined
-      );
-    }).rejects.toThrow(Errors.AUTH_TOKEN_URL_STATUS_NOT_EXPECTED);
-    expect(bb.getAuthResponseStatusCode()).toEqual(999);
-  });
-
   it("expect token response data missing ", async () => {
     const mockResponse = {
       status: 200,
@@ -387,6 +276,5 @@ describe("auth method getAuthorizationToken", () => {
         undefined
       );
     }).rejects.toThrow(Errors.AUTH_TOKEN_URL_RESPONSE_DATA_MISSING);
-    expect(bb.getAuthResponseStatusCode()).toEqual(200);
   });
 });
