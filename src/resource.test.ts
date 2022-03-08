@@ -1,17 +1,84 @@
 import axios from "axios";
-import MockAdapter from "axios-mock-adapter";
 import BlueButton from ".";
-import {
-  getResource,
-  FhirRequest,
-  FhirResourceType,
-  AuthorizationToken,
-} from "./resource";
+import { fetchData, FhirResourceType, AuthorizationToken } from "./resource";
 
-const eob = { resource: "EOB" };
-const patient = { resource: "Patient" };
-const coverage = { resource: "Coverage" };
-const profile = { resource: "Profile" };
+jest.mock("axios");
+
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+const bb = new BlueButton(`${__dirname}/testConfigs/.bluebutton-config.json`);
+
+const BB2_PATIENT_URL = `${String(bb.baseUrl)}/v${bb.version}/fhir/Patient/`;
+
+const BB2_COVERAGE_URL = `${String(bb.baseUrl)}/v${bb.version}/fhir/Coverage/`;
+
+const BB2_EOB_URL = `${String(bb.baseUrl)}/v${
+  bb.version
+}/fhir/ExplanationOfBenefit/`;
+
+const BB2_PROFILE_URL = `${String(bb.baseUrl)}/v${bb.version}/connect/userinfo`;
+
+const BB2_AUTH_TOKEN_URL = `${String(bb.baseUrl)}/v${bb.version}/o/token/`;
+
+const eob = { status: 200, data: { resource: "EOB" } };
+
+const coverage = { status: 200, data: { resource: "Coverage" } };
+
+const patient = { status: 200, data: { resource: "Patient" } };
+
+const profile = { status: 200, data: { resource: "Profile" } };
+
+const resourceNotFound = {
+  status: 400,
+  data: { details: "Resource not found." },
+};
+
+const MOCK_TOKEN_RESPONSE = {
+  status: 200,
+  data: {
+    access_token: "66ClP4JCjpdxmkC6bEKYQFLOWXnraJ",
+    expires_in: 36000,
+    token_type: "Bearer",
+    scope: [
+      "introspection",
+      "patient/Coverage.read",
+      "patient/ExplanationOfBenefit.read",
+      "patient/Patient.read",
+      "profile",
+    ],
+    refresh_token: "jV3knA4xmZ1enK8Rg1Lub5hmIsc9Ad",
+    patient: "-20140000000051",
+    expires_at: 1646195004.3654683,
+  },
+};
+
+// fabricate what retry logic expects
+const MOCK_RETRY_ERROR_RESPONSE = {
+  status: 500,
+  request: {
+    path: BB2_PATIENT_URL,
+  },
+  response: {
+    status: 500,
+    data: {
+      message: "Service not available, try later.",
+    },
+  },
+};
+
+const HEADER_W_TOKEN = {
+  headers: { Authorization: "Bearer access_token_foo" },
+  queryParams: {},
+};
+
+const POST_ARGS_TOKEN_REFRESH = {
+  auth: { password: "bar", username: "foo" },
+  params: {
+    client_id: "foo",
+    grant_type: "refresh_token",
+    refresh_token: "refresh_token_bar_expired",
+  },
+};
 
 const AUTH_TOKEN_MOCK = new AuthorizationToken({
   access_token: "access_token_foo",
@@ -22,7 +89,7 @@ const AUTH_TOKEN_MOCK = new AuthorizationToken({
   patient: "-19990000000001",
 });
 
-const AUTH_TOKEN_REFRESHED_RESPONSE_MOCK = {
+const AUTH_TOKEN_REFRESHED_DATA_MOCK = {
   access_token: "access_token_foo_refreshed",
   expires_in: 36000,
   token_type: "Bearer",
@@ -31,8 +98,13 @@ const AUTH_TOKEN_REFRESHED_RESPONSE_MOCK = {
   patient: "-19990000000001",
 };
 
+const AUTH_TOKEN_REFRESHED_RESPONSE_MOCK = {
+  status: 200,
+  data: AUTH_TOKEN_REFRESHED_DATA_MOCK,
+};
+
 const AUTH_TOKEN_REFRESHED_MOCK = new AuthorizationToken(
-  AUTH_TOKEN_REFRESHED_RESPONSE_MOCK
+  AUTH_TOKEN_REFRESHED_DATA_MOCK
 );
 
 const AUTH_TOKEN_EXPIRED_MOCK = new AuthorizationToken({
@@ -44,318 +116,306 @@ const AUTH_TOKEN_EXPIRED_MOCK = new AuthorizationToken({
   patient: "-19990000000001",
 });
 
-const TOKEN_REFRESH_ERROR_MOCK = { text: "Unauthorized operation!" };
-
-const GENERAL_ERR_JSON = {
-  message: "Unable to load data - query FHIR resource error.",
+const TOKEN_REFRESH_ERROR_RESPONSE_MOCK = {
+  status: 401,
+  data: { message: "Unauthorized operation!" },
 };
 
 test("expect fhir queries response with patient, eob, coverage, profile respectively, no token refresh ...", async () => {
-  const bb = new BlueButton(`${__dirname}/testConfigs/.bluebutton-config.json`);
+  // to verify that token end points not called
+  mockedAxios.post.mockImplementation((url) => {
+    if (url === BB2_AUTH_TOKEN_URL) {
+      return Promise.resolve(AUTH_TOKEN_REFRESHED_RESPONSE_MOCK);
+    } else {
+      throw Error("Invalid TOKEN end point URL: " + url);
+    }
+  });
 
-  const fhirReqForPatient = new FhirRequest(
-    FhirResourceType.Patient,
-    {},
-    AUTH_TOKEN_MOCK,
-    bb
-  );
-  const fhirReqForEOB = new FhirRequest(
+  // mock patient, eob, coverage, profile on url
+  mockedAxios.get.mockImplementation((url) => {
+    if (url === BB2_PATIENT_URL) {
+      return Promise.resolve(patient);
+    } else if (url === BB2_COVERAGE_URL) {
+      return Promise.resolve(coverage);
+    } else if (url === BB2_EOB_URL) {
+      return Promise.resolve(eob);
+    } else if (url === BB2_PROFILE_URL) {
+      return Promise.resolve(profile);
+    } else {
+      throw Error("Invalid FHIR end point URL: " + url);
+    }
+  });
+
+  await fetchData(
     FhirResourceType.ExplanationOfBenefit,
-    {},
     AUTH_TOKEN_MOCK,
-    bb
+    bb,
+    {}
+  ).then((response) => {
+    expect(response.status_code).toEqual(200);
+    expect(response.data).toEqual(eob.data);
+    expect(response.token).toEqual(AUTH_TOKEN_MOCK);
+    expect(mockedAxios.get).toHaveBeenCalledWith(BB2_EOB_URL, HEADER_W_TOKEN);
+    // no refresh occurred
+    expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+  });
+
+  await fetchData(FhirResourceType.Coverage, AUTH_TOKEN_MOCK, bb, {}).then(
+    (response) => {
+      expect(response.status_code).toEqual(200);
+      expect(response.data).toEqual(coverage.data);
+      expect(response.token).toEqual(AUTH_TOKEN_MOCK);
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        BB2_COVERAGE_URL,
+        HEADER_W_TOKEN
+      );
+      // no refresh occurred
+      expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+    }
   );
-  const fhirReqForCoverge = new FhirRequest(
-    FhirResourceType.Coverage,
-    {},
-    AUTH_TOKEN_MOCK,
-    bb
+
+  await fetchData(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
+    (response) => {
+      expect(response.status_code).toEqual(200);
+      expect(response.data).toEqual(patient.data);
+      expect(response.token).toEqual(AUTH_TOKEN_MOCK);
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        BB2_PATIENT_URL,
+        HEADER_W_TOKEN
+      );
+      // no refresh occurred
+      expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+    }
   );
-  const fhirReqForProfile = new FhirRequest(
-    FhirResourceType.Profile,
-    {},
-    AUTH_TOKEN_MOCK,
-    bb
+
+  await fetchData(FhirResourceType.Profile, AUTH_TOKEN_MOCK, bb, {}).then(
+    (response) => {
+      expect(response.status_code).toEqual(200);
+      expect(response.data).toEqual(profile.data);
+      expect(response.token).toEqual(AUTH_TOKEN_MOCK);
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        BB2_PROFILE_URL,
+        HEADER_W_TOKEN
+      );
+      // no refresh occurred
+      expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+    }
   );
-
-  const mock = new MockAdapter(axios);
-
-  mock
-    .onPost(fhirReqForPatient.BB2_AUTH_TOKEN_URL)
-    .reply(200, AUTH_TOKEN_REFRESHED_MOCK);
-  mock.onGet(fhirReqForPatient.BB2_PATIENT_URL).reply(200, patient);
-  mock.onGet(fhirReqForEOB.BB2_EOB_URL).reply(200, eob);
-  mock.onGet(fhirReqForCoverge.BB2_COVERAGE_URL).reply(200, coverage);
-  mock.onGet(fhirReqForProfile.BB2_PROFILE_URL).reply(200, profile);
-
-  await getResource(fhirReqForPatient).then((response) => {
-    expect(response).toEqual(patient);
-    expect(fhirReqForPatient.getData()).toEqual(patient);
-    expect(fhirReqForPatient.getAuthToken()).toEqual(AUTH_TOKEN_MOCK);
-  });
-
-  await getResource(fhirReqForEOB).then((response) => {
-    expect(response).toEqual(eob);
-    expect(fhirReqForEOB.getData()).toEqual(eob);
-    expect(fhirReqForEOB.getAuthToken()).toEqual(AUTH_TOKEN_MOCK);
-  });
-
-  await getResource(fhirReqForCoverge).then((response) => {
-    expect(response).toEqual(coverage);
-    expect(fhirReqForCoverge.getData()).toEqual(coverage);
-    expect(fhirReqForCoverge.getAuthToken()).toEqual(AUTH_TOKEN_MOCK);
-  });
-
-  await getResource(fhirReqForProfile).then((response) => {
-    expect(response).toEqual(profile);
-    expect(fhirReqForProfile.getData()).toEqual(profile);
-    expect(fhirReqForProfile.getAuthToken()).toEqual(AUTH_TOKEN_MOCK);
-  });
 });
 
 test("expect fhir queries with token refreshed ...", async () => {
-  const bb = new BlueButton(`${__dirname}/testConfigs/.bluebutton-config.json`);
+  // to verify that token refresh called
+  mockedAxios.post.mockImplementation((url) => {
+    if (url === BB2_AUTH_TOKEN_URL) {
+      return Promise.resolve(AUTH_TOKEN_REFRESHED_RESPONSE_MOCK);
+    } else {
+      throw Error("Invalid TOKEN end point URL: " + url);
+    }
+  });
 
-  const fhirReqForPatient = new FhirRequest(
+  // mock patient, eob, coverage, profile on url
+  mockedAxios.get.mockImplementation((url) => {
+    if (url === BB2_PATIENT_URL) {
+      return Promise.resolve(patient);
+    } else if (url === BB2_COVERAGE_URL) {
+      return Promise.resolve(coverage);
+    } else if (url === BB2_EOB_URL) {
+      return Promise.resolve(eob);
+    } else if (url === BB2_PROFILE_URL) {
+      return Promise.resolve(profile);
+    } else {
+      throw Error("Invalid FHIR end point URL: " + url);
+    }
+  });
+
+  await fetchData(
     FhirResourceType.Patient,
-    {},
     AUTH_TOKEN_EXPIRED_MOCK,
-    bb
-  );
-  const fhirReqForEOB = new FhirRequest(
+    bb,
+    {}
+  ).then((response) => {
+    expect(response.status_code).toEqual(200);
+    expect(response.data).toEqual(patient.data);
+    expect(mockedAxios.post).toHaveBeenCalledWith(
+      BB2_AUTH_TOKEN_URL,
+      {},
+      POST_ARGS_TOKEN_REFRESH
+    );
+    expect(response.token.accessToken).toEqual(
+      AUTH_TOKEN_REFRESHED_MOCK.accessToken
+    );
+  });
+
+  await fetchData(
     FhirResourceType.ExplanationOfBenefit,
-    {},
     AUTH_TOKEN_EXPIRED_MOCK,
-    bb
-  );
-  const fhirReqForCoverge = new FhirRequest(
+    bb,
+    {}
+  ).then((response) => {
+    expect(response.status_code).toEqual(200);
+    expect(response.data).toEqual(eob.data);
+    expect(mockedAxios.post).toHaveBeenCalledWith(
+      BB2_AUTH_TOKEN_URL,
+      {},
+      POST_ARGS_TOKEN_REFRESH
+    );
+    expect(response.token.accessToken).toEqual(
+      AUTH_TOKEN_REFRESHED_MOCK.accessToken
+    );
+  });
+
+  await fetchData(
     FhirResourceType.Coverage,
-    {},
     AUTH_TOKEN_EXPIRED_MOCK,
-    bb
-  );
-  const fhirReqForProfile = new FhirRequest(
+    bb,
+    {}
+  ).then((response) => {
+    expect(response.status_code).toEqual(200);
+    expect(response.data).toEqual(coverage.data);
+    expect(mockedAxios.post).toHaveBeenCalledWith(
+      BB2_AUTH_TOKEN_URL,
+      {},
+      POST_ARGS_TOKEN_REFRESH
+    );
+    expect(response.token.accessToken).toEqual(
+      AUTH_TOKEN_REFRESHED_MOCK.accessToken
+    );
+  });
+
+  await fetchData(
     FhirResourceType.Profile,
-    {},
     AUTH_TOKEN_EXPIRED_MOCK,
-    bb
-  );
-
-  const mock = new MockAdapter(axios);
-
-  mock
-    .onPost(fhirReqForPatient.BB2_AUTH_TOKEN_URL)
-    .reply(200, AUTH_TOKEN_REFRESHED_RESPONSE_MOCK);
-  mock
-    .onPost(fhirReqForEOB.BB2_AUTH_TOKEN_URL)
-    .reply(200, AUTH_TOKEN_REFRESHED_RESPONSE_MOCK);
-  mock
-    .onPost(fhirReqForCoverge.BB2_AUTH_TOKEN_URL)
-    .reply(200, AUTH_TOKEN_REFRESHED_RESPONSE_MOCK);
-  mock
-    .onPost(fhirReqForProfile.BB2_AUTH_TOKEN_URL)
-    .reply(200, AUTH_TOKEN_REFRESHED_RESPONSE_MOCK);
-
-  mock.onGet(fhirReqForPatient.BB2_PATIENT_URL).reply(200, patient);
-  mock.onGet(fhirReqForEOB.BB2_EOB_URL).reply(200, eob);
-  mock.onGet(fhirReqForCoverge.BB2_COVERAGE_URL).reply(200, coverage);
-  mock.onGet(fhirReqForProfile.BB2_PROFILE_URL).reply(200, profile);
-
-  await getResource(fhirReqForPatient).then((response) => {
-    expect(response).toEqual(patient);
-    expect(fhirReqForPatient.getAuthToken().accessToken).toEqual(
+    bb,
+    {}
+  ).then((response) => {
+    expect(response.status_code).toEqual(200);
+    expect(response.data).toEqual(profile.data);
+    expect(mockedAxios.post).toHaveBeenCalledWith(
+      BB2_AUTH_TOKEN_URL,
+      {},
+      POST_ARGS_TOKEN_REFRESH
+    );
+    expect(response.token.accessToken).toEqual(
       AUTH_TOKEN_REFRESHED_MOCK.accessToken
-    );
-    expect(fhirReqForPatient.getAuthToken().expiresIn).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.expiresIn
-    );
-    expect(fhirReqForPatient.getAuthToken().scope).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.scope
-    );
-    expect(fhirReqForPatient.getAuthToken().refreshToken).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.refreshToken
-    );
-    expect(fhirReqForPatient.getAuthToken().tokenType).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.tokenType
-    );
-  });
-
-  await getResource(fhirReqForEOB).then((response) => {
-    expect(response).toEqual(eob);
-    expect(fhirReqForEOB.getAuthToken().accessToken).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.accessToken
-    );
-    expect(fhirReqForEOB.getAuthToken().expiresIn).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.expiresIn
-    );
-    expect(fhirReqForEOB.getAuthToken().scope).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.scope
-    );
-    expect(fhirReqForEOB.getAuthToken().refreshToken).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.refreshToken
-    );
-    expect(fhirReqForEOB.getAuthToken().tokenType).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.tokenType
-    );
-  });
-
-  await getResource(fhirReqForCoverge).then((response) => {
-    expect(response).toEqual(coverage);
-    expect(fhirReqForCoverge.getAuthToken().accessToken).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.accessToken
-    );
-    expect(fhirReqForCoverge.getAuthToken().expiresIn).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.expiresIn
-    );
-    expect(fhirReqForCoverge.getAuthToken().scope).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.scope
-    );
-    expect(fhirReqForCoverge.getAuthToken().refreshToken).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.refreshToken
-    );
-    expect(fhirReqForCoverge.getAuthToken().tokenType).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.tokenType
-    );
-  });
-
-  await getResource(fhirReqForProfile).then((response) => {
-    expect(response).toEqual(profile);
-    expect(fhirReqForProfile.getAuthToken().accessToken).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.accessToken
-    );
-    expect(fhirReqForProfile.getAuthToken().expiresIn).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.expiresIn
-    );
-    expect(fhirReqForProfile.getAuthToken().scope).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.scope
-    );
-    expect(fhirReqForProfile.getAuthToken().refreshToken).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.refreshToken
-    );
-    expect(fhirReqForProfile.getAuthToken().tokenType).toEqual(
-      AUTH_TOKEN_REFRESHED_MOCK.tokenType
     );
   });
 });
 
 test("expect fhir queries with token refresh failed ...", async () => {
-  const bb = new BlueButton(`${__dirname}/testConfigs/.bluebutton-config.json`);
+  // to verify that token refresh called
+  mockedAxios.post.mockImplementation((url) => {
+    if (url === BB2_AUTH_TOKEN_URL) {
+      return Promise.resolve(TOKEN_REFRESH_ERROR_RESPONSE_MOCK);
+    } else {
+      throw Error("Invalid TOKEN end point URL: " + url);
+    }
+  });
 
-  const fhirReqForPatient = new FhirRequest(
-    FhirResourceType.Patient,
-    {},
-    AUTH_TOKEN_EXPIRED_MOCK,
-    bb
-  );
-  const fhirReqForEOB = new FhirRequest(
-    FhirResourceType.ExplanationOfBenefit,
-    {},
-    AUTH_TOKEN_EXPIRED_MOCK,
-    bb
-  );
-  const fhirReqForCoverge = new FhirRequest(
-    FhirResourceType.Coverage,
-    {},
-    AUTH_TOKEN_EXPIRED_MOCK,
-    bb
-  );
-  const fhirReqForProfile = new FhirRequest(
-    FhirResourceType.Profile,
-    {},
-    AUTH_TOKEN_EXPIRED_MOCK,
-    bb
-  );
+  // mock patient, eob, coverage, profile on url
+  mockedAxios.get.mockImplementation((url) => {
+    if (url === BB2_PATIENT_URL) {
+      return Promise.resolve(patient);
+    } else if (url === BB2_COVERAGE_URL) {
+      return Promise.resolve(coverage);
+    } else if (url === BB2_EOB_URL) {
+      return Promise.resolve(eob);
+    } else if (url === BB2_PROFILE_URL) {
+      return Promise.resolve(profile);
+    } else {
+      throw Error("Invalid FHIR end point URL: " + url);
+    }
+  });
 
-  const mock = new MockAdapter(axios);
+  await expect(
+    fetchData(FhirResourceType.Patient, AUTH_TOKEN_EXPIRED_MOCK, bb, {})
+  ).rejects.toThrow(Error);
 
-  mock
-    .onPost(fhirReqForPatient.BB2_AUTH_TOKEN_URL)
-    .reply(401, TOKEN_REFRESH_ERROR_MOCK);
-  mock
-    .onPost(fhirReqForEOB.BB2_AUTH_TOKEN_URL)
-    .reply(401, TOKEN_REFRESH_ERROR_MOCK);
-  mock
-    .onPost(fhirReqForCoverge.BB2_AUTH_TOKEN_URL)
-    .reply(401, TOKEN_REFRESH_ERROR_MOCK);
-  mock
-    .onPost(fhirReqForProfile.BB2_AUTH_TOKEN_URL)
-    .reply(401, TOKEN_REFRESH_ERROR_MOCK);
+  await expect(
+    fetchData(
+      FhirResourceType.ExplanationOfBenefit,
+      AUTH_TOKEN_EXPIRED_MOCK,
+      bb,
+      {}
+    )
+  ).rejects.toThrow(Error);
 
-  mock.onGet(fhirReqForPatient.BB2_PATIENT_URL).reply(200, patient);
-  mock.onGet(fhirReqForEOB.BB2_EOB_URL).reply(200, eob);
-  mock.onGet(fhirReqForCoverge.BB2_COVERAGE_URL).reply(200, coverage);
-  mock.onGet(fhirReqForProfile.BB2_PROFILE_URL).reply(200, profile);
+  await expect(
+    fetchData(FhirResourceType.Coverage, AUTH_TOKEN_EXPIRED_MOCK, bb, {})
+  ).rejects.toThrow(Error);
 
-  await expect(getResource(fhirReqForPatient)).rejects.toThrow(Error);
-
-  await expect(getResource(fhirReqForEOB)).rejects.toThrow(Error);
-
-  await expect(getResource(fhirReqForCoverge)).rejects.toThrow(Error);
-
-  await expect(getResource(fhirReqForProfile)).rejects.toThrow(Error);
+  await expect(
+    fetchData(FhirResourceType.Profile, AUTH_TOKEN_EXPIRED_MOCK, bb, {})
+  ).rejects.toThrow(Error);
 });
 
 test("expect fhir queries with malformed authToken throw Error ...", async () => {
-  const bb = new BlueButton(`${__dirname}/testConfigs/.bluebutton-config.json`);
-
-  const fhirReqForPatient = new FhirRequest(
-    FhirResourceType.Patient,
-    {},
-    new AuthorizationToken({}),
-    bb
-  );
-
-  const mock = new MockAdapter(axios);
-
-  mock.onGet(fhirReqForPatient.BB2_PATIENT_URL).reply(200, patient);
-
-  await expect(getResource(fhirReqForPatient)).rejects.toThrow(
-    "Invalid authorization token."
-  );
+  await expect(
+    fetchData(FhirResourceType.Patient, new AuthorizationToken({}), bb, {})
+  ).rejects.toThrow("Invalid authorization token.");
 });
 
 test("expect fhir queries error response 'Unable to load data - query FHIR resource error.' on 400 response from FHIR ...", async () => {
-  const bb = new BlueButton(`${__dirname}/testConfigs/.bluebutton-config.json`);
+  // mock patient, eob, coverage, profile on url
+  mockedAxios.get.mockImplementation((url) => {
+    if (url === BB2_PATIENT_URL) {
+      return Promise.resolve(resourceNotFound);
+    } else if (url === BB2_COVERAGE_URL) {
+      return Promise.resolve(resourceNotFound);
+    } else if (url === BB2_EOB_URL) {
+      return Promise.resolve(resourceNotFound);
+    } else if (url === BB2_PROFILE_URL) {
+      return Promise.resolve(resourceNotFound);
+    } else {
+      throw Error("Invalid FHIR end point URL: " + url);
+    }
+  });
 
-  const fhirReqForPatient = new FhirRequest(
-    FhirResourceType.Patient,
-    {},
-    AUTH_TOKEN_MOCK,
-    bb
+  await fetchData(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
+    (response) => {
+      expect(response.status_code).toEqual(400);
+      expect(response.data).toEqual(resourceNotFound.data);
+    }
   );
 
-  const mock = new MockAdapter(axios);
+  await fetchData(FhirResourceType.Coverage, AUTH_TOKEN_MOCK, bb, {}).then(
+    (response) => {
+      expect(response.status_code).toEqual(400);
+      expect(response.data).toEqual(resourceNotFound.data);
+    }
+  );
 
-  mock
-    .onGet(fhirReqForPatient.BB2_PATIENT_URL)
-    .reply(400, { details: "Not found" });
-
-  await getResource(fhirReqForPatient).then((response) => {
-    expect(response).toEqual(GENERAL_ERR_JSON);
-    expect(fhirReqForPatient.getStatusCode()).toEqual(400);
-    expect(fhirReqForPatient.getError()).toEqual(GENERAL_ERR_JSON);
+  await fetchData(
+    FhirResourceType.ExplanationOfBenefit,
+    AUTH_TOKEN_MOCK,
+    bb,
+    {}
+  ).then((response) => {
+    expect(response.status_code).toEqual(400);
+    expect(response.data).toEqual(resourceNotFound.data);
   });
+
+  await fetchData(FhirResourceType.Profile, AUTH_TOKEN_MOCK, bb, {}).then(
+    (response) => {
+      expect(response.status_code).toEqual(400);
+      expect(response.data).toEqual(resourceNotFound.data);
+    }
+  );
 });
 
 test("expect fhir queries trigger retry on 500 response ...", async () => {
-  const bb = new BlueButton(`${__dirname}/testConfigs/.bluebutton-config.json`);
-
-  const fhirReqForPatient = new FhirRequest(
-    FhirResourceType.Patient,
-    {},
-    AUTH_TOKEN_MOCK,
-    bb
-  );
-
-  const mock = new MockAdapter(axios);
-
-  mock
-    .onGet(fhirReqForPatient.BB2_PATIENT_URL)
-    .reply(500, { error: "unexpected error" });
-
-  await getResource(fhirReqForPatient).then((response) => {
-    expect(response).toEqual({
-      message: "Unable to load data - query FHIR resource error.",
-    });
+  // mock patient, eob, coverage, profile on url
+  mockedAxios.get.mockImplementation((url) => {
+    if (url === BB2_PATIENT_URL) {
+      return Promise.resolve(Promise.reject(MOCK_RETRY_ERROR_RESPONSE));
+    } else {
+      throw Error("Invalid FHIR end point URL: " + url);
+    }
   });
+
+  await fetchData(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
+    (response) => {
+      expect(response.status_code).toEqual(500);
+      expect(response.data).toEqual(MOCK_RETRY_ERROR_RESPONSE.response.data);
+    }
+  );
 }, 50000);
