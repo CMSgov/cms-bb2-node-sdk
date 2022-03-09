@@ -402,8 +402,9 @@ test("expect fhir queries error response 'Unable to load data - query FHIR resou
   );
 });
 
-test("expect fhir queries trigger retry on 500 response ...", async () => {
+test("expect fhir queries trigger retry on 500 response, assert retry max attempts reached ...", async () => {
   // mock patient, eob, coverage, profile on url
+  jest.clearAllMocks();
   mockedAxios.get.mockImplementation((url) => {
     if (url === BB2_PATIENT_URL) {
       return Promise.resolve(Promise.reject(MOCK_RETRY_ERROR_RESPONSE));
@@ -416,6 +417,8 @@ test("expect fhir queries trigger retry on 500 response ...", async () => {
     (response) => {
       expect(response.status_code).toEqual(500);
       expect(response.data).toEqual(MOCK_RETRY_ERROR_RESPONSE.response.data);
+      // one get plus 3 retry attempts
+      expect(mockedAxios.get).toHaveBeenCalledTimes(4);
     }
   );
 }, 50000);
