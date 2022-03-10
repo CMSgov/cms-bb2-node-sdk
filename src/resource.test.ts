@@ -33,27 +33,8 @@ const resourceNotFound = {
   data: { details: "Resource not found." },
 };
 
-const MOCK_TOKEN_RESPONSE = {
-  status: 200,
-  data: {
-    access_token: "66ClP4JCjpdxmkC6bEKYQFLOWXnraJ",
-    expires_in: 36000,
-    token_type: "Bearer",
-    scope: [
-      "introspection",
-      "patient/Coverage.read",
-      "patient/ExplanationOfBenefit.read",
-      "patient/Patient.read",
-      "profile",
-    ],
-    refresh_token: "jV3knA4xmZ1enK8Rg1Lub5hmIsc9Ad",
-    patient: "-20140000000051",
-    expires_at: 1646195004.3654683,
-  },
-};
-
 // fabricate what retry logic expects
-const MOCK_RETRY_ERROR_RESPONSE = {
+const MOCK_RETRYABLE_RESPONSE = {
   status: 500,
   request: {
     path: BB2_PATIENT_URL,
@@ -62,6 +43,19 @@ const MOCK_RETRY_ERROR_RESPONSE = {
     status: 500,
     data: {
       message: "Service not available, try later.",
+    },
+  },
+};
+
+const MOCK_NON_RETRYABLE_RESPONSE = {
+  status: 505,
+  request: {
+    path: BB2_PATIENT_URL,
+  },
+  response: {
+    status: 505,
+    data: {
+      message: "Version not supported.",
     },
   },
 };
@@ -403,11 +397,10 @@ test("expect fhir queries error response 'Unable to load data - query FHIR resou
 });
 
 test("expect fhir queries trigger retry on 500 response, assert retry max attempts reached ...", async () => {
-  // mock patient, eob, coverage, profile on url
   jest.clearAllMocks();
   mockedAxios.get.mockImplementation((url) => {
     if (url === BB2_PATIENT_URL) {
-      return Promise.resolve(Promise.reject(MOCK_RETRY_ERROR_RESPONSE));
+      return Promise.resolve(Promise.reject(MOCK_RETRYABLE_RESPONSE));
     } else {
       throw Error("Invalid FHIR end point URL: " + url);
     }
@@ -416,9 +409,47 @@ test("expect fhir queries trigger retry on 500 response, assert retry max attemp
   await fetchData(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
     (response) => {
       expect(response.status_code).toEqual(500);
-      expect(response.data).toEqual(MOCK_RETRY_ERROR_RESPONSE.response.data);
+      expect(response.data).toEqual(MOCK_RETRYABLE_RESPONSE.response.data);
       // one get plus 3 retry attempts
       expect(mockedAxios.get).toHaveBeenCalledTimes(4);
     }
   );
 }, 50000);
+
+// hit non retryable error : not in [500, 502, 503, 504], e.g. 505 ver not supported
+test("expect fhir queries return response on non-retryable error, assert retry not attempted ...", async () => {
+  jest.clearAllMocks();
+  mockedAxios.get.mockImplementation((url) => {
+    if (url === BB2_PATIENT_URL) {
+      return Promise.resolve(Promise.reject(MOCK_NON_RETRYABLE_RESPONSE));
+    } else {
+      throw Error("Invalid FHIR end point URL: " + url);
+    }
+  });
+
+  await fetchData(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
+    (response) => {
+      expect(response.status_code).toEqual(505);
+      expect(response.data).toEqual(MOCK_NON_RETRYABLE_RESPONSE.response.data);
+      // one get plus 0 retry attempts
+      expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+    }
+  );
+});
+
+test("expect fhir queries trigger retry on retryable error, assert retry attempted once and succeeded ...", async () => {
+  jest.clearAllMocks();
+  mockedAxios.get
+    .mockRejectedValueOnce(MOCK_RETRYABLE_RESPONSE)
+    .mockRejectedValueOnce(MOCK_RETRYABLE_RESPONSE)
+    .mockResolvedValueOnce(patient);
+
+  await fetchData(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
+    (response) => {
+      expect(response.status_code).toEqual(200);
+      expect(response.data).toEqual(patient.data);
+      // first get plus 1 errored attempt plus 1 succeeded attempt
+      expect(mockedAxios.get).toHaveBeenCalledTimes(3);
+    }
+  );
+}, 20000);
