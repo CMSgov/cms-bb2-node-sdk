@@ -24,7 +24,9 @@ export class AuthorizationToken {
     this.expiresIn = authToken.expires_in;
     this.expiresAt = authToken.expires_at
       ? authToken.expires_at
-      : moment().add(this.expiresIn).valueOf();
+      : moment()
+          .add(this.expiresIn * 1000)
+          .valueOf();
     this.patient = authToken.patient;
     this.refreshToken = authToken.refresh_token;
     this.scope = authToken.scope;
