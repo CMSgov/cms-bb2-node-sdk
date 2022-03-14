@@ -62,13 +62,17 @@ export function generateAuthData(): AuthData {
   };
 }
 
+function getAuthorizationUrl(bb: BlueButton): string {
+  return `${bb.baseUrl}/v${bb.version}/o/authorize`;
+}
+
 export function generateAuthorizeUrl(
   bb: BlueButton,
   AuthData: AuthData
 ): string {
   const pkceParams = `code_challenge_method=S256&code_challenge=${AuthData.codeChallenge}`;
 
-  return `${bb.getAuthorizationUrl()}?client_id=${bb.clientId}&redirect_uri=${
+  return `${getAuthorizationUrl(bb)}?client_id=${bb.clientId}&redirect_uri=${
     bb.callbackUrl
   }&state=${AuthData.state}&response_type=code&${pkceParams}`;
 }

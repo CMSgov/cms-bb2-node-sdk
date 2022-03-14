@@ -85,13 +85,9 @@ export default class BlueButton {
     };
   }
 
-  public getAccessTokenUrl(): string {
-    return `${this.baseUrl}/v${this.version}/o/token/`;
-  }
-
-  public getAuthorizationUrl(): string {
-    return `${this.baseUrl}/v${this.version}/o/authorize`;
-  }
+  //  public getAuthorizationUrl(): string {
+  //    return `${this.baseUrl}/v${this.version}/o/authorize`;
+  //  }
 
   public generateAuthData(): AuthData {
     return generateAuthData();
