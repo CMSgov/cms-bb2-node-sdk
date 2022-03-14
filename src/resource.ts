@@ -2,8 +2,9 @@ import axios from "axios";
 import moment from "moment";
 import BlueButton from "./index";
 
-const retrySettings = {
-  initInterval: 5,
+// initInterval in milli-seconds
+export const retrySettings = {
+  initInterval: 5000,
   maxAttempts: 3,
   backOffExpr: "interval * ( 2 ** i )",
   retryableCodes: [500, 502, 503, 504],
@@ -104,8 +105,8 @@ async function doRetry(fhirUrl: string, config: any) {
   let resp = null;
 
   for (let i = 0; i < maxAttempts; i += 1) {
-    const waitInSec = eval(retrySettings.backOffExpr);
-    await sleep(waitInSec * 1000);
+    const waitInMilliSec = eval(retrySettings.backOffExpr);
+    await sleep(waitInMilliSec);
     try {
       resp = await axios.get(fhirUrl, config);
       break;

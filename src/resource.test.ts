@@ -1,6 +1,11 @@
 import axios from "axios";
 import BlueButton from ".";
-import { fetchData, FhirResourceType, AuthorizationToken } from "./resource";
+import {
+  retrySettings,
+  fetchData,
+  FhirResourceType,
+  AuthorizationToken,
+} from "./resource";
 
 jest.mock("axios");
 
@@ -406,6 +411,9 @@ test("expect fhir queries trigger retry on 500 response, assert retry max attemp
     }
   });
 
+  // force shorter retry interval to save time
+  retrySettings.initInterval = 1000;
+
   await fetchData(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
     (response) => {
       expect(response.status_code).toEqual(500);
@@ -443,6 +451,9 @@ test("expect fhir queries trigger retry on retryable error, assert retry attempt
     .mockRejectedValueOnce(MOCK_RETRYABLE_RESPONSE)
     .mockRejectedValueOnce(MOCK_RETRYABLE_RESPONSE)
     .mockResolvedValueOnce(patient);
+
+  // force shorter retry interval to save time
+  retrySettings.initInterval = 1000;
 
   await fetchData(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
     (response) => {
