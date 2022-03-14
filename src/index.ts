@@ -85,10 +85,6 @@ export default class BlueButton {
     };
   }
 
-  //  public getAuthorizationUrl(): string {
-  //    return `${this.baseUrl}/v${this.version}/o/authorize`;
-  //  }
-
   public generateAuthData(): AuthData {
     return generateAuthData();
   }
