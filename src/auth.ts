@@ -114,6 +114,10 @@ function validateCallbackRequestQueryParams(
   }
 }
 
+function getAccessTokenUrl(bb: BlueButton): string {
+  return `${bb.baseUrl}/v${bb.version}/o/token/`;
+}
+
 // Get an access token from callback code & state
 export async function getAuthorizationToken(
   bb: BlueButton,
@@ -131,7 +135,7 @@ export async function getAuthorizationToken(
 
   const postData = generateTokenPostData(bb, AuthData, callbackRequestCode);
 
-  const resp = await axios.post(bb.getAccessTokenUrl(), postData);
+  const resp = await axios.post(getAccessTokenUrl(bb), postData);
 
   if (resp.data) {
     const authToken = new AuthorizationToken(resp.data);
