@@ -175,7 +175,7 @@ describe("auth method getAuthorizationToken", () => {
     const expectedAuthTokenJsonStringList =
       expectedAuthTokenJsonStringListBase.concat(
         // Just match partial time since generated whole value is different each time.
-        expect.stringContaining('"expiresAt":1646')
+        expect.stringContaining('"expiresAt":')
       );
 
     // Check json items are in response
