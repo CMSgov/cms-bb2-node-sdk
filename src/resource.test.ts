@@ -1,11 +1,11 @@
 import axios from "axios";
 import BlueButton from ".";
 import {
-  retrySettings,
-  fetchData,
-  FhirResourceType,
   AuthorizationToken,
-} from "./resource";
+  AuthorizationTokenData,
+} from "./entities/AuthorizationToken";
+
+import { retrySettings, getFhirResource, FhirResourceType } from "./resource";
 
 jest.mock("axios");
 
@@ -79,20 +79,31 @@ const POST_ARGS_TOKEN_REFRESH = {
   },
 };
 
-const AUTH_TOKEN_MOCK = new AuthorizationToken({
+const AUTH_TOKEN_DATA_MOCK: AuthorizationTokenData = {
   access_token: "access_token_foo",
   expires_in: 36000,
   token_type: "Bearer",
-  scope: "scope1 scope2 scope3",
+  scope: ["scope1", "scope2", "scope3"],
   refresh_token: "refresh_token_bar",
   patient: "-19990000000001",
-});
+};
 
-const AUTH_TOKEN_REFRESHED_DATA_MOCK = {
+const AUTH_TOKEN_BADDATA_MOCK: AuthorizationTokenData = {
+  access_token: "",
+  expires_in: 36000,
+  token_type: "Bearer",
+  scope: [],
+  refresh_token: "",
+  patient: "",
+};
+
+const AUTH_TOKEN_MOCK = new AuthorizationToken(AUTH_TOKEN_DATA_MOCK);
+
+const AUTH_TOKEN_REFRESHED_DATA_MOCK: AuthorizationTokenData = {
   access_token: "access_token_foo_refreshed",
   expires_in: 36000,
   token_type: "Bearer",
-  scope: "scope1 scope2 scope3",
+  scope: ["scope1", "scope2", "scope3"],
   refresh_token: "refresh_token_bar_refreshed",
   patient: "-19990000000001",
 };
@@ -106,14 +117,18 @@ const AUTH_TOKEN_REFRESHED_MOCK = new AuthorizationToken(
   AUTH_TOKEN_REFRESHED_DATA_MOCK
 );
 
-const AUTH_TOKEN_EXPIRED_MOCK = new AuthorizationToken({
+const AUTH_EXPIRED_TOKEN_DATA_DMOCK: AuthorizationTokenData = {
   access_token: "access_token_foo_expired",
   expires_in: -36000,
   token_type: "Bearer",
-  scope: "scope1 scope2 scope3",
+  scope: ["scope1", "scope2", "scope3"],
   refresh_token: "refresh_token_bar_expired",
   patient: "-19990000000001",
-});
+};
+
+const AUTH_TOKEN_EXPIRED_MOCK = new AuthorizationToken(
+  AUTH_EXPIRED_TOKEN_DATA_DMOCK
+);
 
 const TOKEN_REFRESH_ERROR_RESPONSE_MOCK = {
   status: 401,
@@ -145,7 +160,7 @@ test("expect fhir queries response with patient, eob, coverage, profile respecti
     }
   });
 
-  await fetchData(
+  await getFhirResource(
     FhirResourceType.ExplanationOfBenefit,
     AUTH_TOKEN_MOCK,
     bb,
@@ -159,21 +174,24 @@ test("expect fhir queries response with patient, eob, coverage, profile respecti
     expect(mockedAxios.post).toHaveBeenCalledTimes(0);
   });
 
-  await fetchData(FhirResourceType.Coverage, AUTH_TOKEN_MOCK, bb, {}).then(
-    (response) => {
-      expect(response.status_code).toEqual(200);
-      expect(response.data).toEqual(coverage.data);
-      expect(response.token).toEqual(AUTH_TOKEN_MOCK);
-      expect(mockedAxios.get).toHaveBeenCalledWith(
-        BB2_COVERAGE_URL,
-        HEADER_W_TOKEN
-      );
-      // no refresh occurred
-      expect(mockedAxios.post).toHaveBeenCalledTimes(0);
-    }
-  );
+  await getFhirResource(
+    FhirResourceType.Coverage,
+    AUTH_TOKEN_MOCK,
+    bb,
+    {}
+  ).then((response) => {
+    expect(response.status_code).toEqual(200);
+    expect(response.data).toEqual(coverage.data);
+    expect(response.token).toEqual(AUTH_TOKEN_MOCK);
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      BB2_COVERAGE_URL,
+      HEADER_W_TOKEN
+    );
+    // no refresh occurred
+    expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+  });
 
-  await fetchData(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
+  await getFhirResource(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
     (response) => {
       expect(response.status_code).toEqual(200);
       expect(response.data).toEqual(patient.data);
@@ -187,7 +205,7 @@ test("expect fhir queries response with patient, eob, coverage, profile respecti
     }
   );
 
-  await fetchData(FhirResourceType.Profile, AUTH_TOKEN_MOCK, bb, {}).then(
+  await getFhirResource(FhirResourceType.Profile, AUTH_TOKEN_MOCK, bb, {}).then(
     (response) => {
       expect(response.status_code).toEqual(200);
       expect(response.data).toEqual(profile.data);
@@ -227,7 +245,7 @@ test("expect fhir queries with token refreshed ...", async () => {
     }
   });
 
-  await fetchData(
+  await getFhirResource(
     FhirResourceType.Patient,
     AUTH_TOKEN_EXPIRED_MOCK,
     bb,
@@ -245,7 +263,7 @@ test("expect fhir queries with token refreshed ...", async () => {
     );
   });
 
-  await fetchData(
+  await getFhirResource(
     FhirResourceType.ExplanationOfBenefit,
     AUTH_TOKEN_EXPIRED_MOCK,
     bb,
@@ -263,7 +281,7 @@ test("expect fhir queries with token refreshed ...", async () => {
     );
   });
 
-  await fetchData(
+  await getFhirResource(
     FhirResourceType.Coverage,
     AUTH_TOKEN_EXPIRED_MOCK,
     bb,
@@ -281,7 +299,7 @@ test("expect fhir queries with token refreshed ...", async () => {
     );
   });
 
-  await fetchData(
+  await getFhirResource(
     FhirResourceType.Profile,
     AUTH_TOKEN_EXPIRED_MOCK,
     bb,
@@ -326,11 +344,11 @@ test("expect fhir queries with token refresh failed ...", async () => {
   });
 
   await expect(
-    fetchData(FhirResourceType.Patient, AUTH_TOKEN_EXPIRED_MOCK, bb, {})
+    getFhirResource(FhirResourceType.Patient, AUTH_TOKEN_EXPIRED_MOCK, bb, {})
   ).rejects.toThrow(Error);
 
   await expect(
-    fetchData(
+    getFhirResource(
       FhirResourceType.ExplanationOfBenefit,
       AUTH_TOKEN_EXPIRED_MOCK,
       bb,
@@ -339,17 +357,22 @@ test("expect fhir queries with token refresh failed ...", async () => {
   ).rejects.toThrow(Error);
 
   await expect(
-    fetchData(FhirResourceType.Coverage, AUTH_TOKEN_EXPIRED_MOCK, bb, {})
+    getFhirResource(FhirResourceType.Coverage, AUTH_TOKEN_EXPIRED_MOCK, bb, {})
   ).rejects.toThrow(Error);
 
   await expect(
-    fetchData(FhirResourceType.Profile, AUTH_TOKEN_EXPIRED_MOCK, bb, {})
+    getFhirResource(FhirResourceType.Profile, AUTH_TOKEN_EXPIRED_MOCK, bb, {})
   ).rejects.toThrow(Error);
 });
 
 test("expect fhir queries with malformed authToken throw Error ...", async () => {
   await expect(
-    fetchData(FhirResourceType.Patient, new AuthorizationToken({}), bb, {})
+    getFhirResource(
+      FhirResourceType.Patient,
+      new AuthorizationToken(AUTH_TOKEN_BADDATA_MOCK),
+      bb,
+      {}
+    )
   ).rejects.toThrow("Invalid authorization token.");
 });
 
@@ -369,21 +392,24 @@ test("expect fhir queries error response 'Unable to load data - query FHIR resou
     }
   });
 
-  await fetchData(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
+  await getFhirResource(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
     (response) => {
       expect(response.status_code).toEqual(400);
       expect(response.data).toEqual(resourceNotFound.data);
     }
   );
 
-  await fetchData(FhirResourceType.Coverage, AUTH_TOKEN_MOCK, bb, {}).then(
-    (response) => {
-      expect(response.status_code).toEqual(400);
-      expect(response.data).toEqual(resourceNotFound.data);
-    }
-  );
+  await getFhirResource(
+    FhirResourceType.Coverage,
+    AUTH_TOKEN_MOCK,
+    bb,
+    {}
+  ).then((response) => {
+    expect(response.status_code).toEqual(400);
+    expect(response.data).toEqual(resourceNotFound.data);
+  });
 
-  await fetchData(
+  await getFhirResource(
     FhirResourceType.ExplanationOfBenefit,
     AUTH_TOKEN_MOCK,
     bb,
@@ -393,7 +419,7 @@ test("expect fhir queries error response 'Unable to load data - query FHIR resou
     expect(response.data).toEqual(resourceNotFound.data);
   });
 
-  await fetchData(FhirResourceType.Profile, AUTH_TOKEN_MOCK, bb, {}).then(
+  await getFhirResource(FhirResourceType.Profile, AUTH_TOKEN_MOCK, bb, {}).then(
     (response) => {
       expect(response.status_code).toEqual(400);
       expect(response.data).toEqual(resourceNotFound.data);
@@ -414,7 +440,7 @@ test("expect fhir queries trigger retry on 500 response, assert retry max attemp
   // force shorter retry interval to save time
   retrySettings.initInterval = 1000;
 
-  await fetchData(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
+  await getFhirResource(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
     (response) => {
       expect(response.status_code).toEqual(500);
       expect(response.data).toEqual(MOCK_RETRYABLE_RESPONSE.response.data);
@@ -435,7 +461,7 @@ test("expect fhir queries return response on non-retryable error, assert retry n
     }
   });
 
-  await fetchData(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
+  await getFhirResource(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
     (response) => {
       expect(response.status_code).toEqual(505);
       expect(response.data).toEqual(MOCK_NON_RETRYABLE_RESPONSE.response.data);
@@ -455,7 +481,7 @@ test("expect fhir queries trigger retry on retryable error, assert retry attempt
   // force shorter retry interval to save time
   retrySettings.initInterval = 1000;
 
-  await fetchData(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
+  await getFhirResource(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
     (response) => {
       expect(response.status_code).toEqual(200);
       expect(response.data).toEqual(patient.data);

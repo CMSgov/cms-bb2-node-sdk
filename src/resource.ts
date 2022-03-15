@@ -1,6 +1,8 @@
 import axios from "axios";
+// import { AxiosError } from "axios";
 import moment from "moment";
 import BlueButton from "./index";
+import { AuthorizationToken } from "./entities/AuthorizationToken";
 
 // initInterval in milli-seconds
 export const retrySettings = {
@@ -17,54 +19,10 @@ export const retrySettings = {
 };
 
 export enum FhirResourceType {
-  Patient = "Patient",
-  Coverage = "Coverage",
-  Profile = "Profile",
-  ExplanationOfBenefit = "ExplanationOfBenefit",
-}
-
-export class AuthorizationToken {
-  public accessToken: string;
-  public expiresIn: number;
-  public expiresAt: number;
-  public tokenType: string;
-  public scope: [string];
-  public refreshToken: string;
-  public patient: string;
-
-  constructor(authToken: any) {
-    this.accessToken = authToken.access_token;
-    this.expiresIn = authToken.expires_in; // in seconds
-    this.expiresAt = authToken.expires_at
-      ? authToken.expires_at
-      : moment()
-          .add(this.expiresIn * 1000)
-          .valueOf();
-    this.patient = authToken.patient;
-    this.refreshToken = authToken.refresh_token;
-    this.scope = authToken.scope;
-    this.tokenType = authToken.token_type;
-  }
-
-  isExpired(): boolean {
-    return moment(this.expiresAt).isBefore(moment());
-  }
-
-  validate(): void {
-    if (
-      !(
-        this.accessToken &&
-        this.expiresIn &&
-        this.expiresAt &&
-        this.patient &&
-        this.refreshToken &&
-        this.scope &&
-        this.tokenType
-      )
-    ) {
-      throw new Error("Invalid authorization token.");
-    }
-  }
+  Patient = "fhir/Patient/",
+  Coverage = "fhir/Coverage/",
+  Profile = "connect/userinfo",
+  ExplanationOfBenefit = "fhir/ExplanationOfBenefit/",
 }
 
 function sleep(time: number) {
@@ -99,13 +57,10 @@ function endsWith(path: string) {
 }
 
 async function doRetry(fhirUrl: string, config: any) {
-  const interval = retrySettings.initInterval;
-  const maxAttempts = retrySettings.maxAttempts;
-
   let resp = null;
 
-  for (let i = 0; i < maxAttempts; i += 1) {
-    const waitInMilliSec = eval(retrySettings.backOffExpr);
+  for (let i = 0; i < retrySettings.maxAttempts; i += 1) {
+    const waitInMilliSec = retrySettings.initInterval * 2 ** i;
     await sleep(waitInMilliSec);
     try {
       resp = await axios.get(fhirUrl, config);
@@ -147,38 +102,33 @@ async function refreshAccessToken(
   return new AuthorizationToken(resp.data);
 }
 
-export async function fetchData(
+export async function getFhirResource(
   resourceType: FhirResourceType,
   authToken: AuthorizationToken,
   bb2: BlueButton,
   queryParams: any
 ) {
-  authToken.validate();
+  if (
+    !(
+      authToken.accessToken &&
+      authToken.expiresIn &&
+      authToken.expiresAt &&
+      authToken.patient &&
+      authToken.refreshToken &&
+      authToken.scope &&
+      authToken.tokenType
+    )
+  ) {
+    throw new Error("Invalid authorization token.");
+  }
 
   let newAuth = authToken;
 
-  if (authToken.isExpired()) {
+  if (moment(authToken.expiresAt).isBefore(moment())) {
     newAuth = await refreshAccessToken(authToken, bb2);
   }
 
-  let fhirUrl = `${String(bb2.baseUrl)}/v${bb2.version}`;
-
-  switch (resourceType) {
-    case FhirResourceType.Patient:
-      fhirUrl = `${fhirUrl}/fhir/Patient/`;
-      break;
-    case FhirResourceType.Coverage:
-      fhirUrl = `${fhirUrl}/fhir/Coverage/`;
-      break;
-    case FhirResourceType.ExplanationOfBenefit:
-      fhirUrl = `${fhirUrl}/fhir/ExplanationOfBenefit/`;
-      break;
-    case FhirResourceType.Profile:
-      fhirUrl = `${fhirUrl}/connect/userinfo`;
-      break;
-    default:
-      throw Error(`Unknown Fhir Resource Type --> ${resourceType}`);
-  }
+  const fhirUrl = `${String(bb2.baseUrl)}/v${bb2.version}/${resourceType}`;
 
   let resp = null;
 
@@ -203,5 +153,6 @@ export async function fetchData(
       }
     }
   }
+
   return { token: newAuth, status_code: resp.status, data: resp.data };
 }
