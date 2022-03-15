@@ -1,5 +1,4 @@
 import axios from "axios";
-// import { AxiosError } from "axios";
 import moment from "moment";
 import BlueButton from "./index";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
@@ -8,16 +7,10 @@ import { AuthorizationToken } from "./entities/AuthorizationToken";
 export const retrySettings = {
   initInterval: 5000,
   maxAttempts: 3,
-  backOffExpr: "interval * ( 2 ** i )",
   retryableCodes: [500, 502, 503, 504],
-  retryableFhirPath: [
-    "/fhir/Patient/",
-    "/fhir/Coverage/",
-    "/fhir/ExplanationOfBenefit/",
-    "/connect/userinfo",
-  ],
 };
 
+// also serves as central registry for supported resource paths
 export enum FhirResourceType {
   Patient = "fhir/Patient/",
   Coverage = "fhir/Coverage/",
@@ -39,16 +32,16 @@ function isRetryable(error: any) {
     retrySettings.retryableCodes.includes(error.response.status)
   ) {
     if (error.request && error.request.path) {
-      retryOK = endsWith(error.request.path);
+      retryOK = matchFhirPath(error.request.path);
     }
   }
   return retryOK;
 }
 
-function endsWith(path: string) {
+function matchFhirPath(path: string) {
   let matched = false;
-  for (let i = 0; i < retrySettings.retryableFhirPath.length; i++) {
-    if (path.endsWith(retrySettings.retryableFhirPath[i])) {
+  for (const t of Object.values(FhirResourceType)) {
+    if (path.endsWith(t)) {
       matched = true;
       break;
     }
