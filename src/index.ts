@@ -7,7 +7,6 @@ import {
   generateAuthorizeUrl,
   getAuthorizationToken,
 } from "./auth";
-import { AuthorizationToken } from "./entities/AuthorizationToken";
 
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
@@ -22,6 +21,7 @@ type BlueButtonJsonConfig = {
 };
 
 type BlueButtonConfig = string | BlueButtonJsonConfig;
+
 export default class BlueButton {
   clientId: string;
   clientSecret: string;
