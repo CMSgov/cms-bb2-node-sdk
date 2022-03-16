@@ -70,12 +70,6 @@ async function refreshAccessToken(
     }
   );
 
-  if (resp.status !== 200) {
-    throw new Error(
-      `Failed to refresh access token, status: ${resp.status}, error: ${resp.data}.`
-    );
-  }
-
   return new AuthorizationToken(resp.data);
 }
 

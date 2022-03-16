@@ -1,5 +1,4 @@
 import moment from "moment";
-import { NamedTupleMemberTypeSerializer } from "typedoc/dist/lib/serialization/serializers";
 
 export type AuthorizationTokenData = {
   access_token: string;

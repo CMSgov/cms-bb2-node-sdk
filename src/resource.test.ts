@@ -322,7 +322,7 @@ test("expect fhir queries with token refresh failed ...", async () => {
   // to verify that token refresh called
   mockedAxios.post.mockImplementation((url) => {
     if (url === BB2_AUTH_TOKEN_URL) {
-      return Promise.resolve(TOKEN_REFRESH_ERROR_RESPONSE_MOCK);
+      return Promise.reject(TOKEN_REFRESH_ERROR_RESPONSE_MOCK);
     } else {
       throw Error("Invalid TOKEN end point URL: " + url);
     }
@@ -343,26 +343,49 @@ test("expect fhir queries with token refresh failed ...", async () => {
     }
   });
 
-  await expect(
-    getFhirResource(FhirResourceType.Patient, AUTH_TOKEN_EXPIRED_MOCK, bb, {})
-  ).rejects.toThrow(Error);
+  try {
+    await getFhirResource(
+      FhirResourceType.Patient,
+      AUTH_TOKEN_EXPIRED_MOCK,
+      bb,
+      {}
+    );
+  } catch (error) {
+    expect(error).toEqual(TOKEN_REFRESH_ERROR_RESPONSE_MOCK);
+  }
 
-  await expect(
-    getFhirResource(
+  try {
+    await getFhirResource(
       FhirResourceType.ExplanationOfBenefit,
       AUTH_TOKEN_EXPIRED_MOCK,
       bb,
       {}
-    )
-  ).rejects.toThrow(Error);
+    );
+  } catch (error) {
+    expect(error).toEqual(TOKEN_REFRESH_ERROR_RESPONSE_MOCK);
+  }
 
-  await expect(
-    getFhirResource(FhirResourceType.Coverage, AUTH_TOKEN_EXPIRED_MOCK, bb, {})
-  ).rejects.toThrow(Error);
+  try {
+    await getFhirResource(
+      FhirResourceType.Coverage,
+      AUTH_TOKEN_EXPIRED_MOCK,
+      bb,
+      {}
+    );
+  } catch (error) {
+    expect(error).toEqual(TOKEN_REFRESH_ERROR_RESPONSE_MOCK);
+  }
 
-  await expect(
-    getFhirResource(FhirResourceType.Profile, AUTH_TOKEN_EXPIRED_MOCK, bb, {})
-  ).rejects.toThrow(Error);
+  try {
+    await getFhirResource(
+      FhirResourceType.Profile,
+      AUTH_TOKEN_EXPIRED_MOCK,
+      bb,
+      {}
+    );
+  } catch (error) {
+    expect(error).toEqual(TOKEN_REFRESH_ERROR_RESPONSE_MOCK);
+  }
 });
 
 test("expect fhir queries with malformed authToken throw Error ...", async () => {
