@@ -53,6 +53,7 @@ test("expect bb sdk to be created the appropriate baseUrl that corresponds to th
 
   expect(bb.clientId).toBe(CLIENT_ID);
   expect(bb.clientSecret).toBe(CLIENT_SECRET);
+  expect(bb.callbackUrl).toBe(CALLBACK_URL);
   expect(bb.version).toBe("2");
   expect(bb.baseUrl).toBe(`https://api.bluebutton.cms.gov`);
 });

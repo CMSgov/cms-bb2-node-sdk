@@ -1,16 +1,23 @@
 import fs from "fs";
 import { cwd } from "process";
 import { Environments } from "./enums/environments";
+import { AuthData } from "./auth";
+import {
+  generateAuthData,
+  generateAuthorizeUrl,
+  getAuthorizationToken,
+} from "./auth";
+import {
+  FhirResourceType,
+  getFhirResource,
+  getFhirResourceByPath,
+} from "./resource";
+import { AuthorizationToken } from "./entities/AuthorizationToken";
+import { AxiosRequestConfig } from "axios";
 
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
 const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
-
-type FhirRequestConfig = {
-  params?: {
-    [key in string]: string;
-  };
-};
 
 type BlueButtonJsonConfig = {
   clientId: string;
@@ -21,6 +28,7 @@ type BlueButtonJsonConfig = {
 };
 
 type BlueButtonConfig = string | BlueButtonJsonConfig;
+
 export default class BlueButton {
   clientId: string;
   clientSecret: string;
@@ -84,27 +92,82 @@ export default class BlueButton {
     };
   }
 
-  getExplanationOfBenefitData(config: FhirRequestConfig) {
-    // use config to make request
+  async getExplanationOfBenefitData(
+    authToken: AuthorizationToken,
+    config: AxiosRequestConfig
+  ) {
+    return await getFhirResource(
+      FhirResourceType.ExplanationOfBenefit,
+      authToken,
+      this,
+      config
+    );
   }
 
-  getSingleExplanationOfBenefit(id: string, config: FhirRequestConfig) {
-    // use config to make request
+  async getPatientData(
+    authToken: AuthorizationToken,
+    config: AxiosRequestConfig
+  ) {
+    return await getFhirResource(
+      FhirResourceType.Patient,
+      authToken,
+      this,
+      config
+    );
   }
 
-  getPatientData(config: FhirRequestConfig) {
-    // use config to make request
+  async getCoverageData(
+    authToken: AuthorizationToken,
+    config: AxiosRequestConfig
+  ) {
+    return await getFhirResource(
+      FhirResourceType.Coverage,
+      authToken,
+      this,
+      config
+    );
   }
 
-  getSinglePatient(id: string, config: FhirRequestConfig) {
-    // use config to make request
+  async getProfileData(
+    authToken: AuthorizationToken,
+    config: AxiosRequestConfig
+  ) {
+    return await getFhirResource(
+      FhirResourceType.Profile,
+      authToken,
+      this,
+      config
+    );
   }
 
-  getCoverageData(config: FhirRequestConfig) {
-    // use config to make request
+  async getCustomData(
+    path: string,
+    authToken: AuthorizationToken,
+    config: AxiosRequestConfig
+  ) {
+    return await getFhirResourceByPath(path, authToken, this, config);
   }
 
-  getSingleCoverage(id: string, config: FhirRequestConfig) {
-    // use config to make request
+  generateAuthData(): AuthData {
+    return generateAuthData();
+  }
+
+  generateAuthorizeUrl(authData: AuthData): string {
+    return generateAuthorizeUrl(this, authData);
+  }
+
+  async getAuthorizationToken(
+    authData: AuthData,
+    callbackRequestCode?: string,
+    callbackRequestState?: string,
+    callbackRequestError?: string
+  ) {
+    return getAuthorizationToken(
+      this,
+      authData,
+      callbackRequestCode,
+      callbackRequestState,
+      callbackRequestError
+    );
   }
 }
