@@ -25,28 +25,10 @@ function sleep(time: number) {
 }
 
 function isRetryable(error: any) {
-  let retryOK = false;
-
-  if (
+  return (
     error.response &&
     retrySettings.retryableCodes.includes(error.response.status)
-  ) {
-    if (error.request && error.request.path) {
-      retryOK = matchFhirPath(error.request.path);
-    }
-  }
-  return retryOK;
-}
-
-function matchFhirPath(path: string) {
-  let matched = false;
-  for (const t of Object.values(FhirResourceType)) {
-    if (path.endsWith(t)) {
-      matched = true;
-      break;
-    }
-  }
-  return matched;
+  );
 }
 
 async function doRetry(fhirUrl: string, config: any) {
@@ -95,8 +77,8 @@ async function refreshAccessToken(
   return new AuthorizationToken(resp.data);
 }
 
-export async function getFhirResource(
-  resourceType: FhirResourceType,
+export async function getFhirResourceByPath(
+  resourcePath: string,
   authToken: AuthorizationToken,
   bb2: BlueButton,
   queryParams: any
@@ -121,7 +103,7 @@ export async function getFhirResource(
     newAuth = await refreshAccessToken(authToken, bb2);
   }
 
-  const fhirUrl = `${String(bb2.baseUrl)}/v${bb2.version}/${resourceType}`;
+  const fhirUrl = `${String(bb2.baseUrl)}/v${bb2.version}/${resourcePath}`;
 
   let resp = null;
 
@@ -146,6 +128,23 @@ export async function getFhirResource(
       }
     }
   }
+  return {
+    token: newAuth.getTokenData(),
+    status_code: resp.status,
+    data: resp.data,
+  };
+}
 
-  return { token: newAuth, status_code: resp.status, data: resp.data };
+export async function getFhirResource(
+  resourceType: FhirResourceType,
+  authToken: AuthorizationToken,
+  bb2: BlueButton,
+  queryParams: any
+) {
+  return await getFhirResourceByPath(
+    `${resourceType}`,
+    authToken,
+    bb2,
+    queryParams
+  );
 }

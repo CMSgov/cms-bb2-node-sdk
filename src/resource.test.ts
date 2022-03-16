@@ -168,7 +168,7 @@ test("expect fhir queries response with patient, eob, coverage, profile respecti
   ).then((response) => {
     expect(response.status_code).toEqual(200);
     expect(response.data).toEqual(eob.data);
-    expect(response.token).toEqual(AUTH_TOKEN_MOCK);
+    expect(response.token).toEqual(AUTH_TOKEN_MOCK.getTokenData());
     expect(mockedAxios.get).toHaveBeenCalledWith(BB2_EOB_URL, HEADER_W_TOKEN);
     // no refresh occurred
     expect(mockedAxios.post).toHaveBeenCalledTimes(0);
@@ -182,7 +182,7 @@ test("expect fhir queries response with patient, eob, coverage, profile respecti
   ).then((response) => {
     expect(response.status_code).toEqual(200);
     expect(response.data).toEqual(coverage.data);
-    expect(response.token).toEqual(AUTH_TOKEN_MOCK);
+    expect(response.token).toEqual(AUTH_TOKEN_MOCK.getTokenData());
     expect(mockedAxios.get).toHaveBeenCalledWith(
       BB2_COVERAGE_URL,
       HEADER_W_TOKEN
@@ -195,7 +195,7 @@ test("expect fhir queries response with patient, eob, coverage, profile respecti
     (response) => {
       expect(response.status_code).toEqual(200);
       expect(response.data).toEqual(patient.data);
-      expect(response.token).toEqual(AUTH_TOKEN_MOCK);
+      expect(response.token).toEqual(AUTH_TOKEN_MOCK.getTokenData());
       expect(mockedAxios.get).toHaveBeenCalledWith(
         BB2_PATIENT_URL,
         HEADER_W_TOKEN
@@ -209,7 +209,7 @@ test("expect fhir queries response with patient, eob, coverage, profile respecti
     (response) => {
       expect(response.status_code).toEqual(200);
       expect(response.data).toEqual(profile.data);
-      expect(response.token).toEqual(AUTH_TOKEN_MOCK);
+      expect(response.token).toEqual(AUTH_TOKEN_MOCK.getTokenData());
       expect(mockedAxios.get).toHaveBeenCalledWith(
         BB2_PROFILE_URL,
         HEADER_W_TOKEN
@@ -258,7 +258,7 @@ test("expect fhir queries with token refreshed ...", async () => {
       {},
       POST_ARGS_TOKEN_REFRESH
     );
-    expect(response.token.accessToken).toEqual(
+    expect(response.token.access_token).toEqual(
       AUTH_TOKEN_REFRESHED_MOCK.accessToken
     );
   });
@@ -276,7 +276,7 @@ test("expect fhir queries with token refreshed ...", async () => {
       {},
       POST_ARGS_TOKEN_REFRESH
     );
-    expect(response.token.accessToken).toEqual(
+    expect(response.token.access_token).toEqual(
       AUTH_TOKEN_REFRESHED_MOCK.accessToken
     );
   });
@@ -294,7 +294,7 @@ test("expect fhir queries with token refreshed ...", async () => {
       {},
       POST_ARGS_TOKEN_REFRESH
     );
-    expect(response.token.accessToken).toEqual(
+    expect(response.token.access_token).toEqual(
       AUTH_TOKEN_REFRESHED_MOCK.accessToken
     );
   });
@@ -312,7 +312,7 @@ test("expect fhir queries with token refreshed ...", async () => {
       {},
       POST_ARGS_TOKEN_REFRESH
     );
-    expect(response.token.accessToken).toEqual(
+    expect(response.token.access_token).toEqual(
       AUTH_TOKEN_REFRESHED_MOCK.accessToken
     );
   });

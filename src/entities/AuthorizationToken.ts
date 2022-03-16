@@ -1,4 +1,5 @@
 import moment from "moment";
+import { NamedTupleMemberTypeSerializer } from "typedoc/dist/lib/serialization/serializers";
 
 export type AuthorizationTokenData = {
   access_token: string;
@@ -31,5 +32,17 @@ export class AuthorizationToken {
     this.refreshToken = authToken.refresh_token;
     this.scope = authToken.scope;
     this.tokenType = authToken.token_type;
+  }
+
+  getTokenData() {
+    return {
+      access_token: this.accessToken,
+      expires_in: this.expiresIn,
+      expires_at: this.expiresAt,
+      token_type: this.tokenType,
+      scope: this.scope,
+      refresh_token: this.refreshToken,
+      patient: this.patient,
+    };
   }
 }
