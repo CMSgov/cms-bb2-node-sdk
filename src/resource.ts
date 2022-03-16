@@ -2,6 +2,7 @@ import axios from "axios";
 import moment from "moment";
 import BlueButton from "./index";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
+import { Errors } from "./enums/errors";
 
 // initInterval in milli-seconds
 export const retrySettings = {
@@ -70,8 +71,9 @@ async function refreshAccessToken(
   );
 
   if (resp.status !== 200) {
-    const msg = `Failed to refresh access token, status: ${resp.status}, error: ${resp.data}.`;
-    throw new Error(msg);
+    throw new Error(
+      `Failed to refresh access token, status: ${resp.status}, error: ${resp.data}.`
+    );
   }
 
   return new AuthorizationToken(resp.data);
@@ -94,7 +96,7 @@ export async function getFhirResourceByPath(
       authToken.tokenType
     )
   ) {
-    throw new Error("Invalid authorization token.");
+    throw new Error(Errors.GET_FHIR_RESOURCE_INALID_AUTH_TOKEN);
   }
 
   let newAuth = authToken;
@@ -117,15 +119,16 @@ export async function getFhirResourceByPath(
   try {
     resp = await axios.get(fhirUrl, config);
   } catch (error: any) {
-    if (error.response) {
-      if (isRetryable(error)) {
-        const retryResp = await doRetry(fhirUrl, config);
-        if (retryResp) {
-          resp = retryResp;
-        }
-      } else {
-        resp = error.response;
+    if (isRetryable(error)) {
+      const retryResp = await doRetry(fhirUrl, config);
+      if (retryResp) {
+        resp = retryResp;
       }
+    } else {
+      // bubble up other errors:
+      // expect that sdk top level logic will handle the bubbled up errors
+      // such that client code not to be burdened with axios error processing...
+      throw error;
     }
   }
   return {

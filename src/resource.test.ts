@@ -4,7 +4,7 @@ import {
   AuthorizationToken,
   AuthorizationTokenData,
 } from "./entities/AuthorizationToken";
-
+import { Errors } from "./enums/errors";
 import { retrySettings, getFhirResource, FhirResourceType } from "./resource";
 
 jest.mock("axios");
@@ -373,7 +373,7 @@ test("expect fhir queries with malformed authToken throw Error ...", async () =>
       bb,
       {}
     )
-  ).rejects.toThrow("Invalid authorization token.");
+  ).rejects.toThrow(Errors.GET_FHIR_RESOURCE_INALID_AUTH_TOKEN);
 });
 
 test("expect fhir queries error response 'Unable to load data - query FHIR resource error.' on 400 response from FHIR ...", async () => {
@@ -461,14 +461,13 @@ test("expect fhir queries return response on non-retryable error, assert retry n
     }
   });
 
-  await getFhirResource(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {}).then(
-    (response) => {
-      expect(response.status_code).toEqual(505);
-      expect(response.data).toEqual(MOCK_NON_RETRYABLE_RESPONSE.response.data);
-      // one get plus 0 retry attempts
-      expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-    }
-  );
+  try {
+    await getFhirResource(FhirResourceType.Patient, AUTH_TOKEN_MOCK, bb, {});
+  } catch (error: any) {
+    expect(error).toEqual(MOCK_NON_RETRYABLE_RESPONSE);
+    // one get plus 0 retry attempts
+    expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+  }
 });
 
 test("expect fhir queries trigger retry on retryable error, assert retry attempted once and succeeded ...", async () => {
