@@ -103,7 +103,7 @@ export default class BlueButton {
 
   async getExplanationOfBenefitData(
     authToken: AuthorizationToken,
-    config: AxiosRequestConfig
+    config: AxiosRequestConfig = {}
   ) {
     return await getFhirResource(
       FhirResourceType.ExplanationOfBenefit,
@@ -115,7 +115,7 @@ export default class BlueButton {
 
   async getPatientData(
     authToken: AuthorizationToken,
-    config: AxiosRequestConfig
+    config: AxiosRequestConfig = {}
   ) {
     return await getFhirResource(
       FhirResourceType.Patient,
@@ -127,7 +127,7 @@ export default class BlueButton {
 
   async getCoverageData(
     authToken: AuthorizationToken,
-    config: AxiosRequestConfig
+    config: AxiosRequestConfig = {}
   ) {
     return await getFhirResource(
       FhirResourceType.Coverage,
@@ -139,7 +139,7 @@ export default class BlueButton {
 
   async getProfileData(
     authToken: AuthorizationToken,
-    config: AxiosRequestConfig
+    config: AxiosRequestConfig = {}
   ) {
     return await getFhirResource(
       FhirResourceType.Profile,
@@ -152,7 +152,7 @@ export default class BlueButton {
   async getCustomData(
     path: string,
     authToken: AuthorizationToken,
-    config: AxiosRequestConfig
+    config: AxiosRequestConfig = {}
   ) {
     return await getFhirResourceByPath(path, authToken, this, config);
   }
