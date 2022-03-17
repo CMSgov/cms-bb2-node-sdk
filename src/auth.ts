@@ -6,6 +6,7 @@ import crypto from "crypto";
 
 import BlueButton from ".";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
+import { SDK_HEADER_KEY, SDK_HEADER } from "./enums/environments";
 import { Errors } from "./enums/errors";
 
 type PkceData = {
@@ -26,7 +27,7 @@ function sha256(str: string): Buffer {
 }
 
 function generatePkceData(): PkceData {
-  var verifier = base64URLEncode(crypto.randomBytes(32));
+  const verifier = base64URLEncode(crypto.randomBytes(32));
   return {
     codeChallenge: base64URLEncode(sha256(verifier)),
     verifier: verifier,
@@ -95,7 +96,7 @@ export function generateTokenPostData(
 }
 
 function validateCallbackRequestQueryParams(
-  AuthData: AuthData,
+  authData: AuthData,
   callbackCode?: string,
   callbackState?: string,
   callbackError?: string
@@ -113,33 +114,35 @@ function validateCallbackRequestQueryParams(
     throw new Error(Errors.CALLBACK_STATE_MISSING);
   }
 
-  if (callbackState != AuthData.state) {
+  if (callbackState != authData.state) {
     throw new Error(Errors.CALLBACK_STATE_DOES_NOT_MATCH);
   }
 }
 
-function getAccessTokenUrl(bb: BlueButton): string {
+export function getAccessTokenUrl(bb: BlueButton): string {
   return `${bb.baseUrl}/v${bb.version}/o/token/`;
 }
 
 // Get an access token from callback code & state
 export async function getAuthorizationToken(
   bb: BlueButton,
-  AuthData: AuthData,
+  authData: AuthData,
   callbackRequestCode?: string,
   callbackRequestState?: string,
   callbackRequestError?: string
 ) {
   validateCallbackRequestQueryParams(
-    AuthData,
+    authData,
     callbackRequestCode,
     callbackRequestState,
     callbackRequestError
   );
 
-  const postData = generateTokenPostData(bb, AuthData, callbackRequestCode);
+  const postData = generateTokenPostData(bb, authData, callbackRequestCode);
 
-  const resp = await axios.post(getAccessTokenUrl(bb), postData);
+  const resp = await axios.post(getAccessTokenUrl(bb), postData, {
+    headers: { [SDK_HEADER_KEY]: SDK_HEADER },
+  });
 
   if (resp.data) {
     const authToken = new AuthorizationToken(resp.data);

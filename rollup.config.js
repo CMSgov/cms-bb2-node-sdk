@@ -16,9 +16,9 @@ export default [
       resolve(),
       commonjs(),
       typescript({
-          tsconfig: "./tsconfig.json",
-          exclude: ["**/node_modules/**"]
-        }),
+        tsconfig: "./tsconfig.json",
+        exclude: ["**/node_modules/**"],
+      }),
     ],
   },
 
@@ -35,10 +35,10 @@ export default [
       { file: pkg.module, format: "es" },
     ],
     plugins: [
-        typescript({
-            tsconfig: "./tsconfig.json",
-            exclude: ["**/node_modules/**"]
-        })
+      typescript({
+        tsconfig: "./tsconfig.json",
+        exclude: ["**/node_modules/**"],
+      }),
     ],
   },
 ];

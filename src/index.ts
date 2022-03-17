@@ -7,6 +7,13 @@ import {
   generateAuthorizeUrl,
   getAuthorizationToken,
 } from "./auth";
+import {
+  FhirResourceType,
+  getFhirResource,
+  getFhirResourceByPath,
+} from "./resource";
+import { AuthorizationToken } from "./entities/AuthorizationToken";
+import { AxiosRequestConfig } from "axios";
 
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
@@ -73,6 +80,15 @@ export default class BlueButton {
   }
 
   normalizeConfig(config: BlueButtonJsonConfig) {
+    if (
+      config.environment &&
+      !Object.values(Environments).includes(config.environment)
+    ) {
+      throw new Error(
+        `Invalid environment: must be ${Environments.PRODUCTION} or ${Environments.SANDBOX}`
+      );
+    }
+
     return {
       clientId: config.clientId,
       clientSecret: config.clientSecret,
@@ -85,23 +101,79 @@ export default class BlueButton {
     };
   }
 
-  public generateAuthData(): AuthData {
+  async getExplanationOfBenefitData(
+    authToken: AuthorizationToken,
+    config: AxiosRequestConfig = {}
+  ) {
+    return await getFhirResource(
+      FhirResourceType.ExplanationOfBenefit,
+      authToken,
+      this,
+      config
+    );
+  }
+
+  async getPatientData(
+    authToken: AuthorizationToken,
+    config: AxiosRequestConfig = {}
+  ) {
+    return await getFhirResource(
+      FhirResourceType.Patient,
+      authToken,
+      this,
+      config
+    );
+  }
+
+  async getCoverageData(
+    authToken: AuthorizationToken,
+    config: AxiosRequestConfig = {}
+  ) {
+    return await getFhirResource(
+      FhirResourceType.Coverage,
+      authToken,
+      this,
+      config
+    );
+  }
+
+  async getProfileData(
+    authToken: AuthorizationToken,
+    config: AxiosRequestConfig = {}
+  ) {
+    return await getFhirResource(
+      FhirResourceType.Profile,
+      authToken,
+      this,
+      config
+    );
+  }
+
+  async getCustomData(
+    path: string,
+    authToken: AuthorizationToken,
+    config: AxiosRequestConfig = {}
+  ) {
+    return await getFhirResourceByPath(path, authToken, this, config);
+  }
+
+  generateAuthData(): AuthData {
     return generateAuthData();
   }
 
-  public generateAuthorizeUrl(AuthData: AuthData): string {
-    return generateAuthorizeUrl(this, AuthData);
+  generateAuthorizeUrl(authData: AuthData): string {
+    return generateAuthorizeUrl(this, authData);
   }
 
-  public async getAuthorizationToken(
-    AuthData: AuthData,
+  async getAuthorizationToken(
+    authData: AuthData,
     callbackRequestCode?: string,
     callbackRequestState?: string,
     callbackRequestError?: string
   ) {
     return getAuthorizationToken(
       this,
-      AuthData,
+      authData,
       callbackRequestCode,
       callbackRequestState,
       callbackRequestError

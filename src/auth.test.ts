@@ -8,20 +8,19 @@ import BlueButton from ".";
 import { generateTokenPostData } from "./auth";
 import { Errors } from "./enums/errors";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
+import { SDK_HEADER_KEY, SDK_HEADER } from "./enums/environments";
 
 // Setup BlueButton class instance
 const CLIENT_ID = "foo";
 const CLIENT_SECRET = "bar";
 const CALLBACK_URL = "http://localhost/callback/";
+const BASE_AUTH_URL = "https://sandbox.bluebutton.cms.gov/v2/o/authorize";
+
 const bb = new BlueButton({
   clientId: CLIENT_ID,
   clientSecret: CLIENT_SECRET,
   callbackUrl: CALLBACK_URL,
 });
-
-// TEST CONSTANTS
-const BASE_AUTH_URL: string =
-  "https://sandbox.bluebutton.cms.gov/v2/o/authorize";
 
 describe("auth method generateAuthData()", () => {
   const AuthData = bb.generateAuthData();
@@ -158,7 +157,8 @@ describe("auth method getAuthorizationToken", () => {
     });
     expect(axios.post).toHaveBeenCalledWith(
       BB2_ACCESS_TOKEN_URL,
-      expect.anything()
+      expect.anything(),
+      { headers: { [SDK_HEADER_KEY]: SDK_HEADER } }
     );
   });
 
@@ -185,7 +185,8 @@ describe("auth method getAuthorizationToken", () => {
 
     expect(axios.post).toHaveBeenCalledWith(
       BB2_ACCESS_TOKEN_URL,
-      expect.anything()
+      expect.anything(),
+      { headers: { [SDK_HEADER_KEY]: SDK_HEADER } }
     );
   });
 

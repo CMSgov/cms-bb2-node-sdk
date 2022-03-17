@@ -1,8 +1,9 @@
-import axios from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import moment from "moment";
 import BlueButton from "./index";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
-import { Errors } from "./enums/errors";
+import { getAccessTokenUrl } from "./auth";
+import { SDK_HEADER, SDK_HEADER_KEY } from "./enums/environments";
 
 // initInterval in milli-seconds
 export const retrySettings = {
@@ -19,34 +20,37 @@ export enum FhirResourceType {
   ExplanationOfBenefit = "fhir/ExplanationOfBenefit/",
 }
 
-function sleep(time: number) {
+export function sleep(time: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, time);
   });
 }
 
-function isRetryable(error: any) {
+function isRetryable(error: AxiosError) {
   return (
     error.response &&
     retrySettings.retryableCodes.includes(error.response.status)
   );
 }
 
-async function doRetry(fhirUrl: string, config: any) {
-  let resp = null;
+async function doRetry(fhirUrl: string, config: AxiosRequestConfig) {
+  let resp;
 
-  for (let i = 0; i < retrySettings.maxAttempts; i += 1) {
+  for (let i = 0; i < retrySettings.maxAttempts; i++) {
     const waitInMilliSec = retrySettings.initInterval * 2 ** i;
     await sleep(waitInMilliSec);
     try {
       resp = await axios.get(fhirUrl, config);
       break;
-    } catch (error: any) {
-      if (error.response) {
+    } catch (error: unknown | AxiosError) {
+      if (axios.isAxiosError(error) && isRetryable(error)) {
         resp = error.response;
+      } else {
+        throw error;
       }
     }
   }
+
   return resp;
 }
 
@@ -54,10 +58,14 @@ async function refreshAccessToken(
   authToken: AuthorizationToken,
   bb: BlueButton
 ) {
+  const tokenUrl = getAccessTokenUrl(bb);
   const resp = await axios.post(
-    `${String(bb.baseUrl)}/v${bb.version}/o/token/`,
+    tokenUrl,
     {},
     {
+      headers: {
+        [SDK_HEADER_KEY]: SDK_HEADER,
+      },
       auth: {
         username: bb.clientId,
         password: bb.clientSecret,
@@ -77,26 +85,12 @@ export async function getFhirResourceByPath(
   resourcePath: string,
   authToken: AuthorizationToken,
   bb2: BlueButton,
-  queryParams: any
+  axiosConfig: AxiosRequestConfig
 ) {
-  if (
-    !(
-      authToken.accessToken &&
-      authToken.expiresIn &&
-      authToken.expiresAt &&
-      authToken.patient &&
-      authToken.refreshToken &&
-      authToken.scope &&
-      authToken.tokenType
-    )
-  ) {
-    throw new Error(Errors.GET_FHIR_RESOURCE_INALID_AUTH_TOKEN);
-  }
-
-  let newAuth = authToken;
+  let newAuthToken = authToken;
 
   if (moment(authToken.expiresAt).isBefore(moment())) {
-    newAuth = await refreshAccessToken(authToken, bb2);
+    newAuthToken = await refreshAccessToken(authToken, bb2);
   }
 
   const fhirUrl = `${String(bb2.baseUrl)}/v${bb2.version}/${resourcePath}`;
@@ -104,31 +98,26 @@ export async function getFhirResourceByPath(
   let resp = null;
 
   const config = {
-    queryParams,
+    ...axiosConfig,
     headers: {
-      Authorization: `Bearer ${newAuth.accessToken}`,
+      ...axiosConfig.headers,
+      Authorization: `Bearer ${newAuthToken.accessToken}`,
+      [SDK_HEADER_KEY]: SDK_HEADER,
     },
   };
 
   try {
     resp = await axios.get(fhirUrl, config);
-  } catch (error: any) {
-    if (isRetryable(error)) {
-      const retryResp = await doRetry(fhirUrl, config);
-      if (retryResp) {
-        resp = retryResp;
-      }
+  } catch (error: unknown | AxiosError) {
+    if (axios.isAxiosError(error) && isRetryable(error)) {
+      resp = await doRetry(fhirUrl, config);
     } else {
-      // bubble up other errors:
-      // expect that sdk top level logic will handle the bubbled up errors
-      // such that client code not to be burdened with axios error processing...
       throw error;
     }
   }
   return {
-    token: newAuth.getTokenData(),
-    status_code: resp.status,
-    data: resp.data,
+    token: newAuthToken,
+    response: resp,
   };
 }
 
@@ -136,12 +125,12 @@ export async function getFhirResource(
   resourceType: FhirResourceType,
   authToken: AuthorizationToken,
   bb2: BlueButton,
-  queryParams: any
+  axiosConfig: AxiosRequestConfig
 ) {
   return await getFhirResourceByPath(
     `${resourceType}`,
     authToken,
     bb2,
-    queryParams
+    axiosConfig
   );
 }
