@@ -80,6 +80,15 @@ export default class BlueButton {
   }
 
   normalizeConfig(config: BlueButtonJsonConfig) {
+    if (
+      config.environment &&
+      !Object.values(Environments).includes(config.environment)
+    ) {
+      throw new Error(
+        `Invalid environment: must be ${Environments.PRODUCTION} or ${Environments.SANDBOX}`
+      );
+    }
+
     return {
       clientId: config.clientId,
       clientSecret: config.clientSecret,
