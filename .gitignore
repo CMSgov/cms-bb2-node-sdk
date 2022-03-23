@@ -1,6 +1,5 @@
 node_modules
 build
-dist
 docs
 yarn-error.log
 yarn.lock

@@ -8,7 +8,7 @@ export default [
   {
     input: "src/index.ts",
     output: {
-      name: "cms-bb2",
+      name: "cms-bluebutton",
       file: pkg.browser,
       format: "umd",
     },
