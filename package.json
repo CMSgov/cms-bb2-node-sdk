@@ -1,10 +1,10 @@
 {
-  "name": "cms-bb2",
+  "name": "cms-bluebutton-sdk",
   "version": "1.0.0",
   "description": "An sdk used for interacting with the CMS Blue Button 2.0 API",
-  "main": "dist/my-lib.cjs.js",
-  "module": "dist/my-lib.esm.js",
-  "browser": "dist/my-lib.umd.js",
+  "main": "dist/cms-bluebutton-sdk.cjs.js",
+  "module": "dist/cms-bluebutton-sdk.esm.js",
+  "browser": "dist/cms-bluebutton-sdk.umd.js",
   "files": [
     "dist"
   ],
