@@ -1,4 +1,4 @@
-## Descritpion
+## Description
 
 This is an SDK for interacting with [CMS Blue Button 2.0 API](https://bluebutton.cms.gov/developers/),
 the API allows applications to obtain a beneficiary's (who has login account with medicare.gov) grant
@@ -55,11 +55,11 @@ A sample configuration json:
 | version      | 1 or 2                  | version number of BlueButton API (v1/v2)                                                                     |
 | environment  | PRODUCTION/SANDBOX      | the target URL:<br>PRODUCTION: https://api.bluebutton.cms.gov<br>SANDBOX: https://sandbox.bluebutton.cms.gov |
 
-## Example Usages
+## Usages
 
 ### Sample Code
 
-Below code snippets show SDK used with node express server.
+Below are psuedo code snippets show SDK used with node express server.
 
 #### Main Usage: Obtain Access Grant and Access Data
 
