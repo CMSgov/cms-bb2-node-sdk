@@ -20,7 +20,7 @@ const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
 const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
 
 /**
- * Configuration parameters for a BlueButton API application
+ * Configuration parameters for a Blue Button API application
  */
 type BlueButtonJsonConfig = {
   clientId: string;
@@ -196,7 +196,7 @@ export default class BlueButton {
 
   /**
    * Generate hashes for PKCE
-   * @returns {}
+   * @returns AuthData object
    */
   generateAuthData(): AuthData {
     return generateAuthData();
@@ -219,7 +219,7 @@ export default class BlueButton {
    * @param callbackRequestCode - Auhtorization Code
    * @param callbackRequestState - the state
    * @param callbackRequestError - the error if any
-   * @returns {AuthorizationToken} containing access token, refresh token, etc.
+   * @returns AuthorizationToken object containing access token, refresh token, etc.
    */
   async getAuthorizationToken(
     authData: AuthData,

@@ -1,6 +1,6 @@
-/*
-auth.ts - Provides auth related methods for the Bluebutton class
-*/
+/**
+ * auth.ts - Provides auth related methods for the Bluebutton class
+ */
 import axios from "axios";
 import crypto from "crypto";
 
@@ -38,6 +38,9 @@ function generateRandomState(): string {
   return base64URLEncode(crypto.randomBytes(32));
 }
 
+/**
+ * Complex type holding PKCE verifier, code challenge, and state
+ */
 export type AuthData = {
   codeChallenge: string;
   verifier: string;
