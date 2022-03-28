@@ -80,35 +80,35 @@ const router = Router();
 // auth flow: response with URL to redirect to Medicare.gov beneficiary login
 router.get('/authorize/authurl', bb.generateAuthorizeUrl);
 
-// auth flow: oauth2 call back
+// auth flow: route oauth2 call back
 router.get('/bluebutton/callback', async (req: Request, res: Response) => {
   authToken = await bb.getAuthorizationToken(authData, req.query.code, req.query.state, req.query.error);
 });
 
 // data flow
 
-// get EOB
+// route get EOB requests
 router.get('/data/benefit', async (req: Request, res: Response) => {
   const data = await bb.getExplanationOfBenefitData(authToken);
   authToken = data.token;
   res.json(data.response.data);
 });
 
-// get Patient
+// route get Patient requests
 router.get('/data/patient', async (req: Request, res: Response) => {
   const data = await bb.getPatientData(authToken);
   authToken = data.token;
   res.json(data.response.data);
 });
 
-// get Coverage
+// route get Coverage requests
 router.get('/data/coverage', async (req: Request, res: Response) => {
   const data = await bb.getCoverageData(authToken);
   authToken = data.token;
   res.json(data.response.data);
 });
 
-// get Profile
+// route get Profile requests
 router.get('/data/userprofile', async (req: Request, res: Response) => {
   const data = await bb.getProfileData(authToken);
   authToken = data.token;
@@ -138,7 +138,7 @@ const router = Router();
 // auth flow: response with URL to redirect to Medicare.gov beneficiary login
 router.get('/authorize/authurl', bb.generateAuthorizeUrl);
 
-// auth flow: oauth2 call back
+// auth flow: route oauth2 call back
 router.get('/bluebutton/callback', async (req: Request, res: Response) => {
   authToken = await bb.getAuthorizationToken(authData, req.query.code, req.query.state, req.query.error);
 });
