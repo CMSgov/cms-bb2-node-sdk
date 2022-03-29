@@ -1,4 +1,15 @@
-## Description
+# Blue Button API SDK
+
+# Table of contents
+
+1. [Descritpion](#description)
+2. [Installation](#installation)
+3. [Configuration](#configuration)
+4. [Usages: Obtain Access Grant, Probe Scope, and Access Data](#usages)
+5. [A Complete Sample App](#samples)
+6. [API Versions and Environments](#versions_and_environments)
+
+## Description <a name="description"></a>
 
 This is an SDK for interacting with [CMS Blue Button 2.0 API](https://bluebutton.cms.gov/developers/),
 the API allows applications to obtain a beneficiary's (who has login account with medicare.gov) grant
@@ -8,7 +19,7 @@ By using the SDK, the development of applications accessing Blue Button 2.0 API 
 
 Note, following the OAUTH2 best practices, OAUTH2 PKCE etension [(RFC 7636)](https://datatracker.ietf.org/doc/html/rfc7636) is always enabled.
 
-## Installation
+## Installation <a name="installation"></a>
 
 Using npm:
 
@@ -34,7 +45,7 @@ When develop with typescript
 $ yarn add --dev @types/cms-bluebutton-sdk
 ```
 
-## Configuration
+## Configuration <a name="configuration"></a>
 
 the SDK needs to be properly configured to work, the parameters are:
 
@@ -66,7 +77,7 @@ A sample configuration json:
 For application registration and client id and client secret, please refer to:
 [Blue Button 2.0 API Docs - Try the API](https://bluebutton.cms.gov/developers/#try-the-api)
 
-## Sample Usages: Obtain Access Grant, Probe Scope, and Access Data
+## Sample Usages: Obtain Access Grant, Probe Scope, and Access Data <a name="usages"></a>
 
 Below are psuedo code snippets showing SDK used with node express server.
 
@@ -79,7 +90,11 @@ const app = express();
 const bb = new BlueButton();
 const authData = bb.generateAuthData();
 
-// each associated with current logged in user in real app
+// AuthorizationToken holds access grant info:
+// access token, expire in, expire at, token type, scope, refreh token, etc.
+// it is associated with current logged in user in real app,
+// check SDK js docs for more details.
+
 let authToken: AuthorizationToken;
 
 const router = Router();
@@ -123,12 +138,12 @@ router.get('/bluebutton/callback', async (req: Request, res: Response) => {
 
 ```
 
-## A Complete Sample App
+## A Complete Sample App <a name="samples"></a>
 
 A Node JS React sample app can be found at:
 [CMS Blue Button Node JS Sample App](https://github.com/CMSgov/bluebutton-sample-client-nodejs-react)
 
-## API Versions and Environments
+## API Versions and Environments <a name="versions_and_environments"></a>
 
 From two environments: PRODUCTION and SANDBOX, Blue Button API is available in v1 and v2, data served from v1 is in FHIR STU2 format, and data from v2 is in FHIR R4 format, an application's target environment and API version can be set in the SDK configuration as shown by example below:
 
