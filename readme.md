@@ -116,35 +116,10 @@ router.get('/bluebutton/callback', async (req: Request, res: Response) => {
    */
 });
 
-// data flow
-
-// route get EOB requests
-router.get('/data/benefit', async (req: Request, res: Response) => {
-  const data = await bb.getExplanationOfBenefitData(authToken);
-  authToken = data.token;
-  res.json(data.response.data);
-});
-
-// route get Patient requests
-router.get('/data/patient', async (req: Request, res: Response) => {
-  const data = await bb.getPatientData(authToken);
-  authToken = data.token;
-  res.json(data.response.data);
-});
-
-// route get Coverage requests
-router.get('/data/coverage', async (req: Request, res: Response) => {
-  const data = await bb.getCoverageData(authToken);
-  authToken = data.token;
-  res.json(data.response.data);
-});
-
-// route get Profile requests
-router.get('/data/userprofile', async (req: Request, res: Response) => {
-  const data = await bb.getProfileData(authToken);
-  authToken = data.token;
-  res.json(data.response.data);
-});
+// data flow: after access granted
+// the app logic can fetch the beneficiary's data in app specific ways:
+// e.g. download EOB periodically etc.
+// access token can expire, SDK automatically refresh access token when that happens.
 
 ```
 
