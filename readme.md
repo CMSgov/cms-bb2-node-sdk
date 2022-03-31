@@ -83,7 +83,7 @@ Below are psuedo code snippets showing SDK used with node express server.
 
 ```
 
-import express, { Router, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 
 const app = express();
 
@@ -97,48 +97,70 @@ const authData = bb.generateAuthData();
 
 let authToken: AuthorizationToken;
 
-const router = Router();
-
 // start authorize flow: response with URL to redirect to Medicare.gov beneficiary login
-router.get('/authorize/authurl', bb.generateAuthorizeUrl);
+app.get('/', (req, res) => {
+    const redirectUrl = bb.generateAuthorizeUrl(authData);
+    res.redirect(redirectUrl);
+})
 
 // oauth2 call back: obtain access token, optionally check scope, and fetch data
-router.get('/bluebutton/callback', async (req: Request, res: Response) => {
-  // note: in real use, handle promise reject
-  authToken = await bb.getAuthorizationToken(authData, req.query.code, req.query.state);
-  // now access token obtained, note, during authorization, the beneficiary can grant
-  // access to his/her demographic data and claims data or only claims data, check the scope
-  // of the current access token as shown below:
+app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
 
-  const scopes: string[] = authToken.scope;
-  // iterate scope entries here or check if a permission is in the scope
-  if (authToken.scope.index("patient/Patient.read") > -1) {
-      // patient info access granted
-  }
+  let results = {};
+    try {
+        authToken = await bb.getAuthorizationToken(authData, req.query.code, req.query.state, req.query.error);
+        // now access token obtained, note, during authorization, the beneficiary can grant
+        // access to his/her demographic data and claims data or only claims data, check the scope
+        // of the current access token as shown below:
+        const scopes: string[] = authToken.scope;
+        // iterate scope entries here or check if a permission is in the scope
+        if (authToken.scope.index("patient/Patient.read") > -1) {
+            // patient info access granted
+        }
 
-  /**
-   * 1. access token scope where demagraphic info included:
-   *
-   * scope: [
-   * "patient/Coverage.read",
-   * "patient/ExplanationOfBenefit.read",
-   * "patient/Patient.read",
-   * "profile",
-   * ]
-   *
-   * 2. access token scope where demagraphic info not included:
-   *
-   * scope: [
-   * "patient/Coverage.read",
-   * "patient/ExplanationOfBenefit.read",
-   * ]
-   */
+        /**
+        * 1. access token scope where demagraphic info included:
+        *
+        * scope: [
+        * "patient/Coverage.read",
+        * "patient/ExplanationOfBenefit.read",
+        * "patient/Patient.read",
+        * "profile",
+        * ]
+        *
+        * 2. access token scope where demagraphic info not included:
+        *
+        * scope: [
+        * "patient/Coverage.read",
+        * "patient/ExplanationOfBenefit.read",
+        * ]
+        */
+
+        // data flow: after access granted
+        // the app logic can fetch the beneficiary's data in app specific ways:
+        // e.g. download EOB periodically etc.
+        // access token can expire, SDK automatically refresh access token when that happens.
+        eobResults = await bb.getExplanationOfBenefitData(authToken);
+        patientResults = await bb.getPatientData(authToken);
+        coverageResults = await bb.getCoverageData(authToken);
+        profileResults = await bb.getProfileData(authToken);
+
+        results = {
+            eob: eobResults.response.data,
+            patient: patientResults.response.data,
+            coverage: coverageResults.response.data,
+            profile: profileResults.response.data
+        }
+
+        authToken = profileResults.token;
+
+    } catch (e) {
+        console.log(e);
+    }
+
+    res.json(results)
+
 });
-
-// data flow: after access granted
-// the app logic can fetch the beneficiary's data in app specific ways:
-// e.g. download EOB periodically etc.
-// access token can expire, SDK automatically refresh access token when that happens.
 
 ```
 
