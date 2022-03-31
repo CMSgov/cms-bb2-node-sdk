@@ -104,13 +104,17 @@ router.get('/authorize/authurl', bb.generateAuthorizeUrl);
 
 // oauth2 call back: obtain access token, optionally check scope, and fetch data
 router.get('/bluebutton/callback', async (req: Request, res: Response) => {
-  authToken = await bb.getAuthorizationToken(authData, req.query.code, req.query.state, req.query.error);
+  // note: in real use, handle promise reject
+  authToken = await bb.getAuthorizationToken(authData, req.query.code, req.query.state);
   // now access token obtained, note, during authorization, the beneficiary can grant
   // access to his/her demographic data and claims data or only claims data, check the scope
   // of the current access token as shown below:
 
   const scopes: string[] = authToken.scope;
-  // iterate scope entries here
+  // iterate scope entries here or check if a permission is in the scope
+  if (authToken.scope.index("patient/Patient.read") > -1) {
+      // patient info access granted
+  }
 
   /**
    * 1. access token scope where demagraphic info included:
