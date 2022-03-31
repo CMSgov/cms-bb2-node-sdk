@@ -5,6 +5,7 @@ var process = require('process');
 var axios = require('axios');
 var crypto = require('crypto');
 var moment = require('moment');
+var FormData = require('form-data');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -108,16 +109,16 @@ function generateAuthorizeUrl(bb, AuthData) {
     return `${getAuthorizationUrl(bb)}?client_id=${bb.clientId}&redirect_uri=${bb.callbackUrl}&state=${AuthData.state}&response_type=code&${pkceParams}`;
 }
 //  Generates post data for call to access token URL
-function generateTokenPostData(bb, authData, callbackCode) {
-    return {
-        client_id: bb.clientId,
-        client_secret: bb.clientSecret,
-        code: callbackCode,
-        grant_type: "authorization_code",
-        redirect_uri: bb.callbackUrl,
-        code_verifier: authData.verifier,
-        code_challenge: authData.codeChallenge,
-    };
+function generateTokenFormData(bb, authData, callbackCode) {
+    const formData = new FormData();
+    formData.append('client_id', bb.clientId);
+    formData.append('client_secret', bb.clientSecret);
+    formData.append('code', callbackCode);
+    formData.append('grant_type', 'authorization_code');
+    formData.append('redirect_uri', bb.callbackUrl);
+    formData.append('code_verifier', authData.verifier);
+    formData.append('code_challenge', authData.codeChallenge);
+    return formData;
 }
 function validateCallbackRequestQueryParams(authData, callbackCode, callbackState, callbackError) {
     // Check state from callback here?
@@ -141,10 +142,8 @@ function getAccessTokenUrl(bb) {
 function getAuthorizationToken(bb, authData, callbackRequestCode, callbackRequestState, callbackRequestError) {
     return __awaiter(this, void 0, void 0, function* () {
         validateCallbackRequestQueryParams(authData, callbackRequestCode, callbackRequestState, callbackRequestError);
-        const postData = generateTokenPostData(bb, authData, callbackRequestCode);
-        const resp = yield axios__default["default"].post(getAccessTokenUrl(bb), postData, {
-            headers: { [SDK_HEADER_KEY]: SDK_HEADER },
-        });
+        const postData = generateTokenFormData(bb, authData, callbackRequestCode);
+        const resp = yield axios__default["default"].post(getAccessTokenUrl(bb), postData, Object.assign({ headers: { [SDK_HEADER_KEY]: SDK_HEADER } }, postData.getHeaders()));
         if (resp.data) {
             const authToken = new AuthorizationToken(resp.data);
             return authToken;

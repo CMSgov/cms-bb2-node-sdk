@@ -5,9 +5,8 @@ jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 import BlueButton from ".";
-import { generateTokenPostData } from "./auth";
+import { generateTokenFormData } from "./auth";
 import { Errors } from "./enums/errors";
-import { AuthorizationToken } from "./entities/AuthorizationToken";
 import { SDK_HEADER_KEY, SDK_HEADER } from "./enums/environments";
 
 // Setup BlueButton class instance
@@ -54,19 +53,9 @@ test("expect auth method generateAuthorizeUrl()", () => {
 test("expect auth method generateTokenPostData() function", () => {
   const AuthData = bb.generateAuthData();
 
-  const expectedPostData = {
-    client_id: "foo",
-    client_secret: "bar",
-    code: "test-code",
-    code_challenge: AuthData.codeChallenge,
-    code_verifier: AuthData.verifier,
-    grant_type: "authorization_code",
-    redirect_uri: "http://localhost/callback/",
-  };
+  const formData = generateTokenFormData(bb, AuthData, "test-code");
 
-  const postData = generateTokenPostData(bb, AuthData, "test-code");
-
-  expect(postData).toStrictEqual(expectedPostData);
+  expect(formData.getLengthSync()).toEqual(7);
 });
 
 describe("auth method getAuthorizationToken", () => {
