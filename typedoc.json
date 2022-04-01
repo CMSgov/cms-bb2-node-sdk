@@ -1,0 +1,11 @@
+{
+  "entryPoints": [
+    "./src/index.ts",
+    "./src/auth.ts",
+    "./src/resource.ts",
+    "./src/entities/AuthorizationToken.ts",
+    "./src/enums/environments.ts",
+    "./src/enums/errors.ts"
+  ],
+  "out": "docs"
+}

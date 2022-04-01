@@ -19,6 +19,9 @@ const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
 const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
 
+/**
+ * Configuration parameters for a Blue Button API application
+ */
 type BlueButtonJsonConfig = {
   clientId: string;
   clientSecret: string;
@@ -29,6 +32,9 @@ type BlueButtonJsonConfig = {
 
 type BlueButtonConfig = string | BlueButtonJsonConfig;
 
+/**
+ * BlueButton - the main SDK class
+ */
 export default class BlueButton {
   clientId: string;
   clientSecret: string;
@@ -101,6 +107,12 @@ export default class BlueButton {
     };
   }
 
+  /**
+   * Returns the ExplanationOfBenefitData resources for the authorized beneficiary
+   * @param authToken - AuthorizationToken with access token info
+   * @param config - extra request parameters
+   * @returns authToken and Fhir Bundle of ExplanationOfBenefitData resources
+   */
   async getExplanationOfBenefitData(
     authToken: AuthorizationToken,
     config: AxiosRequestConfig = {}
@@ -113,6 +125,12 @@ export default class BlueButton {
     );
   }
 
+  /**
+   * Returns the Patient resource for the current (authorized) beneficiary
+   * @param authToken - AuthorizationToken with access token info
+   * @param config - extra request parameters
+   * @returns authToken and Fhir Patient resources
+   */
   async getPatientData(
     authToken: AuthorizationToken,
     config: AxiosRequestConfig = {}
@@ -125,6 +143,12 @@ export default class BlueButton {
     );
   }
 
+  /**
+   * Returns the Coverage resources for the current (authorized) beneficiary
+   * @param authToken - AuthorizationToken with access token info
+   * @param config - extra request parameters
+   * @returns authToken and Fhir Bundle of Coverage resources
+   */
   async getCoverageData(
     authToken: AuthorizationToken,
     config: AxiosRequestConfig = {}
@@ -137,6 +161,12 @@ export default class BlueButton {
     );
   }
 
+  /**
+   * Returns the profile for the current (authorized) beneficiary
+   * @param authToken - AuthorizationToken with access token info
+   * @param config - extra request parameters
+   * @returns authToken and profile
+   */
   async getProfileData(
     authToken: AuthorizationToken,
     config: AxiosRequestConfig = {}
@@ -149,6 +179,13 @@ export default class BlueButton {
     );
   }
 
+  /**
+   * Returns the resource(s) for the current (authorized) beneficiary as identified by the url path
+   * @param path - url path for the resurce(s)
+   * @param authToken - AuthorizationToken with access token info
+   * @param config - extra request parameters
+   * @returns authToken and the resource(s)
+   */
   async getCustomData(
     path: string,
     authToken: AuthorizationToken,
@@ -157,14 +194,33 @@ export default class BlueButton {
     return await getFhirResourceByPath(path, authToken, this, config);
   }
 
+  /**
+   * Generate hashes for PKCE
+   * @returns AuthData object
+   */
   generateAuthData(): AuthData {
     return generateAuthData();
   }
 
+  /**
+   * Generate URL for beneficiary login (Medicare.gov)
+   * @param authData - PKCE data used in the URL
+   * @returns the URL direct to beneficiary login
+   */
   generateAuthorizeUrl(authData: AuthData): string {
     return generateAuthorizeUrl(this, authData);
   }
 
+  /**
+   * Callback of OAUTH2 flow, App's oauth2 callback is routed to this function,
+   * the returned AuthorizationToken object is used by subsequent Fhir resource(s)
+   * queries
+   * @param authData - PKCE data
+   * @param callbackRequestCode - Auhtorization Code
+   * @param callbackRequestState - the state
+   * @param callbackRequestError - the error if any
+   * @returns AuthorizationToken object containing access token, refresh token, etc.
+   */
   async getAuthorizationToken(
     authData: AuthData,
     callbackRequestCode?: string,

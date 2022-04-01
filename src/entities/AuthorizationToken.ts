@@ -1,5 +1,10 @@
 import moment from "moment";
 
+/**
+ * Complex type holding access token and related info,
+ * such as token type, scope, associated beneficiary fhir id (patient id),
+ * expiration, refresh token.
+ */
 export type AuthorizationTokenData = {
   access_token: string;
   expires_in: number;
@@ -10,6 +15,11 @@ export type AuthorizationTokenData = {
   expires_at?: number;
 };
 
+/**
+ * Class holding access token and related info,
+ * such as token type, scope, associated beneficiary fhir id (patient id),
+ * expiration, refresh token.
+ */
 export class AuthorizationToken {
   public accessToken: string;
   public expiresIn: number;
