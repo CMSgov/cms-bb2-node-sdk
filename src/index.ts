@@ -83,6 +83,14 @@ export default class BlueButton {
     this.callbackUrl = bbJsonConfig.callbackUrl;
     this.clientSecret = bbJsonConfig.clientSecret;
     this.version = bbJsonConfig.version;
+    this.generateAuthorizeUrl = this.generateAuthorizeUrl.bind(this);
+    this.getAuthorizationToken = this.getAuthorizationToken.bind(this);
+    this.getProfileData = this.getProfileData.bind(this);
+    this.getExplanationOfBenefitData =
+      this.getExplanationOfBenefitData.bind(this);
+    this.getPatientData = this.getPatientData.bind(this);
+    this.getCoverageData = this.getCoverageData.bind(this);
+    this.getCustomData = this.getCustomData.bind(this);
   }
 
   normalizeConfig(config: BlueButtonJsonConfig) {

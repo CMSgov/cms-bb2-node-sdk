@@ -1,0 +1,7 @@
+{
+  "clientId": "foo",
+  "clientSecret": "bar",
+  "callbackUrl": "http://localhost:3001/api/bluebutton/callback/",
+  "version": "2",
+  "environment": "SANDBOX"
+}

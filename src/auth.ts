@@ -3,6 +3,7 @@
  */
 import axios from "axios";
 import crypto from "crypto";
+import FormData from "form-data";
 
 import BlueButton from ".";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
@@ -143,9 +144,23 @@ export async function getAuthorizationToken(
 
   const postData = generateTokenPostData(bb, authData, callbackRequestCode);
 
-  const resp = await axios.post(getAccessTokenUrl(bb), postData, {
-    headers: { [SDK_HEADER_KEY]: SDK_HEADER },
-  });
+  const form = new FormData();
+
+  form.append("client_id", postData.client_id);
+  form.append("client_secret", postData.client_secret);
+  form.append("code", postData.code);
+  form.append("grant_type", "authorization_code");
+  form.append("redirect_uri", postData.redirect_uri);
+  form.append("code_verifier", postData.code_verifier);
+  form.append("code_challenge", postData.code_challenge);
+
+  const url = getAccessTokenUrl(bb);
+  const hdrs = { SDK_HEADER_KEY: SDK_HEADER };
+
+  const resp = await axios.post(url, form, { headers: form.getHeaders() });
+  //   const resp = await axios.post(url, form, {
+  //     headers: hdrs,
+  //   });
 
   if (resp.data) {
     const authToken = new AuthorizationToken(resp.data);
