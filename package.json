@@ -57,10 +57,8 @@
   "dependencies": {
     "@microsoft/api-extractor": "^7.19.4",
     "@types/dotenv": "^8.2.0",
-    "@types/form-data": "^2.5.0",
     "axios": "^0.26.1",
     "dotenv": "^16.0.0",
-    "form-data": "^4.0.0",
     "moment": "^2.29.1",
     "typedoc": "^0.22.11"
   }

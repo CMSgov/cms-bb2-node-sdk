@@ -3,7 +3,7 @@
  */
 import axios from "axios";
 import crypto from "crypto";
-import FormData from "form-data";
+// import FormData from "form-data";
 
 import BlueButton from ".";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
@@ -144,6 +144,11 @@ export async function getAuthorizationToken(
 
   const postData = generateTokenPostData(bb, authData, callbackRequestCode);
 
+  const body = new URLSearchParams(postData);
+  const resp = await axios.post(getAccessTokenUrl(bb), body, {
+    headers: { [SDK_HEADER_KEY]: SDK_HEADER },
+  });
+
   //   const form = new FormData();
 
   //   form.append("client_id", postData.client_id);
@@ -155,12 +160,16 @@ export async function getAuthorizationToken(
   //   form.append("code_challenge", postData.code_challenge);
 
   //   const url = getAccessTokenUrl(bb);
-  //   const hdrs = { SDK_HEADER_KEY: SDK_HEADER };
+  //   const headers = {[SDK_HEADER_KEY]: SDK_HEADER, ...form.getHeaders()};
+  //   const resp = await axios.post(url, form, { headers: headers });
+  // form.getHearders() will generate Content type header with boundary as below example:
+  // "multipart/form-data; boundary=--------------------------871743645947203066115383"
+  // and the form is delimited with the boundary
 
-  //   const resp = await axios.post(url, form, { headers: form.getHeaders() });
-  const resp = await axios.post(getAccessTokenUrl(bb), postData, {
-    headers: { [SDK_HEADER_KEY]: SDK_HEADER },
-  });
+  // original sdk code:
+  // const resp = await axios.post(getAccessTokenUrl(bb), postData, {
+  //   headers: { [SDK_HEADER_KEY]: SDK_HEADER },
+  // });
 
   if (resp.data) {
     const authToken = new AuthorizationToken(resp.data);
