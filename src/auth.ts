@@ -143,7 +143,8 @@ export async function getAuthorizationToken(
 
   const postData = generateTokenPostData(bb, authData, callbackRequestCode);
 
-  const resp = await axios.post(getAccessTokenUrl(bb), postData, {
+  const body = new URLSearchParams(postData);
+  const resp = await axios.post(getAccessTokenUrl(bb), body, {
     headers: { [SDK_HEADER_KEY]: SDK_HEADER },
   });
 
