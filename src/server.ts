@@ -51,9 +51,13 @@ app.get("/api/bluebutton/callback", async (req: Request, res: Response) => {
         // e.g. download EOB periodically etc.
         // access token can expire, SDK automatically refresh access token when that happens.
         const eobResults = await bb.getExplanationOfBenefitData(authToken);
+        authToken = eobResults.token; // in case authToken got refreshed during fhir call
         const patientResults = await bb.getPatientData(authToken);
+        authToken = patientResults.token;
         const coverageResults = await bb.getCoverageData(authToken);
+        authToken = coverageResults.token;
         const profileResults = await bb.getProfileData(authToken);
+        authToken = profileResults.token;
 
         results = {
           eob: eobResults.response?.data,
@@ -61,8 +65,6 @@ app.get("/api/bluebutton/callback", async (req: Request, res: Response) => {
           coverage: coverageResults.response?.data,
           profile: profileResults.response?.data,
         };
-
-        authToken = profileResults.token;
       } catch (e) {
         console.log(e);
       }
