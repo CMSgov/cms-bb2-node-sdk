@@ -1885,7 +1885,7 @@
     if ((He(n, t), !n.index || !n.data)) return;
     e.textContent = "";
     let i = r.value.trim(),
-      s = n.index.search(`*${i}*`);
+      s = i ? n.index.search(`*${i}*`) : [];
     for (let o = 0, a = Math.min(10, s.length); o < a; o++) {
       let u = n.data.rows[Number(s[o].ref)],
         l = pe(u.name, i);
