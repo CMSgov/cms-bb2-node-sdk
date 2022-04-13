@@ -54,7 +54,7 @@
   "dependencies": {
     "@microsoft/api-extractor": "^7.19.5",
     "axios": "^0.26.1",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "typedoc": "^0.22.11"
   }
 }
