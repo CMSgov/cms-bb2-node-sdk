@@ -8,9 +8,3 @@ services:
     ports:
       - "3001:3001"
       - "9229:9229"
-  client:
-    build:
-      context: ./client
-      dockerfile: ./Dockerfile
-    ports:
-      - "3000:3000"
