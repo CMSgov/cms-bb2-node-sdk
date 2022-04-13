@@ -1,11 +1,7 @@
 import express, { Request, Response } from "express";
 import BlueButton from ".";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
-import dotenv from "dotenv";
 
-dotenv.config();
-
-const port = process.env.PORT;
 const app = express();
 
 const bb = new BlueButton();
@@ -18,16 +14,10 @@ const authData = bb.generateAuthData();
 
 let authToken: AuthorizationToken;
 
-// start authorize flow: response with URL to redirect to Medicare.gov beneficiary login
-app.get("/api", (req, res) => {
+// auth flow: response with URL to redirect to Medicare.gov beneficiary login
+app.get("/", async (req: Request, res: Response) => {
   const redirectUrl = bb.generateAuthorizeUrl(authData);
   res.redirect(redirectUrl);
-});
-
-// auth flow: response with URL to redirect to Medicare.gov beneficiary login
-app.get("/api/authorize/authurl", async (req: Request, res: Response) => {
-  const authUrl = bb.generateAuthorizeUrl(authData);
-  res.send(authUrl);
 });
 
 // auth flow: oauth2 call back
@@ -75,6 +65,7 @@ app.get("/api/bluebutton/callback", async (req: Request, res: Response) => {
   }
 });
 
+const port = 3001;
 app.listen(port, () => {
   console.log(`[server]: Server is running at https://localhost:${port}`);
 });
