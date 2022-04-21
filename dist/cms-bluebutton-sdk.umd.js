@@ -8771,7 +8771,7 @@
                     bbJsonConfig = this.normalizeConfig(jsonConfig);
                 }
                 catch (e) {
-                    throw new Error(`Failed to load config file at: ${DEFAULT_CONFIG_FILE_LOCATION}`);
+                    throw new Error(`Failed to load config file at XXXX: ${DEFAULT_CONFIG_FILE_LOCATION}`);
                 }
             }
             else if (typeof config === "string") {
@@ -8781,7 +8781,7 @@
                     bbJsonConfig = this.normalizeConfig(jsonConfig);
                 }
                 catch (e) {
-                    throw new Error(`Failed to load config via string: ${config}`);
+                    throw new Error(`Failed to load config via string XXXX: ${config}`);
                 }
             }
             else {
