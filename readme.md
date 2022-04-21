@@ -84,6 +84,8 @@ Below are psuedo code snippets showing SDK used with node express server.
 ```
 
 import express, { Request, Response } from 'express';
+import BlueButton from 'cms-bluebutton-sdk';
+import { AuthorizationToken } from 'cms-bluebutton-sdk';
 
 const app = express();
 
@@ -141,9 +143,13 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         // e.g. download EOB periodically etc.
         // access token can expire, SDK automatically refresh access token when that happens.
         eobResults = await bb.getExplanationOfBenefitData(authToken);
+        authToken = eobResults.token; // in case authToken got refreshed during fhir call
         patientResults = await bb.getPatientData(authToken);
+        authToken = patientResults.token;
         coverageResults = await bb.getCoverageData(authToken);
+        authToken = coverageResults.token;
         profileResults = await bb.getProfileData(authToken);
+        authToken = profileResults.token;
 
         results = {
             eob: eobResults.response.data,
@@ -151,8 +157,6 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
             coverage: coverageResults.response.data,
             profile: profileResults.response.data
         }
-
-        authToken = profileResults.token;
 
     } catch (e) {
         console.log(e);
