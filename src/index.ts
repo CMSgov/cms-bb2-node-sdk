@@ -63,11 +63,11 @@ export default class BlueButton {
       }
     } else if (typeof config === "string") {
       try {
-        const rawdata = fs.readFileSync(config);
+        // const rawdata = fs.readFileSync(config);
         const jsonConfig = JSON.parse(rawdata.toString());
         bbJsonConfig = this.normalizeConfig(jsonConfig);
       } catch (e) {
-        throw new Error(`Failed to load config file at: ${config}`);
+        throw new Error(`Failed to load config via string: ${config}`);
       }
     } else {
       bbJsonConfig = this.normalizeConfig(config);
