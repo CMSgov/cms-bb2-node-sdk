@@ -58,16 +58,16 @@ export default class BlueButton {
         bbJsonConfig = this.normalizeConfig(jsonConfig);
       } catch (e) {
         throw new Error(
-          `Failed to load config file at XXXX: ${DEFAULT_CONFIG_FILE_LOCATION}`
+          `Failed to load config file at: ${DEFAULT_CONFIG_FILE_LOCATION}`
         );
       }
     } else if (typeof config === "string") {
       try {
-        // const rawdata = fs.readFileSync(config);
-        const jsonConfig = JSON.parse(config);
+        const rawdata = fs.readFileSync(config);
+        const jsonConfig = JSON.parse(rawdata.toString());
         bbJsonConfig = this.normalizeConfig(jsonConfig);
       } catch (e) {
-        throw new Error(`Failed to load config via string XXXX: ${config}`);
+        throw new Error(`Failed to load config file at: ${config}`);
       }
     } else {
       bbJsonConfig = this.normalizeConfig(config);
