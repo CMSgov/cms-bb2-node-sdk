@@ -1,7 +1,7 @@
 import fs from "fs";
 import { cwd } from "process";
 import BlueButton from ".";
-import { Environments } from "./enums/environments";
+import { Environments } from ".";
 
 test("expect bb sdk to be created with appropriate defaults", () => {
   const CLIENT_ID = "foo";
