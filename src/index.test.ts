@@ -142,3 +142,28 @@ test("should throw a helpful error if no callbackUrl is provided", () => {
     expect(e).toEqual(new Error(`callbackUrl is required`));
   }
 });
+
+test("expect bb sdk to be created with config as object", () => {
+  const CLIENT_ID = "foo";
+  const CLIENT_SECRET = "bar";
+  const CALLBACK_URL = "https://www.fake.com/";
+
+  const blueButtonConfig =
+    '{"baseUrl": "https://api.bluebutton.cms.gov",' +
+    '"clientId": "' +
+    CLIENT_ID +
+    '" ,"clientSecret": "' +
+    CLIENT_SECRET +
+    '", "callbackUrl": "' +
+    CALLBACK_URL +
+    '", "version":"2", "environment": "PRODUCTION"}';
+
+  const blueButtonConfigObj = JSON.parse(blueButtonConfig);
+  const bb = new BlueButton(blueButtonConfigObj);
+
+  expect(bb.clientId).toBe(CLIENT_ID);
+  expect(bb.clientSecret).toBe(CLIENT_SECRET);
+  expect(bb.callbackUrl).toBe(CALLBACK_URL);
+  expect(bb.version).toBe("2");
+  expect(bb.baseUrl).toBe(`https://api.bluebutton.cms.gov`);
+});
