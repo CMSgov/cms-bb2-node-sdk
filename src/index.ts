@@ -15,6 +15,13 @@ import {
 import { AuthorizationToken } from "./entities/AuthorizationToken";
 import { AxiosRequestConfig } from "axios";
 
+export {
+  AuthorizationTokenData,
+  AuthorizationToken,
+} from "./entities/AuthorizationToken";
+export { AuthData } from "./auth";
+export { Environments } from "./enums/environments";
+
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
 const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
@@ -22,7 +29,7 @@ const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
 /**
  * Configuration parameters for a Blue Button API application
  */
-type BlueButtonJsonConfig = {
+export type BlueButtonJsonConfig = {
   clientId: string;
   clientSecret: string;
   callbackUrl: string;
@@ -30,7 +37,7 @@ type BlueButtonJsonConfig = {
   environment?: Environments;
 };
 
-type BlueButtonConfig = string | BlueButtonJsonConfig;
+export type BlueButtonConfig = string | BlueButtonJsonConfig;
 
 /**
  * BlueButton - the main SDK class
