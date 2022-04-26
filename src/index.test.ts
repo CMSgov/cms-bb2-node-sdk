@@ -148,9 +148,9 @@ test("expect bb sdk to be created with config as object", () => {
   const CLIENT_SECRET = "bar";
   const CALLBACK_URL = "https://www.fake.com/";
 
+  //    '{"baseUrl": "https://api.bluebutton.cms.gov",' +
   const blueButtonConfig =
-    '{"baseUrl": "https://api.bluebutton.cms.gov",' +
-    '"clientId": "' +
+    '{"clientId": "' +
     CLIENT_ID +
     '" ,"clientSecret": "' +
     CLIENT_SECRET +
