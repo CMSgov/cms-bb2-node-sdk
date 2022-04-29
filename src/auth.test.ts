@@ -5,9 +5,9 @@ jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 import BlueButton from ".";
+import { Errors } from ".";
+
 import { generateTokenPostData } from "./auth";
-import { Errors } from "./enums/errors";
-import { AuthorizationToken } from "./entities/AuthorizationToken";
 import { SDK_HEADER_KEY, SDK_HEADER } from "./enums/environments";
 
 // Setup BlueButton class instance
