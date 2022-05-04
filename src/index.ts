@@ -23,6 +23,7 @@ export { AuthData } from "./auth";
 export { Environments } from "./enums/environments";
 
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
+const DEVLOCAL_BASE_URL = "http://localhost:8000";
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
 const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
 
@@ -90,14 +91,6 @@ export default class BlueButton {
     this.callbackUrl = bbJsonConfig.callbackUrl;
     this.clientSecret = bbJsonConfig.clientSecret;
     this.version = bbJsonConfig.version;
-    // this.generateAuthorizeUrl = this.generateAuthorizeUrl.bind(this);
-    // this.getAuthorizationToken = this.getAuthorizationToken.bind(this);
-    // this.getProfileData = this.getProfileData.bind(this);
-    // this.getExplanationOfBenefitData =
-    //   this.getExplanationOfBenefitData.bind(this);
-    // this.getPatientData = this.getPatientData.bind(this);
-    // this.getCoverageData = this.getCoverageData.bind(this);
-    // this.getCustomData = this.getCustomData.bind(this);
   }
 
   normalizeConfig(config: BlueButtonJsonConfig) {
@@ -118,6 +111,8 @@ export default class BlueButton {
       baseUrl:
         config.environment === Environments.PRODUCTION
           ? PRODUCTION_BASE_URL
+          : config.environment === Environments.DEVLOCAL
+          ? DEVLOCAL_BASE_URL
           : SANDBOX_BASE_URL,
     };
   }
