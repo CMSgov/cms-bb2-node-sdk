@@ -1,6 +1,7 @@
 import fs from "fs";
 import { cwd } from "process";
 import { Environments } from "./enums/environments";
+import { Errors } from "./enums/errors";
 import { AuthData } from "./auth";
 import {
   generateAuthData,
@@ -21,6 +22,7 @@ export {
 } from "./entities/AuthorizationToken";
 export { AuthData } from "./auth";
 export { Environments } from "./enums/environments";
+export { Errors };
 
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
