@@ -3,6 +3,7 @@ node_modules
 
 # don't lint build output
 dist
+build
 
 # added to resolve:
 #     error  Parsing error: "parserOptions.project" has been set for @typescript-eslint/parser.
