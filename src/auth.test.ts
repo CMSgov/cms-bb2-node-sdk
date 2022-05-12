@@ -215,12 +215,14 @@ describe("auth method getAuthorizationToken", () => {
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
 
     await expect(async () => {
+      /* eslint-disable  @typescript-eslint/no-unused-vars */
       const ret = await bb.getAuthorizationToken(
         authData,
         undefined,
         "test-state",
         "test-error"
       );
+      /* eslint-enable @typescript-eslint/no-unused-vars */
     }).rejects.toThrow(Errors.CALLBACK_ACCESS_CODE_MISSING);
   });
 
@@ -228,12 +230,14 @@ describe("auth method getAuthorizationToken", () => {
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
 
     await expect(async () => {
+      /* eslint-disable  @typescript-eslint/no-unused-vars */
       const ret = await bb.getAuthorizationToken(
         authData,
         "test-code",
         undefined,
         "test-error"
       );
+      /* eslint-enable @typescript-eslint/no-unused-vars */
     }).rejects.toThrow(Errors.CALLBACK_STATE_MISSING);
   });
 
@@ -241,12 +245,14 @@ describe("auth method getAuthorizationToken", () => {
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
 
     await expect(async () => {
+      /* eslint-disable  @typescript-eslint/no-unused-vars */
       const ret = await bb.getAuthorizationToken(
         authData,
         "test-code",
         "test-state-does-not-match",
         "test-error"
       );
+      /* eslint-enable @typescript-eslint/no-unused-vars */
     }).rejects.toThrow(Errors.CALLBACK_STATE_DOES_NOT_MATCH);
   });
 
@@ -254,12 +260,14 @@ describe("auth method getAuthorizationToken", () => {
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
 
     await expect(async () => {
+      /* eslint-disable  @typescript-eslint/no-unused-vars */
       const ret = await bb.getAuthorizationToken(
         authData,
         "test-code",
         "test-state",
         "access_denied"
       );
+      /* eslint-enable @typescript-eslint/no-unused-vars */
     }).rejects.toThrow(Errors.CALLBACK_ACCESS_DENIED);
   });
 
@@ -270,12 +278,14 @@ describe("auth method getAuthorizationToken", () => {
     mockedAxios.post.mockResolvedValueOnce(mockResponse);
 
     await expect(async () => {
+      /* eslint-disable  @typescript-eslint/no-unused-vars */
       const ret = await bb.getAuthorizationToken(
         authData,
         "test-code",
         authData.state,
         undefined
       );
+      /* eslint-enable @typescript-eslint/no-unused-vars */
     }).rejects.toThrow(Errors.AUTH_TOKEN_URL_RESPONSE_DATA_MISSING);
   });
 });

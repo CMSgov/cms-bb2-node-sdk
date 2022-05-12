@@ -100,11 +100,6 @@ const AUTH_TOKEN_EXPIRED_MOCK = new AuthorizationToken(
   AUTH_EXPIRED_TOKEN_DATA_DMOCK
 );
 
-const TOKEN_REFRESH_ERROR_RESPONSE_MOCK = {
-  status: 401,
-  data: { message: "Unauthorized operation!" },
-};
-
 beforeEach(() => {
   jest.clearAllMocks();
   jest.useFakeTimers();
