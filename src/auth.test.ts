@@ -8,7 +8,7 @@ import BlueButton from ".";
 import { Errors } from ".";
 
 import { generateTokenPostData } from "./auth";
-import { SDK_HEADER_KEY, SDK_HEADER } from "./enums/environments";
+import { SDK_HEADERS } from "./enums/environments";
 
 // Setup BlueButton class instance
 const CLIENT_ID = "foo";
@@ -158,7 +158,7 @@ describe("auth method getAuthorizationToken", () => {
     expect(axios.post).toHaveBeenCalledWith(
       BB2_ACCESS_TOKEN_URL,
       expect.anything(),
-      { headers: { [SDK_HEADER_KEY]: SDK_HEADER } }
+      { headers:SDK_HEADERS }
     );
   });
 
@@ -186,7 +186,7 @@ describe("auth method getAuthorizationToken", () => {
     expect(axios.post).toHaveBeenCalledWith(
       BB2_ACCESS_TOKEN_URL,
       expect.anything(),
-      { headers: { [SDK_HEADER_KEY]: SDK_HEADER } }
+      { headers: SDK_HEADERS  }
     );
   });
 

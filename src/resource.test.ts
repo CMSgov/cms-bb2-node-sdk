@@ -4,7 +4,7 @@ import {
   AuthorizationToken,
   AuthorizationTokenData,
 } from "./entities/AuthorizationToken";
-import { SDK_HEADER_KEY, SDK_HEADER } from "./enums/environments";
+import { SDK_HEADERS } from "./enums/environments";
 import { getFhirResource, FhirResourceType } from "./resource";
 
 jest.mock("axios");
@@ -54,7 +54,7 @@ const MOCK_RETRYABLE_RESPONSE = {
 const HEADER_W_TOKEN = {
   headers: {
     Authorization: "Bearer access_token_foo",
-    [SDK_HEADER_KEY]: SDK_HEADER,
+    ...SDK_HEADERS,
   },
 };
 
