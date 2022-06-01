@@ -6,7 +6,7 @@ import crypto from "crypto";
 
 import BlueButton from ".";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
-import { SDK_HEADER_KEY, SDK_HEADER } from "./enums/environments";
+import { SDK_HEADERS } from "./enums/environments";
 import { Errors } from "./enums/errors";
 
 type PkceData = {
@@ -145,7 +145,7 @@ export async function getAuthorizationToken(
 
   const body = new URLSearchParams(postData);
   const resp = await axios.post(getAccessTokenUrl(bb), body, {
-    headers: { [SDK_HEADER_KEY]: SDK_HEADER },
+    headers: SDK_HEADERS,
   });
 
   if (resp.data) {

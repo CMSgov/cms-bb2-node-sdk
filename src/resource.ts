@@ -3,7 +3,7 @@ import moment from "moment";
 import BlueButton from "./index";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
 import { getAccessTokenUrl } from "./auth";
-import { SDK_HEADER, SDK_HEADER_KEY } from "./enums/environments";
+import { SDK_HEADERS } from "./enums/environments";
 
 // initInterval in milli-seconds
 export const retrySettings = {
@@ -63,9 +63,7 @@ async function refreshAccessToken(
     tokenUrl,
     {},
     {
-      headers: {
-        [SDK_HEADER_KEY]: SDK_HEADER,
-      },
+      headers: SDK_HEADERS,
       auth: {
         username: bb.clientId,
         password: bb.clientSecret,
@@ -102,7 +100,7 @@ export async function getFhirResourceByPath(
     headers: {
       ...axiosConfig.headers,
       Authorization: `Bearer ${newAuthToken.accessToken}`,
-      [SDK_HEADER_KEY]: SDK_HEADER,
+      ...SDK_HEADERS,
     },
   };
 
