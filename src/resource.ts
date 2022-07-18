@@ -91,7 +91,10 @@ export async function getFhirResourceByPath(
     newAuthToken = await refreshAccessToken(authToken, bb2);
   }
 
-  const fhirUrl = `${String(bb2.baseUrl)}/v${bb2.version}/${resourcePath}`;
+  // modified to allow absolute path if it is under base URL
+  const fhirUrl = resourcePath.startsWith(bb2.baseUrl)
+    ? resourcePath
+    : `${String(bb2.baseUrl)}/v${bb2.version}/${resourcePath}`;
 
   let resp = null;
 
