@@ -142,21 +142,56 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         // the app logic can fetch the beneficiary's data in app specific ways:
         // e.g. download EOB periodically etc.
         // access token can expire, SDK automatically refresh access token when that happens.
+
         eobResults = await bb.getExplanationOfBenefitData(authToken);
+        // this is needed to pass on the auth token in case it got updated during the call
         authToken = eobResults.token; // in case authToken got refreshed during fhir call
+
         patientResults = await bb.getPatientData(authToken);
         authToken = patientResults.token;
+
         coverageResults = await bb.getCoverageData(authToken);
         authToken = coverageResults.token;
+
         profileResults = await bb.getProfileData(authToken);
         authToken = profileResults.token;
 
+        // Note that above FHIR data calls (getExplanationOfBenefitData/getPatientData/getCoverageData)
+        // are sending FHIR search requests to Blue Button 2.0 API, and the data returned is a FHIR resource
+        // bundles of the first 10 resources, e.g. if the current beneficiary has 55 ExplanationOfBenefit resources,
+        // the call to getExplanationOfBenefitData will return the first 10 of them,
+        // to retrive all the ExplanationOfBenefit resources, call getPages as shown below:
+
+        const eobbundle = eobResults.response?.data;
+        // getPages will navigate from the bundle (eobbundle) and return a list of all
+        // the 'pages'
+        const eobs = await bb.getPages(eobbundle, authToken);
+        // this is needed to pass on the auth token in case it got updated during the call
+        authToken = eobs.token;
+
+        const ptbundle = patientResults.response?.data;
+        const pts = await bb.getPages(ptbundle, authToken);
+        authToken = pts.token;
+
+        const coveragebundle = coverageResults.response?.data;
+        const coverages = await bb.getPages(coveragebundle, authToken);
+        authToken = coverages.token;
+
+        // Note, getPages can be applied on non bundle resources or bundles without navigation links,
+        // in that case, no page navigation occurs and a list of the original resource will be returned,
+        // e.g. below code calls getPages on a profile result which might not be a bundle resource.
+        const pfbundle = profileResults.response?.data;
+        const pfs = await bb.getPages(pfbundle, authToken);
+        authToken = pfs.token;
+
+        // getPages return an object of structure:
+        // {token: <authToken>, pages: [<bundle of 10 resources>, <bundle of 10 resources>, ...]}
         results = {
-            eob: eobResults.response.data,
-            patient: patientResults.response.data,
-            coverage: coverageResults.response.data,
-            profile: profileResults.response.data
-        }
+          eob: eobs.pages,
+          patient: pts.pages,
+          coverage: coverages.pages,
+          profile: pfs.pages,
+        };
 
     } catch (e) {
         console.log(e);
