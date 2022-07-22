@@ -249,14 +249,12 @@ export default class BlueButton {
     const pages = [bundle];
     let pageURL = this.extractNextPageUrl(bundle);
     while (pageURL) {
-      console.log("pageURL: " + pageURL);
       const eobNextPage = await this.getCustomData(pageURL, authToken);
       at = eobNextPage.token;
       bundle = eobNextPage.response?.data;
       pages.push(bundle);
       pageURL = this.extractNextPageUrl(bundle);
     }
-    console.log(pages);
     return { token: at, pages: pages };
   }
 

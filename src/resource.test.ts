@@ -1,5 +1,6 @@
 import axios from "axios";
 import fs from "fs";
+import { cwd } from "process";
 import BlueButton from ".";
 import {
   AuthorizationToken,
@@ -100,6 +101,18 @@ const AUTH_EXPIRED_TOKEN_DATA_DMOCK: AuthorizationTokenData = {
 const AUTH_TOKEN_EXPIRED_MOCK = new AuthorizationToken(
   AUTH_EXPIRED_TOKEN_DATA_DMOCK
 );
+
+const eobPages: unknown[] = [];
+fs.readdir(`${cwd()}/src/fixtures/eobs`, (err, files) => {
+  if (err) console.log(err);
+  else {
+    files.forEach((file) => {
+      const rawData = fs.readFileSync(`${cwd()}/src/fixtures/eobs/${file}`);
+      const jsonBundle = JSON.parse(rawData.toString());
+      eobPages.push({ data: jsonBundle });
+    });
+  }
+});
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -212,47 +225,24 @@ test("fhir query with expired token that is automatically refreshed", async () =
   expect(mockedAxios.post).toHaveBeenCalledTimes(1);
 });
 
-// test("fhir search with page navigation.", async () => {
-//     const eobPages: unknown[] = [];
-//     fs.readdir("fixtures/eobs", (err, files) => {
-//       console.log("============= list dir =================");
-//       if (err)
-//         console.log(err);
-//       else {
-//         console.log("============= read files =================");
-//         files.forEach(file => {
-//             console.log(file);
-//             const rawData = fs.readFileSync(file);
-//             const jsonBundle = JSON.parse(rawData.toString());
-//             eobPages.push(jsonBundle);
-//         });
-//         console.log("============= after read files =================");
-//       }});
+test("fhir search with page navigation.", async () => {
+  mockedAxios.get.mockImplementation((url: string) => {
+    // fihure out the page number from startIndex and _index, and return the
+    // page (bundle) from the eobPages array
+    const urlParsed = new URL(url);
+    const startIndex = urlParsed.searchParams.get("startIndex");
+    if (startIndex) {
+      const index = parseInt(startIndex, 10) / 10;
+      return Promise.resolve(eobPages[index]);
+    } else {
+      return Promise.resolve(eobPages[0]);
+    }
+  });
 
-//     mockedAxios.get.mockClear();
-//     mockedAxios.get.mockImplementation((url: string) => {
-//         // fihure out the page number from startIndex and _index, and return the
-//         // page (bundle) from the eobPages array
-//         const urlParsed = new URL(url);
-//         const startIndex = urlParsed.searchParams.get('startIndex');
-//         if (startIndex) {
-//             const index = parseInt(startIndex, 10)/10;
-//             return Promise.resolve(eobPages[index]);
-//         }
-//         else {
-//             return Promise.resolve(eobPages[0])
-//         }
-//     });
-
-//     const response = await bb.getExplanationOfBenefitData(AUTH_TOKEN_MOCK);
-//     console.log("=======================================");
-//     console.log(response.response?.data);
-//     const eobs = await bb.getPages(response, AUTH_TOKEN_MOCK);
-//     console.log("=======================================");
-//     console.log(eobs.pages[3]);
-//     // expect(response.response?.status).toEqual(200);
-//     // expect(response.response?.data).toEqual(profile.data);
-//     // expect(response.token).toEqual(AUTH_TOKEN_MOCK);
-//     // expect(mockedAxios.get).toHaveBeenCalledWith(BB2_PROFILE_URL, HEADER_W_TOKEN);
-//     // expect(mockedAxios.post).toHaveBeenCalledTimes(0);
-//   });
+  const response = await bb.getExplanationOfBenefitData(AUTH_TOKEN_MOCK);
+  const firstPage = response.response?.data;
+  const eobs = await bb.getPages(firstPage, AUTH_TOKEN_MOCK);
+  expect(eobs.pages.length).toEqual(6);
+  expect(eobs.token).toEqual(AUTH_TOKEN_MOCK);
+  expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+});
