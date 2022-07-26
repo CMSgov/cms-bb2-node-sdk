@@ -204,6 +204,61 @@ export default class BlueButton {
   }
 
   /**
+   * Extract 'next' page url from a FHIR search result (Bundle with nav links)
+   * overload for convenience ('next' nav link is more frequently used to fetch all pages)
+   * @param data - data in json, expect to be a FHIR Bundle of type 'searchset' with page nav links
+   * @returns the url or null if expected structure not present
+   */
+  extractNextPageUrl(data: any) {
+    return this.extractPageNavUrl(data, "next");
+  }
+
+  /**
+   * Extract the specified nav link page url from a FHIR search result (Bundle with nav links)
+   * @param data - data in json, expect to be a FHIR Bundle of type 'searchset' with page nav links
+   * @param relation - the nav relation to current page: 'first', 'previous', 'next', 'self', 'last'
+   * @returns the url or null if expected structure not present
+   */
+  extractPageNavUrl(data: any, relation: string) {
+    if (
+      data &&
+      data.resourceType === "Bundle" &&
+      data.type &&
+      data.type === "searchset" &&
+      data.link
+    ) {
+      for (const l of data.link) {
+        if (l.relation === relation) {
+          return l.url;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Given a navigatable FHIR search result (Bundle with nav links), navigate forward until max pages reached
+   * or when there is no next page whichever comes first, and return all the pages as a list.
+   * @param data - current page of a FHIR search result (Bundle) with nav links
+   * @param authToken - AuthorizationToken with access token info
+   * @returns authToken (might be updated during fhir data call) and the page(s) as a list
+   */
+  async getPages(data: any, authToken: AuthorizationToken) {
+    let bundle = data;
+    let at = authToken;
+    const pages = [bundle];
+    let pageURL = this.extractNextPageUrl(bundle);
+    while (pageURL) {
+      const eobNextPage = await this.getCustomData(pageURL, authToken);
+      at = eobNextPage.token;
+      bundle = eobNextPage.response?.data;
+      pages.push(bundle);
+      pageURL = this.extractNextPageUrl(bundle);
+    }
+    return { token: at, pages: pages };
+  }
+
+  /**
    * Generate hashes for PKCE
    * @returns AuthData object
    */
