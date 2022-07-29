@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import moment from "moment";
 import BlueButton from "./index";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
-import { getAccessTokenUrl } from "./auth";
+import { refreshAccessToken } from "./auth";
 import { SDK_HEADERS } from "./enums/environments";
 
 // initInterval in milli-seconds
@@ -52,31 +52,6 @@ async function doRetry(fhirUrl: string, config: AxiosRequestConfig) {
   }
 
   return resp;
-}
-
-async function refreshAccessToken(
-  authToken: AuthorizationToken,
-  bb: BlueButton
-) {
-  const tokenUrl = getAccessTokenUrl(bb);
-  const resp = await axios.post(
-    tokenUrl,
-    {},
-    {
-      headers: SDK_HEADERS,
-      auth: {
-        username: bb.clientId,
-        password: bb.clientSecret,
-      },
-      params: {
-        grant_type: "refresh_token",
-        client_id: bb.clientId,
-        refresh_token: authToken.refreshToken,
-      },
-    }
-  );
-
-  return new AuthorizationToken(resp.data);
 }
 
 export async function getFhirResourceByPath(

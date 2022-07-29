@@ -155,3 +155,35 @@ export async function getAuthorizationToken(
     throw Error(Errors.AUTH_TOKEN_URL_RESPONSE_DATA_MISSING);
   }
 }
+
+/**
+ * Refresh the access token in the given AuthorizationToken instance
+ *
+ * @param authToken auth token instance to be refreshed
+ * @param bb - instance of the SDK facade class
+ * @returns new auth token instance with refreshed access token
+ */
+export async function refreshAccessToken(
+  authToken: AuthorizationToken,
+  bb: BlueButton
+) {
+  const tokenUrl = getAccessTokenUrl(bb);
+  const resp = await axios.post(
+    tokenUrl,
+    {},
+    {
+      headers: SDK_HEADERS,
+      auth: {
+        username: bb.clientId,
+        password: bb.clientSecret,
+      },
+      params: {
+        grant_type: "refresh_token",
+        client_id: bb.clientId,
+        refresh_token: authToken.refreshToken,
+      },
+    }
+  );
+
+  return new AuthorizationToken(resp.data);
+}
