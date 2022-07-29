@@ -169,10 +169,49 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         // this is needed to pass on the auth token in case it got updated during the call
         authToken = eobs.token;
 
+        // alternatively, the app can choose more fine grained control of pagination:
+        // e.g. fetch 1st page, fetch last page, fetch next page, fetch previous page,
+        // as shown by below lines of code:
+        const firstPgURL = bb.extractPageNavUrl(eobbundle, "first");
+        if (firstPgURL) {
+            const fistPage = await this.getCustomData(firstPgURL, authToken);
+            // pass on token
+            authToken = firstPage.token;
+            // harvest bundle json
+            const firstBundle = firstPage.response?.data;
+        }
+        const lastPgURL = bb.extractPageNavUrl(eobbundle, "last");
+        if (lastPgURL) {
+            const lastPage = await this.getCustomData(lastPgURL, authToken);
+            // pass on token
+            authToken = lastPage.token;
+            // harvest bundle json
+            const lastBundle = lastPage.response?.data;
+        }
+        const nextPgURL = bb.extractPageNavUrl(eobbundle, "next");
+        if (nextPgURL) {
+            const nextPage = await this.getCustomData(nextPgURL, authToken);
+            // pass on token
+            authToken = nextPage.token;
+            // harvest bundle json
+            const nextBundle = nextPage.response?.data;
+        }
+        const prevPgURL = bb.extractPageNavUrl(eobbundle, "previous");
+        if (prevPgURL) {
+            const prevPage = await this.getCustomData(prevPgURL, authToken);
+            // pass on token
+            authToken = prevPage.token;
+            // harvest bundle json
+            const prevBundle = prevPage.response?.data;
+        }
+
+        // get all patient(s) by calling getPages - note this is trivial since there is only 
+        // 1 patient resource
         const ptbundle = patientResults.response?.data;
         const pts = await bb.getPages(ptbundle, authToken);
         authToken = pts.token;
 
+        // get all coverages by calling getPages
         const coveragebundle = coverageResults.response?.data;
         const coverages = await bb.getPages(coveragebundle, authToken);
         authToken = coverages.token;
