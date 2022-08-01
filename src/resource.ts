@@ -62,6 +62,9 @@ export async function getFhirResourceByPath(
 ) {
   let newAuthToken = authToken;
 
+  // rare edge case: access token in authToken become expired right after below check
+  // and before subsequent fhir end point call, in that case, a correctional action
+  // by the app logic might be a recommended practice.
   if (moment(authToken.expiresAt).isBefore(moment())) {
     newAuthToken = await refreshAccessToken(authToken, bb2);
   }
