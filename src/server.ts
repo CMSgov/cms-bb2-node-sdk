@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import BlueButton from ".";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
+import fs from "fs";
 
 const app = express();
 
@@ -50,9 +51,21 @@ app.get("/api/bluebutton/callback", async (req: Request, res: Response) => {
         authToken = profileResults.token;
 
         // nav pages if needed for eob, patient, coverage
-        console.log("=============EOB=================");
+        // client code can preemptively refresh tokens by calling refreshAccessToken(authToken)
+        console.log(
+          "============= preemptively do oauth token refresh before fetch EOB ================="
+        );
+
+        authToken = await bb.refreshAccessToken(authToken);
+
+        console.log("============= EOB =================");
+
         const eobbundle = eobResults.response?.data;
         const eobs = await bb.getPages(eobbundle, authToken);
+        for (let i = 0; i < eobs.pages.length; i++) {
+          fs.writeFileSync(`eob_p${i}.json`, JSON.stringify(eobs.pages[i]));
+        }
+
         authToken = eobs.token;
 
         console.log("=============PATIENT=================");
