@@ -17,7 +17,7 @@ to access his/her medicare claims data - through OAUTH2 [(RFC 6749)](https://dat
 
 By using the SDK, the development of applications accessing Blue Button 2.0 API can be greatly simplified.
 
-Note, following the OAUTH2 best practices, OAUTH2 PKCE etension [(RFC 7636)](https://datatracker.ietf.org/doc/html/rfc7636) is always enabled.
+Note, following the OAUTH2 best practices, OAUTH2 PKCE extension [(RFC 7636)](https://datatracker.ietf.org/doc/html/rfc7636) is always enabled.
 
 ## Installation <a name="installation"></a>
 
@@ -141,7 +141,7 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         // data flow: after access granted
         // the app logic can fetch the beneficiary's data in app specific ways:
         // e.g. download EOB periodically etc.
-        // access token can expire, SDK automatically refresh access token when that happens.
+        // access token can expire, SDK automatically refresh token when that happens.
         eobResults = await bb.getExplanationOfBenefitData(authToken);
         authToken = eobResults.token; // in case authToken got refreshed during fhir call
         patientResults = await bb.getPatientData(authToken);

@@ -51,12 +51,12 @@ app.get("/api/bluebutton/callback", async (req: Request, res: Response) => {
         authToken = profileResults.token;
 
         // nav pages if needed for eob, patient, coverage
-        // client code can preemptively refresh tokens by calling refreshAccessToken(authToken)
+        // client code can preemptively refresh tokens by calling refreshAuthToken(authToken)
         console.log(
           "============= preemptively do oauth token refresh before fetch EOB ================="
         );
 
-        authToken = await bb.refreshAccessToken(authToken);
+        authToken = await bb.refreshAuthToken(authToken);
 
         console.log("============= EOB =================");
 

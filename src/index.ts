@@ -4,7 +4,7 @@ import { Environments } from "./enums/environments";
 import { Errors } from "./enums/errors";
 import { AuthData } from "./auth";
 import {
-  refreshAccessToken,
+  refreshAuthToken,
   generateAuthData,
   generateAuthorizeUrl,
   getAuthorizationToken,
@@ -284,8 +284,8 @@ export default class BlueButton {
    * @param authToken - AuthorizationToken instance with access token info
    * @returns new AuthorizationToken instance with newly issued (refreshed) access token (and refresh token)
    */
-  async refreshAccessToken(authToken: AuthorizationToken) {
-    return refreshAccessToken(authToken, this);
+  async refreshAuthToken(authToken: AuthorizationToken) {
+    return refreshAuthToken(authToken, this);
   }
 
   /**
