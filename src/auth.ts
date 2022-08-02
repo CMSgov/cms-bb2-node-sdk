@@ -3,6 +3,7 @@
  */
 import axios from "axios";
 import crypto from "crypto";
+import FormData from "form-data";
 
 import BlueButton from ".";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
@@ -163,11 +164,24 @@ export async function getAuthorizationToken(
  * @param bb - instance of the SDK facade class
  * @returns new auth token instance with refreshed access token
  */
-export async function refreshAccessToken(
+export async function refreshAuthToken(
   authToken: AuthorizationToken,
   bb: BlueButton
 ) {
   const tokenUrl = getAccessTokenUrl(bb);
+  // const formData = new FormData();
+  // formData.append("username", bb.clientId);
+  // formData.append("passowrd", bb.clientSecret);
+  // formData.append("grant_type", "refresh_token");
+  // formData.append("client_id", bb.clientId);
+  // formData.append("refresh_token", authToken.refreshToken);
+  // const resp = await axios({
+  //     method: 'post',
+  //     url: tokenUrl,
+  //     data: formData,
+  //     headers: SDK_HEADERS,
+  // });
+
   const resp = await axios.post(
     tokenUrl,
     {},

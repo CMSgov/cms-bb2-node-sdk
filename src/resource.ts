@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import moment from "moment";
 import BlueButton from "./index";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
-import { refreshAccessToken } from "./auth";
+import { refreshAuthToken } from "./auth";
 import { SDK_HEADERS } from "./enums/environments";
 
 // initInterval in milli-seconds
@@ -66,7 +66,7 @@ export async function getFhirResourceByPath(
   // and before subsequent fhir end point call, in that case, a correctional action
   // by the app logic might be a recommended practice.
   if (moment(authToken.expiresAt).isBefore(moment())) {
-    newAuthToken = await refreshAccessToken(authToken, bb2);
+    newAuthToken = await refreshAuthToken(authToken, bb2);
   }
 
   // modified to allow absolute path if it is under base URL

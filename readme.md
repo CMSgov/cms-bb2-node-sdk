@@ -145,9 +145,9 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         // Access token kept in var authToken can expire, SDK fhir call (e.g. getExplanationOfBenefitData)
         // will detect that and perform token refresh accordingly.
 
-        // Alternatively app logic can call refreshAccessToken to perform a token refresh
+        // Alternatively app logic can call refreshAuthToken to perform a token refresh
         // preemptively before the fhir calls:
-        // authToken = await bb.refreshAccessToken(authToken);
+        // authToken = await bb.refreshAuthToken(authToken);
 
         eobResults = await bb.getExplanationOfBenefitData(authToken);
         // Note, below assignment is needed to pass on the auth token in case it got updated during the fhir call
