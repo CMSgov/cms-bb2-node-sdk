@@ -141,11 +141,17 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         // data flow: after access granted
         // the app logic can fetch the beneficiary's data in app specific ways:
         // e.g. download EOB periodically etc.
-        // access token can expire, SDK automatically refresh access token when that happens.
+
+        // Access token kept in var authToken can expire, SDK fhir call (e.g. getExplanationOfBenefitData)
+        // will detect that and perform token refresh accordingly.
+
+        // Alternatively app logic can call refreshAuthToken to perform a token refresh
+        // preemptively before the fhir calls:
+        // authToken = await bb.refreshAuthToken(authToken);
 
         eobResults = await bb.getExplanationOfBenefitData(authToken);
-        // this is needed to pass on the auth token in case it got updated during the call
-        authToken = eobResults.token; // in case authToken got refreshed during fhir call
+        // Note, below assignment is needed to pass on the auth token in case it got updated during the fhir call
+        authToken = eobResults.token;
 
         patientResults = await bb.getPatientData(authToken);
         authToken = patientResults.token;
@@ -205,7 +211,7 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
             const prevBundle = prevPage.response?.data;
         }
 
-        // get all patient(s) by calling getPages - note this is trivial since there is only 
+        // get all patient(s) by calling getPages - note this is trivial since there is only
         // 1 patient resource
         const ptbundle = patientResults.response?.data;
         const pts = await bb.getPages(ptbundle, authToken);

@@ -3,6 +3,7 @@
  */
 import axios from "axios";
 import crypto from "crypto";
+import FormData from "form-data";
 
 import BlueButton from ".";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
@@ -154,4 +155,49 @@ export async function getAuthorizationToken(
   } else {
     throw Error(Errors.AUTH_TOKEN_URL_RESPONSE_DATA_MISSING);
   }
+}
+
+/**
+ * Refresh the access token in the given AuthorizationToken instance
+ *
+ * @param authToken auth token instance to be refreshed
+ * @param bb - instance of the SDK facade class
+ * @returns new auth token instance with refreshed access token
+ */
+export async function refreshAuthToken(
+  authToken: AuthorizationToken,
+  bb: BlueButton
+) {
+  const tokenUrl = getAccessTokenUrl(bb);
+  // const formData = new FormData();
+  // formData.append("username", bb.clientId);
+  // formData.append("passowrd", bb.clientSecret);
+  // formData.append("grant_type", "refresh_token");
+  // formData.append("client_id", bb.clientId);
+  // formData.append("refresh_token", authToken.refreshToken);
+  // const resp = await axios({
+  //     method: 'post',
+  //     url: tokenUrl,
+  //     data: formData,
+  //     headers: SDK_HEADERS,
+  // });
+
+  const resp = await axios.post(
+    tokenUrl,
+    {},
+    {
+      headers: SDK_HEADERS,
+      auth: {
+        username: bb.clientId,
+        password: bb.clientSecret,
+      },
+      params: {
+        grant_type: "refresh_token",
+        client_id: bb.clientId,
+        refresh_token: authToken.refreshToken,
+      },
+    }
+  );
+
+  return new AuthorizationToken(resp.data);
 }
