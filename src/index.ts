@@ -29,6 +29,15 @@ const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
 const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
 
 /**
+ * FHIR end point retry configuration
+ */
+export type RetryConfig = {
+  initInterval: number;
+  maxAttempts: number;
+  retryableCodes: number[];
+};
+
+/**
  * Configuration parameters for a Blue Button API application
  */
 export type BlueButtonJsonConfig = {
@@ -37,6 +46,7 @@ export type BlueButtonJsonConfig = {
   callbackUrl: string;
   version?: string;
   environment?: Environments;
+  retrySettings?: RetryConfig;
 };
 
 export type BlueButtonConfig = string | BlueButtonJsonConfig;
@@ -50,9 +60,15 @@ export default class BlueButton {
   callbackUrl: string;
   version: string;
   baseUrl: string;
+  retrySettings: RetryConfig;
 
   constructor(config?: BlueButtonConfig) {
     let bbJsonConfig;
+    this.retrySettings = {
+      initInterval: 5000,
+      maxAttempts: 3,
+      retryableCodes: [500, 502, 503, 504],
+    };
     if (!config) {
       try {
         const rawdata = fs.readFileSync(DEFAULT_CONFIG_FILE_LOCATION);
@@ -87,11 +103,26 @@ export default class BlueButton {
       throw new Error("callbackUrl is required");
     }
 
+    if (bbJsonConfig.retrySettings?.initInterval) {
+      this.retrySettings.initInterval =
+        bbJsonConfig.retrySettings?.initInterval;
+    }
+
+    if (bbJsonConfig.retrySettings?.maxAttempts) {
+      this.retrySettings.maxAttempts = bbJsonConfig.retrySettings?.maxAttempts;
+    }
+
+    if (bbJsonConfig.retrySettings?.retryableCodes) {
+      this.retrySettings.retryableCodes =
+        bbJsonConfig.retrySettings?.retryableCodes;
+    }
+
     this.baseUrl = bbJsonConfig.baseUrl;
     this.clientId = bbJsonConfig.clientId;
     this.callbackUrl = bbJsonConfig.callbackUrl;
     this.clientSecret = bbJsonConfig.clientSecret;
     this.version = bbJsonConfig.version;
+    console.log(this.retrySettings);
   }
 
   normalizeConfig(config: BlueButtonJsonConfig) {
@@ -108,6 +139,7 @@ export default class BlueButton {
       clientId: config.clientId,
       clientSecret: config.clientSecret,
       callbackUrl: config.callbackUrl,
+      retrySettings: config.retrySettings,
       version: config.version ? config.version : "2",
       baseUrl:
         config.environment === Environments.PRODUCTION

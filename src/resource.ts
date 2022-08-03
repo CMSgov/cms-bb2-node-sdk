@@ -6,11 +6,11 @@ import { getAccessTokenUrl } from "./auth";
 import { SDK_HEADERS } from "./enums/environments";
 
 // initInterval in milli-seconds
-export const retrySettings = {
-  initInterval: 5000,
-  maxAttempts: 3,
-  retryableCodes: [500, 502, 503, 504],
-};
+// export const retrySettings = {
+//   initInterval: 5000,
+//   maxAttempts: 3,
+//   retryableCodes: [500, 502, 503, 504],
+// };
 
 // also serves as central registry for supported resource paths
 export enum FhirResourceType {
@@ -26,24 +26,28 @@ export function sleep(time: number) {
   });
 }
 
-function isRetryable(error: AxiosError) {
+function isRetryable(error: AxiosError, bb2: BlueButton) {
   return (
     error.response &&
-    retrySettings.retryableCodes.includes(error.response.status)
+    bb2.retrySettings.retryableCodes.includes(error.response.status)
   );
 }
 
-async function doRetry(fhirUrl: string, config: AxiosRequestConfig) {
+async function doRetry(
+  fhirUrl: string,
+  config: AxiosRequestConfig,
+  bb2: BlueButton
+) {
   let resp;
 
-  for (let i = 0; i < retrySettings.maxAttempts; i++) {
-    const waitInMilliSec = retrySettings.initInterval * 2 ** i;
+  for (let i = 0; i < bb2.retrySettings.maxAttempts; i++) {
+    const waitInMilliSec = bb2.retrySettings.initInterval * 2 ** i;
     await sleep(waitInMilliSec);
     try {
       resp = await axios.get(fhirUrl, config);
       break;
     } catch (error: unknown | AxiosError) {
-      if (axios.isAxiosError(error) && isRetryable(error)) {
+      if (axios.isAxiosError(error) && isRetryable(error, bb2)) {
         resp = error.response;
       } else {
         throw error;
@@ -110,8 +114,8 @@ export async function getFhirResourceByPath(
   try {
     resp = await axios.get(fhirUrl, config);
   } catch (error: unknown | AxiosError) {
-    if (axios.isAxiosError(error) && isRetryable(error)) {
-      resp = await doRetry(fhirUrl, config);
+    if (axios.isAxiosError(error) && isRetryable(error, bb2)) {
+      resp = await doRetry(fhirUrl, config, bb2);
     } else {
       throw error;
     }
