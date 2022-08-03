@@ -3,10 +3,5 @@
   "clientSecret": "bar",
   "callbackUrl": "https://www.fake.com/",
   "version": "1",
-  "environment": "PRODUCTION",
-  "retrySettings": {
-    "initInterval": 8000,
-    "maxAttempts": 5,
-    "retryableCodes": [500, 502, 503, 504, 888]
-  }
+  "environment": "PRODUCTION"
 }

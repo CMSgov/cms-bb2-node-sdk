@@ -64,9 +64,16 @@ A sample configuration json:
   "clientId": "foo",
   "clientSecret": "bar",
   "callbackUrl": "https://www.fake.com/",
+  "retrySettings": {
+    "initInterval": 8000,
+    "maxAttempts": 5,
+    "retryableCodes": [500, 502, 503, 504]
+  }
 }
 
 ```
+
+OAUTH2.0 parameters: clientId, clientSecret, callbackUrl, they are mandatory and must be provided
 
 | parameter    | value                   | Comments                        |
 | ------------ | ----------------------- | ------------------------------- |
@@ -76,6 +83,20 @@ A sample configuration json:
 
 For application registration and client id and client secret, please refer to:
 [Blue Button 2.0 API Docs - Try the API](https://bluebutton.cms.gov/developers/#try-the-api)
+
+FHIR requests retry parameters:
+
+retrySettings (Optional), parameters for exponential back off retry algorithm
+
+| retry parameter | value (default)      | Comments                         |
+| --------------- | -------------------- | -------------------------------- |
+| initInterval    | 5000                 | back off interval in milli sec   |
+| maxAttempts     | 3                    | max retry attempts               |
+| retryableCodes  | [500, 502, 503, 504] | error response codes to retry on |
+
+the exponential back off retry intervals are calculated by below formular, where i starts from 0:
+
+initInterval \* 2 \*\* i
 
 ## Sample Usages: Obtain Access Grant, Probe Scope, and Access Data <a name="usages"></a>
 

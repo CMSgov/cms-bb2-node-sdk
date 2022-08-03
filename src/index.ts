@@ -123,7 +123,6 @@ export default class BlueButton {
     this.callbackUrl = bbJsonConfig.callbackUrl;
     this.clientSecret = bbJsonConfig.clientSecret;
     this.version = bbJsonConfig.version;
-    console.log(this.retrySettings);
   }
 
   normalizeConfig(config: BlueButtonJsonConfig) {

@@ -5,13 +5,6 @@ import { AuthorizationToken } from "./entities/AuthorizationToken";
 import { refreshAuthToken } from "./auth";
 import { SDK_HEADERS } from "./enums/environments";
 
-// initInterval in milli-seconds
-// export const retrySettings = {
-//   initInterval: 5000,
-//   maxAttempts: 3,
-//   retryableCodes: [500, 502, 503, 504],
-// };
-
 // also serves as central registry for supported resource paths
 export enum FhirResourceType {
   Patient = "fhir/Patient/",
