@@ -56,15 +56,19 @@ app.get("/api/bluebutton/callback", async (req: Request, res: Response) => {
           "============= preemptively do oauth token refresh before fetch EOB ================="
         );
 
+        console.log("============= authToken =================");
+
         authToken = await bb.refreshAuthToken(authToken);
 
-        console.log("============= EOB =================");
+        console.log(authToken);
+
+        console.log("============= EOB PAGES =================");
 
         const eobbundle = eobResults.response?.data;
         const eobs = await bb.getPages(eobbundle, authToken);
-        for (let i = 0; i < eobs.pages.length; i++) {
-          fs.writeFileSync(`eob_p${i}.json`, JSON.stringify(eobs.pages[i]));
-        }
+        // for (let i = 0; i < eobs.pages.length; i++) {
+        //   fs.writeFileSync(`eob_p${i}.json`, JSON.stringify(eobs.pages[i]));
+        // }
 
         authToken = eobs.token;
 

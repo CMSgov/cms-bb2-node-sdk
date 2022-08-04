@@ -1,0 +1,12 @@
+{
+  "clientId": "foo",
+  "clientSecret": "bar",
+  "callbackUrl": "https://www.fake.com/",
+  "version": "1",
+  "environment": "PRODUCTION",
+  "retrySettings": {
+    "initInterval": 1000,
+    "maxAttempts": 2,
+    "retryableCodes": [500, 502, 503, 504, 508]
+  }
+}
