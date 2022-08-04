@@ -4,7 +4,7 @@
 import axios from "axios";
 import crypto from "crypto";
 
-import BlueButton from ".";
+import { BlueButton } from ".";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
 import { SDK_HEADERS } from "./enums/environments";
 import { Errors } from "./enums/errors";

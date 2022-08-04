@@ -44,7 +44,7 @@ export type BlueButtonConfig = string | BlueButtonJsonConfig;
 /**
  * BlueButton - the main SDK class
  */
-export default class BlueButton {
+export class BlueButton {
   clientId: string;
   clientSecret: string;
   callbackUrl: string;

@@ -1,7 +1,7 @@
 import axios from "axios";
 import fs from "fs";
 import { cwd } from "process";
-import BlueButton from ".";
+import { BlueButton } from ".";
 import {
   AuthorizationToken,
   AuthorizationTokenData,

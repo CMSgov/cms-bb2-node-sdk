@@ -1,6 +1,6 @@
 import fs from "fs";
 import { cwd } from "process";
-import BlueButton from ".";
+import { BlueButton } from ".";
 import { Environments } from ".";
 
 test("expect bb sdk to be created with appropriate defaults", () => {
