@@ -4,7 +4,7 @@ jest.mock("axios");
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-import BlueButton from ".";
+import { BlueButton } from ".";
 import { Errors } from ".";
 
 import { generateTokenPostData } from "./auth";
@@ -158,7 +158,7 @@ describe("auth method getAuthorizationToken", () => {
     expect(axios.post).toHaveBeenCalledWith(
       BB2_ACCESS_TOKEN_URL,
       expect.anything(),
-      { headers:SDK_HEADERS }
+      { headers: SDK_HEADERS }
     );
   });
 
@@ -186,7 +186,7 @@ describe("auth method getAuthorizationToken", () => {
     expect(axios.post).toHaveBeenCalledWith(
       BB2_ACCESS_TOKEN_URL,
       expect.anything(),
-      { headers: SDK_HEADERS  }
+      { headers: SDK_HEADERS }
     );
   });
 

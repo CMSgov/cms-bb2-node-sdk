@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import moment from "moment";
-import BlueButton from "./index";
+import { BlueButton } from "./index";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
 import { refreshAuthToken } from "./auth";
 import { SDK_HEADERS } from "./enums/environments";
