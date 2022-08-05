@@ -142,11 +142,13 @@ export async function getAuthorizationToken(
   );
 
   const postData = generateTokenPostData(bb, authData, callbackRequestCode);
-
-  const body = new URLSearchParams(postData);
-  const resp = await axios.post(getAccessTokenUrl(bb), body, {
-    headers: SDK_HEADERS,
-  });
+  const resp = await doPost(
+    getAccessTokenUrl(bb),
+    new URLSearchParams(postData),
+    {
+      headers: SDK_HEADERS,
+    }
+  );
 
   if (resp.data) {
     const authToken = new AuthorizationToken(resp.data);
@@ -167,19 +169,34 @@ export async function refreshAuthToken(
   authToken: AuthorizationToken,
   bb: BlueButton
 ) {
-  const tokenUrl = getAccessTokenUrl(bb);
   const postData = {
     grant_type: "refresh_token",
     client_id: bb.clientId,
     refresh_token: authToken.refreshToken,
   };
-  const body = new URLSearchParams(postData);
-  const resp = await axios.post(tokenUrl, body, {
-    headers: SDK_HEADERS,
-    auth: {
-      username: bb.clientId,
-      password: bb.clientSecret,
-    },
-  });
+
+  const resp = await axios.post(
+    getAccessTokenUrl(bb),
+    new URLSearchParams(postData),
+    {
+      headers: SDK_HEADERS,
+      auth: {
+        username: bb.clientId,
+        password: bb.clientSecret,
+      },
+    }
+  );
+
   return new AuthorizationToken(resp.data);
+}
+
+/**
+ *
+ * @param url helper
+ * @param postData - data to be posted
+ * @param config - axios config
+ * @returns the response
+ */
+async function doPost(url: string, postData: any, config: any) {
+  return await axios.post(url, new URLSearchParams(postData), config);
 }
