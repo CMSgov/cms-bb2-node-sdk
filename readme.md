@@ -99,7 +99,7 @@ the exponential back off factor (in seconds) is used to calculate interval betwe
 
 backoff factor \* (2 \*\* (i - 1))
 
-e.g. for backoff_factor is 5 seconds, it will generate wait intervals: 2.5, 5, 20, ...
+e.g. for backoff_factor is 5 seconds, it will generate wait intervals: 2.5, 5, 10, ...
 
 to disable the retry: set total = 0
 
