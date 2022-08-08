@@ -3,7 +3,6 @@
  */
 import axios from "axios";
 import crypto from "crypto";
-import FormData from "form-data";
 
 import BlueButton from ".";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
@@ -143,9 +142,7 @@ export async function getAuthorizationToken(
   );
 
   const postData = generateTokenPostData(bb, authData, callbackRequestCode);
-
-  const body = new URLSearchParams(postData);
-  const resp = await axios.post(getAccessTokenUrl(bb), body, {
+  const resp = await doPost(getAccessTokenUrl(bb), postData, {
     headers: SDK_HEADERS,
   });
 
@@ -168,36 +165,30 @@ export async function refreshAuthToken(
   authToken: AuthorizationToken,
   bb: BlueButton
 ) {
-  const tokenUrl = getAccessTokenUrl(bb);
-  // const formData = new FormData();
-  // formData.append("username", bb.clientId);
-  // formData.append("passowrd", bb.clientSecret);
-  // formData.append("grant_type", "refresh_token");
-  // formData.append("client_id", bb.clientId);
-  // formData.append("refresh_token", authToken.refreshToken);
-  // const resp = await axios({
-  //     method: 'post',
-  //     url: tokenUrl,
-  //     data: formData,
-  //     headers: SDK_HEADERS,
-  // });
+  const postData = {
+    grant_type: "refresh_token",
+    client_id: bb.clientId,
+    refresh_token: authToken.refreshToken,
+  };
 
-  const resp = await axios.post(
-    tokenUrl,
-    {},
-    {
-      headers: SDK_HEADERS,
-      auth: {
-        username: bb.clientId,
-        password: bb.clientSecret,
-      },
-      params: {
-        grant_type: "refresh_token",
-        client_id: bb.clientId,
-        refresh_token: authToken.refreshToken,
-      },
-    }
-  );
+  const resp = await doPost(getAccessTokenUrl(bb), postData, {
+    headers: SDK_HEADERS,
+    auth: {
+      username: bb.clientId,
+      password: bb.clientSecret,
+    },
+  });
 
   return new AuthorizationToken(resp.data);
+}
+
+/**
+ *
+ * @param url helper
+ * @param postData - data to be posted
+ * @param config - axios config
+ * @returns the response
+ */
+async function doPost(url: string, postData: any, config: any) {
+  return await axios.post(url, new URLSearchParams(postData), config);
 }

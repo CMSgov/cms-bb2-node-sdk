@@ -228,6 +228,7 @@ test("fhir query with initial failure and exhausted max retry (2)", async () => 
   jest.runAllTimers();
   const response = await responsePromise;
 
+  expect(bb_custom_retry.retrySettings.statusForcelist.includes(508));
   expect(response.response?.status).toEqual(500);
   expect(response.token).toEqual(AUTH_TOKEN_MOCK);
   expect(mockedAxios.get).toHaveBeenCalledTimes(3);

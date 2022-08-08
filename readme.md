@@ -17,7 +17,7 @@ to access his/her medicare claims data - through OAUTH2 [(RFC 6749)](https://dat
 
 By using the SDK, the development of applications accessing Blue Button 2.0 API can be greatly simplified.
 
-Note, following the OAUTH2 best practices, OAUTH2 PKCE etension [(RFC 7636)](https://datatracker.ietf.org/doc/html/rfc7636) is always enabled.
+Note, following the OAUTH2 best practices, OAUTH2 PKCE extension [(RFC 7636)](https://datatracker.ietf.org/doc/html/rfc7636) is always enabled.
 
 ## Installation <a name="installation"></a>
 
@@ -53,6 +53,7 @@ the SDK needs to be properly configured to work, the parameters are:
 - the app's callback url
 - the version number of the API
 - the app's environment (web location where the app is registered)
+- The FHIR call retry settings
 
 the configuration is in json format and stored in a local file, the default location
 is current working directory with file name: .bluebutton-config.json
@@ -65,9 +66,9 @@ A sample configuration json:
   "clientSecret": "bar",
   "callbackUrl": "https://www.fake.com/",
   "retrySettings": {
-    "initInterval": 8000,
-    "maxAttempts": 5,
-    "retryableCodes": [500, 502, 503, 504]
+    "total": 3,
+    "backoffFactor": 5,
+    "statusForcelist": [500, 502, 503, 504, 508]
   }
 }
 
@@ -84,19 +85,23 @@ OAUTH2.0 parameters: clientId, clientSecret, callbackUrl, they are mandatory and
 For application registration and client id and client secret, please refer to:
 [Blue Button 2.0 API Docs - Try the API](https://bluebutton.cms.gov/developers/#try-the-api)
 
-FHIR requests retry parameters:
+FHIR requests retry:
 
-retrySettings (Optional), parameters for exponential back off retry algorithm
+Retry is enabled by default for FHIR requests, retry_settings: parameters for exponential back off retry algorithm
 
-| retry parameter | value (default)      | Comments                         |
-| --------------- | -------------------- | -------------------------------- |
-| initInterval    | 5000                 | back off interval in milli sec   |
-| maxAttempts     | 3                    | max retry attempts               |
-| retryableCodes  | [500, 502, 503, 504] | error response codes to retry on |
+| retry parameter  | value (default)      | Comments                         |
+| ---------------- | -------------------- | -------------------------------- |
+| backoff_factor   | 5                    | back off factor in seconds       |
+| total            | 3                    | max retries                      |
+| status_forcelist | [500, 502, 503, 504] | error response codes to retry on |
 
-the exponential back off retry intervals are calculated by below formular, where i starts from 0:
+the exponential back off factor (in seconds) is used to calculate interval between retries by below formular, where i starts from 0:
 
-initInterval \* 2 \*\* i
+backoff factor \* (2 \*\* (i - 1))
+
+e.g. for backoff_factor is 5 seconds, it will generate wait intervals: 2.5, 5, 20, ...
+
+to disable the retry: set total = 0
 
 ## Sample Usages: Obtain Access Grant, Probe Scope, and Access Data <a name="usages"></a>
 
