@@ -28,6 +28,7 @@ export { Errors };
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
 const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
+const TEST_BASE_URL = "https://test.bluebutton.cms.gov";
 const LOCAL_BASE_URL = "http://localhost:8000";
 
 /**
@@ -133,7 +134,7 @@ export default class BlueButton {
       !Object.values(Environments).includes(config.environment)
     ) {
       throw new Error(
-        `Invalid environment: must be ${Environments.PRODUCTION} or ${Environments.SANDBOX} or ${Environments.LOCAL}`
+        `Invalid environment: must be ${Environments.PRODUCTION} or ${Environments.SANDBOX} or ${Environments.LOCAL} or ${Environments.TEST}`
       );
     }
 
@@ -148,6 +149,8 @@ export default class BlueButton {
           ? PRODUCTION_BASE_URL
           : config.environment === Environments.SANDBOX
           ? SANDBOX_BASE_URL
+          : config.environment === Environments.TEST
+          ? TEST_BASE_URL
           : LOCAL_BASE_URL,
     };
   }

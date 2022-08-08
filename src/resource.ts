@@ -34,7 +34,7 @@ async function doRetry(
   let resp;
 
   for (let i = 0; i < bb2.retrySettings.total; i++) {
-    const waitInSec = bb2.retrySettings.total * 2 ** (i - 1);
+    const waitInSec = bb2.retrySettings.backoffFactor * 2 ** (i - 1);
     await sleep(waitInSec * 1000);
     try {
       resp = await axios.get(fhirUrl, config);
