@@ -22,7 +22,7 @@ export function sleep(time: number) {
 function isRetryable(error: AxiosError, bb2: BlueButton) {
   return (
     error.response &&
-    bb2.retrySettings.retryableCodes.includes(error.response.status)
+    bb2.retrySettings.statusForcelist.includes(error.response.status)
   );
 }
 
@@ -33,9 +33,9 @@ async function doRetry(
 ) {
   let resp;
 
-  for (let i = 0; i < bb2.retrySettings.maxAttempts; i++) {
-    const waitInMilliSec = bb2.retrySettings.initInterval * 2 ** i;
-    await sleep(waitInMilliSec);
+  for (let i = 0; i < bb2.retrySettings.total; i++) {
+    const waitInSec = bb2.retrySettings.total * 2 ** (i - 1);
+    await sleep(waitInSec * 1000);
     try {
       resp = await axios.get(fhirUrl, config);
       break;

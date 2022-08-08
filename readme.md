@@ -53,6 +53,7 @@ the SDK needs to be properly configured to work, the parameters are:
 - the app's callback url
 - the version number of the API
 - the app's environment (web location where the app is registered)
+- The FHIR call retry settings
 
 the configuration is in json format and stored in a local file, the default location
 is current working directory with file name: .bluebutton-config.json
@@ -64,9 +65,16 @@ A sample configuration json:
   "clientId": "foo",
   "clientSecret": "bar",
   "callbackUrl": "https://www.fake.com/",
+  "retrySettings": {
+    "total": 3,
+    "backoffFactor": 5,
+    "statusForcelist": [500, 502, 503, 504, 508]
+  }
 }
 
 ```
+
+OAUTH2.0 parameters: clientId, clientSecret, callbackUrl, they are mandatory and must be provided
 
 | parameter    | value                   | Comments                        |
 | ------------ | ----------------------- | ------------------------------- |
@@ -76,6 +84,24 @@ A sample configuration json:
 
 For application registration and client id and client secret, please refer to:
 [Blue Button 2.0 API Docs - Try the API](https://bluebutton.cms.gov/developers/#try-the-api)
+
+FHIR requests retry:
+
+Retry is enabled by default for FHIR requests, retry_settings: parameters for exponential back off retry algorithm
+
+| retry parameter  | value (default)      | Comments                         |
+| ---------------- | -------------------- | -------------------------------- |
+| backoff_factor   | 5                    | back off factor in seconds       |
+| total            | 3                    | max retries                      |
+| status_forcelist | [500, 502, 503, 504] | error response codes to retry on |
+
+the exponential back off factor (in seconds) is used to calculate interval between retries by below formular, where i starts from 0:
+
+backoff factor \* (2 \*\* (i - 1))
+
+e.g. for backoff_factor is 5 seconds, it will generate wait intervals: 2.5, 5, 20, ...
+
+to disable the retry: set total = 0
 
 ## Sample Usages: Obtain Access Grant, Probe Scope, and Access Data <a name="usages"></a>
 

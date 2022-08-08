@@ -5,8 +5,8 @@
   "version": "1",
   "environment": "PRODUCTION",
   "retrySettings": {
-    "initInterval": 1000,
-    "maxAttempts": 2,
-    "retryableCodes": [500, 502, 503, 504, 508]
+    "total": 2,
+    "backoffFactor": 5,
+    "statusForcelist": [500, 502, 503, 504, 508]
   }
 }

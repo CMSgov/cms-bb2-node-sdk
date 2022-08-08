@@ -34,9 +34,9 @@ const LOCAL_BASE_URL = "http://localhost:8000";
  * FHIR end point retry configuration
  */
 export type RetryConfig = {
-  initInterval: number;
-  maxAttempts: number;
-  retryableCodes: number[];
+  total: number;
+  backoffFactor: number;
+  statusForcelist: number[];
 };
 
 /**
@@ -67,9 +67,9 @@ export default class BlueButton {
   constructor(config?: BlueButtonConfig) {
     let bbJsonConfig;
     this.retrySettings = {
-      initInterval: 5000,
-      maxAttempts: 3,
-      retryableCodes: [500, 502, 503, 504],
+      backoffFactor: 5,
+      total: 3,
+      statusForcelist: [500, 502, 503, 504],
     };
     if (!config) {
       try {
@@ -105,18 +105,18 @@ export default class BlueButton {
       throw new Error("callbackUrl is required");
     }
 
-    if (bbJsonConfig.retrySettings?.initInterval) {
-      this.retrySettings.initInterval =
-        bbJsonConfig.retrySettings?.initInterval;
+    if (bbJsonConfig.retrySettings?.backoffFactor) {
+      this.retrySettings.backoffFactor =
+        bbJsonConfig.retrySettings?.backoffFactor;
     }
 
-    if (bbJsonConfig.retrySettings?.maxAttempts) {
-      this.retrySettings.maxAttempts = bbJsonConfig.retrySettings?.maxAttempts;
+    if (bbJsonConfig.retrySettings?.total) {
+      this.retrySettings.total = bbJsonConfig.retrySettings?.total;
     }
 
-    if (bbJsonConfig.retrySettings?.retryableCodes) {
-      this.retrySettings.retryableCodes =
-        bbJsonConfig.retrySettings?.retryableCodes;
+    if (bbJsonConfig.retrySettings?.statusForcelist) {
+      this.retrySettings.statusForcelist =
+        bbJsonConfig.retrySettings?.statusForcelist;
     }
 
     this.baseUrl = bbJsonConfig.baseUrl;
