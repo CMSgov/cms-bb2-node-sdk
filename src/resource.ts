@@ -22,6 +22,7 @@ export function sleep(time: number) {
 function isRetryable(error: AxiosError, bb2: BlueButton) {
   return (
     error.response &&
+    bb2.retrySettings.total > 0 &&
     bb2.retrySettings.statusForcelist.includes(error.response.status)
   );
 }
@@ -40,8 +41,12 @@ async function doRetry(
       resp = await axios.get(fhirUrl, config);
       break;
     } catch (error: unknown | AxiosError) {
-      if (axios.isAxiosError(error) && isRetryable(error, bb2)) {
+      if (axios.isAxiosError(error)) {
         resp = error.response;
+        if (!isRetryable(error, bb2)) {
+          // break out if error is not retryable
+          break;
+        }
       } else {
         throw error;
       }
@@ -85,9 +90,15 @@ export async function getFhirResourceByPath(
   try {
     resp = await axios.get(fhirUrl, config);
   } catch (error: unknown | AxiosError) {
-    if (axios.isAxiosError(error) && isRetryable(error, bb2)) {
-      resp = await doRetry(fhirUrl, config, bb2);
+    if (axios.isAxiosError(error)) {
+      if (isRetryable(error, bb2)) {
+        resp = await doRetry(fhirUrl, config, bb2);
+      } else {
+        // a response attribute expected on an AxiosError
+        resp = error.response;
+      }
     } else {
+      // other errors - likely axios internal exception etc.
       throw error;
     }
   }
