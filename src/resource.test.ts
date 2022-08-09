@@ -20,6 +20,14 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const bb = new BlueButton(`${__dirname}/testConfigs/.bluebutton-config.json`);
 
+const bb_custom_retry = new BlueButton(
+  `${__dirname}/testConfigs/.bluebutton-config-retry.json`
+);
+
+const bb_custom_retry_disabled = new BlueButton(
+  `${__dirname}/testConfigs/.bluebutton-config-disable-retry.json`
+);
+
 const BB2_PATIENT_URL = `${String(bb.baseUrl)}/v${bb.version}/fhir/Patient/`;
 
 const BB2_COVERAGE_URL = `${String(bb.baseUrl)}/v${bb.version}/fhir/Coverage/`;
@@ -199,6 +207,57 @@ test("fhir query with initial failure and success on 2nd retry", async () => {
 
   expect(response.response?.status).toEqual(200);
   expect(response.response?.data).toEqual(patient.data);
+  expect(response.token).toEqual(AUTH_TOKEN_MOCK);
+  expect(mockedAxios.get).toHaveBeenCalledTimes(3);
+  expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+});
+
+test("fhir query with retryable error and retry disabled", async () => {
+  mockedAxios.isAxiosError.mockReturnValue(true);
+  mockedAxios.get.mockRejectedValueOnce(MOCK_RETRYABLE_RESPONSE);
+
+  expect(bb_custom_retry_disabled.retrySettings.total).toEqual(0);
+  expect(bb_custom_retry_disabled.retrySettings.backoffFactor).toEqual(10);
+
+  const responsePromise = getFhirResource(
+    FhirResourceType.Patient,
+    AUTH_TOKEN_MOCK,
+    bb_custom_retry_disabled,
+    {}
+  );
+
+  await flushPromises();
+  jest.runAllTimers();
+  await flushPromises();
+  jest.runAllTimers();
+  const response = await responsePromise;
+
+  expect(response.response?.status).toEqual(500);
+  expect(response.token).toEqual(AUTH_TOKEN_MOCK);
+  expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+});
+
+test("fhir query with initial failure and exhausted max retry (2)", async () => {
+  mockedAxios.isAxiosError.mockReturnValue(true);
+  mockedAxios.get
+    .mockRejectedValueOnce(MOCK_RETRYABLE_RESPONSE)
+    .mockRejectedValueOnce(MOCK_RETRYABLE_RESPONSE)
+    .mockRejectedValueOnce(MOCK_RETRYABLE_RESPONSE);
+
+  const responsePromise = getFhirResource(
+    FhirResourceType.Patient,
+    AUTH_TOKEN_MOCK,
+    bb_custom_retry,
+    {}
+  );
+
+  await flushPromises();
+  jest.runAllTimers();
+  await flushPromises();
+  jest.runAllTimers();
+  const response = await responsePromise;
+
+  expect(response.response?.status).toEqual(500);
   expect(response.token).toEqual(AUTH_TOKEN_MOCK);
   expect(mockedAxios.get).toHaveBeenCalledTimes(3);
   expect(mockedAxios.post).toHaveBeenCalledTimes(0);
