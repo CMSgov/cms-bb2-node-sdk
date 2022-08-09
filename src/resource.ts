@@ -95,6 +95,7 @@ export async function getFhirResourceByPath(
         resp = await doRetry(fhirUrl, config, bb2);
       } else {
         // a response attribute expected on an AxiosError
+        console.log("============== NOT retryable =================");
         resp = error.response;
       }
     } else {
