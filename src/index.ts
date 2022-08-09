@@ -106,12 +106,23 @@ export default class BlueButton {
       throw new Error("callbackUrl is required");
     }
 
-    if (bbJsonConfig.retrySettings?.backoffFactor) {
+    if (
+      bbJsonConfig.retrySettings?.backoffFactor ||
+      bbJsonConfig.retrySettings?.backoffFactor === 0
+    ) {
+      if (bbJsonConfig.retrySettings?.backoffFactor <= 0) {
+        throw new Error(
+          `Invalid retry settings parameter backoffFactor = ${bbJsonConfig.retrySettings?.backoffFactor}: must be > 0`
+        );
+      }
       this.retrySettings.backoffFactor =
         bbJsonConfig.retrySettings?.backoffFactor;
     }
 
-    if (bbJsonConfig.retrySettings?.total) {
+    if (
+      bbJsonConfig.retrySettings?.total ||
+      bbJsonConfig.retrySettings?.total === 0
+    ) {
       this.retrySettings.total = bbJsonConfig.retrySettings?.total;
     }
 
