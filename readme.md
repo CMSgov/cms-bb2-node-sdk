@@ -110,7 +110,7 @@ Below are psuedo code snippets showing SDK used with node express server.
 ```
 
 import express, { Request, Response } from 'express';
-import BlueButton from 'cms-bluebutton-sdk';
+import { BlueButton } from 'cms-bluebutton-sdk';
 import { AuthorizationToken } from 'cms-bluebutton-sdk';
 
 const app = express();
