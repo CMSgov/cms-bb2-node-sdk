@@ -30,6 +30,15 @@ const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
 const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
 
 /**
+ * FHIR end point retry configuration
+ */
+export type RetryConfig = {
+  total: number;
+  backoffFactor: number;
+  statusForcelist: number[];
+};
+
+/**
  * Configuration parameters for a Blue Button API application
  */
 export type BlueButtonJsonConfig = {
@@ -38,6 +47,7 @@ export type BlueButtonJsonConfig = {
   callbackUrl: string;
   version?: string;
   environment?: Environments;
+  retrySettings?: RetryConfig;
 };
 
 export type BlueButtonConfig = string | BlueButtonJsonConfig;
@@ -51,9 +61,15 @@ export class BlueButton {
   callbackUrl: string;
   version: string;
   baseUrl: string;
+  retrySettings: RetryConfig;
 
   constructor(config?: BlueButtonConfig) {
     let bbJsonConfig;
+    this.retrySettings = {
+      backoffFactor: 5,
+      total: 3,
+      statusForcelist: [500, 502, 503, 504],
+    };
     if (!config) {
       try {
         const rawdata = fs.readFileSync(DEFAULT_CONFIG_FILE_LOCATION);
@@ -88,6 +104,31 @@ export class BlueButton {
       throw new Error("callbackUrl is required");
     }
 
+    if (
+      bbJsonConfig.retrySettings?.backoffFactor ||
+      bbJsonConfig.retrySettings?.backoffFactor === 0
+    ) {
+      if (bbJsonConfig.retrySettings?.backoffFactor <= 0) {
+        throw new Error(
+          `Invalid retry settings parameter backoffFactor = ${bbJsonConfig.retrySettings?.backoffFactor}: must be > 0`
+        );
+      }
+      this.retrySettings.backoffFactor =
+        bbJsonConfig.retrySettings?.backoffFactor;
+    }
+
+    if (
+      bbJsonConfig.retrySettings?.total ||
+      bbJsonConfig.retrySettings?.total === 0
+    ) {
+      this.retrySettings.total = bbJsonConfig.retrySettings?.total;
+    }
+
+    if (bbJsonConfig.retrySettings?.statusForcelist) {
+      this.retrySettings.statusForcelist =
+        bbJsonConfig.retrySettings?.statusForcelist;
+    }
+
     this.baseUrl = bbJsonConfig.baseUrl;
     this.clientId = bbJsonConfig.clientId;
     this.callbackUrl = bbJsonConfig.callbackUrl;
@@ -109,6 +150,7 @@ export class BlueButton {
       clientId: config.clientId,
       clientSecret: config.clientSecret,
       callbackUrl: config.callbackUrl,
+      retrySettings: config.retrySettings,
       version: config.version ? config.version : "2",
       baseUrl:
         config.environment === Environments.PRODUCTION

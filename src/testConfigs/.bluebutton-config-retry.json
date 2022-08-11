@@ -1,0 +1,12 @@
+{
+  "clientId": "foo",
+  "clientSecret": "bar",
+  "callbackUrl": "https://www.fake.com/",
+  "version": "1",
+  "environment": "PRODUCTION",
+  "retrySettings": {
+    "total": 2,
+    "backoffFactor": 5,
+    "statusForcelist": [500, 502, 503, 504, 508]
+  }
+}

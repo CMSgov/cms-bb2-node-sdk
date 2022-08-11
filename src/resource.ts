@@ -5,13 +5,6 @@ import { AuthorizationToken } from "./entities/AuthorizationToken";
 import { refreshAuthToken } from "./auth";
 import { SDK_HEADERS } from "./enums/environments";
 
-// initInterval in milli-seconds
-export const retrySettings = {
-  initInterval: 5000,
-  maxAttempts: 3,
-  retryableCodes: [500, 502, 503, 504],
-};
-
 // also serves as central registry for supported resource paths
 export enum FhirResourceType {
   Patient = "fhir/Patient/",
@@ -26,25 +19,34 @@ export function sleep(time: number) {
   });
 }
 
-function isRetryable(error: AxiosError) {
+function isRetryable(error: AxiosError, bb2: BlueButton) {
   return (
     error.response &&
-    retrySettings.retryableCodes.includes(error.response.status)
+    bb2.retrySettings.total > 0 &&
+    bb2.retrySettings.statusForcelist.includes(error.response.status)
   );
 }
 
-async function doRetry(fhirUrl: string, config: AxiosRequestConfig) {
+async function doRetry(
+  fhirUrl: string,
+  config: AxiosRequestConfig,
+  bb2: BlueButton
+) {
   let resp;
 
-  for (let i = 0; i < retrySettings.maxAttempts; i++) {
-    const waitInMilliSec = retrySettings.initInterval * 2 ** i;
-    await sleep(waitInMilliSec);
+  for (let i = 0; i < bb2.retrySettings.total; i++) {
+    const waitInSec = bb2.retrySettings.backoffFactor * 2 ** (i - 1);
+    await sleep(waitInSec * 1000);
     try {
       resp = await axios.get(fhirUrl, config);
       break;
     } catch (error: unknown | AxiosError) {
-      if (axios.isAxiosError(error) && isRetryable(error)) {
+      if (axios.isAxiosError(error)) {
         resp = error.response;
+        if (!isRetryable(error, bb2)) {
+          // break out if error is not retryable
+          break;
+        }
       } else {
         throw error;
       }
@@ -88,9 +90,15 @@ export async function getFhirResourceByPath(
   try {
     resp = await axios.get(fhirUrl, config);
   } catch (error: unknown | AxiosError) {
-    if (axios.isAxiosError(error) && isRetryable(error)) {
-      resp = await doRetry(fhirUrl, config);
+    if (axios.isAxiosError(error)) {
+      if (isRetryable(error, bb2)) {
+        resp = await doRetry(fhirUrl, config, bb2);
+      } else {
+        // a response attribute expected on an AxiosError
+        resp = error.response;
+      }
     } else {
+      // other errors - likely axios internal exception etc.
       throw error;
     }
   }
