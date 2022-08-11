@@ -1,6 +1,6 @@
 import fs from "fs";
 import { cwd } from "process";
-import BlueButton from ".";
+import { BlueButton } from ".";
 import { Environments } from ".";
 
 test("expect bb sdk to be created with appropriate defaults", () => {
@@ -166,4 +166,18 @@ test("expect bb sdk to be created with config as object", () => {
   expect(bb.callbackUrl).toBe(CALLBACK_URL);
   expect(bb.version).toBe("2");
   expect(bb.baseUrl).toBe(`https://api.bluebutton.cms.gov`);
+});
+
+test("should throw a helpful error if backoffFactor is a negative number", () => {
+  try {
+    new BlueButton(
+      `${__dirname}/testConfigs/.bluebutton-config-invalid-backoff-factor.json`
+    );
+  } catch (e) {
+    expect(e).toEqual(
+      new Error(
+        `Invalid retry settings parameter backoffFactor = 0: must be > 0`
+      )
+    );
+  }
 });

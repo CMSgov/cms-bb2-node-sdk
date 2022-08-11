@@ -4,7 +4,7 @@
 import axios from "axios";
 import crypto from "crypto";
 
-import BlueButton from ".";
+import { BlueButton } from ".";
 import { AuthorizationToken } from "./entities/AuthorizationToken";
 import { SDK_HEADERS } from "./enums/environments";
 import { Errors } from "./enums/errors";
@@ -142,13 +142,9 @@ export async function getAuthorizationToken(
   );
 
   const postData = generateTokenPostData(bb, authData, callbackRequestCode);
-  const resp = await doPost(
-    getAccessTokenUrl(bb),
-    new URLSearchParams(postData),
-    {
-      headers: SDK_HEADERS,
-    }
-  );
+  const resp = await doPost(getAccessTokenUrl(bb), postData, {
+    headers: SDK_HEADERS,
+  });
 
   if (resp.data) {
     const authToken = new AuthorizationToken(resp.data);
@@ -175,17 +171,13 @@ export async function refreshAuthToken(
     refresh_token: authToken.refreshToken,
   };
 
-  const resp = await axios.post(
-    getAccessTokenUrl(bb),
-    new URLSearchParams(postData),
-    {
-      headers: SDK_HEADERS,
-      auth: {
-        username: bb.clientId,
-        password: bb.clientSecret,
-      },
-    }
-  );
+  const resp = await doPost(getAccessTokenUrl(bb), postData, {
+    headers: SDK_HEADERS,
+    auth: {
+      username: bb.clientId,
+      password: bb.clientSecret,
+    },
+  });
 
   return new AuthorizationToken(resp.data);
 }
