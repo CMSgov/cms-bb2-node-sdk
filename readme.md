@@ -4,7 +4,7 @@
 The Node software development kit (SDK) for [CMS Blue Button 2.0 (BB2.0) API](https://bluebutton.cms.gov/developers/) provides tools and resources for developers integrating with the Blue Button 2.0 API.
 
 
-# Table of contents
+# Table of Contents
 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
@@ -24,7 +24,7 @@ See  **[Try the API](https://bluebutton.cms.gov/developers/#try-the-api)** for i
 In the developer sandbox, you'll register an app to get a client ID and client secret which are required  to configure the SDK. 
 
 
-### Sample access token
+### Sample Access Token
 
 To access data from the API, you need an access token. We provide synthetic Medicare beneficiary accounts to use in our developer sandbox. You can use one these synthetic accounts to simulate the authorization flow of the production environment to generate a sample token. 
 
@@ -50,7 +50,7 @@ Yarn
 $ yarn add cms-bluebutton-sdk
 ```
 
-Yarn with typescript
+Yarn with TypeScript
 
 ```bash
 $ yarn add --dev @types/cms-bluebutton-sdk
@@ -289,6 +289,6 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
 The [Blue Button 2.0 API](https://bluebutton.cms.gov/) provides Medicare enrollee claims data to applications using the [OAuth2.0 authorization flow](https://datatracker.ietf.org/doc/html/rfc6749). We aim to provide a developer-friendly, standards-based API that enables people with Medicare to connect their claims data to the applications, services, and research programs they trust.
 
 
-## Help and Support
-Got questions? Need help troubleshooting? Want to propse a feature? Contact the Blue Button 2.0 team and connect with the community in our [Google Group](https://groups.google.com/forum/#!forum/Developer-group-for-cms-blue-button-api). 
+## Help And Support
+Got questions? Need help troubleshooting? Want to propose a new feature? Contact the Blue Button 2.0 team and connect with the community in our [Google Group](https://groups.google.com/forum/#!forum/Developer-group-for-cms-blue-button-api). 
 
