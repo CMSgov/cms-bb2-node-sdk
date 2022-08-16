@@ -9,10 +9,9 @@ The Node software development kit (SDK) for [CMS Blue Button 2.0 (BB2.0) API](ht
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Examples](#examples)
-- [Sample App](#samples)
-- [About](#about)
-- [Help and Support](#support)
+- [Usages: Obtain Access Grant, Probe Scope, and Access Data](#usages)
+- [A Complete Sample App](#samples)
+- [API Versions and Environments](#versions_and_environments)
 
 ## Prerequisites <a name="prerequisites"></a>
 
@@ -108,7 +107,7 @@ Example:
 
 ```
 
-## Examples <a name="examples"></a>
+## Usage: Obtain Access Grant, Probe Scope, and Access Data <a name="usages"></a>
 
 Below are psuedo code snippets showing SDK used with Node JS Express server.
 
@@ -281,10 +280,13 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
 
 
 
-## About The Blue Button 2.0 API <a name="about"></a>
+
+
+
+## About The Blue Button 2.0 API
 The [Blue Button 2.0 API](https://bluebutton.cms.gov/) provides Medicare enrollee claims data to applications using the [OAuth2.0 authorization flow](https://datatracker.ietf.org/doc/html/rfc6749). We aim to provide a developer-friendly, standards-based API that enables people with Medicare to connect their claims data to the applications, services, and research programs they trust.
 
 
-## Help and Support <a name="support"></a>
+## Help and Support
 Got questions? Need help troubleshooting? Want to propse a feature? Contact the Blue Button 2.0 team and connect with the community in our [Google Group](https://groups.google.com/forum/#!forum/Developer-group-for-cms-blue-button-api). 
 
