@@ -107,7 +107,9 @@ Example:
 
 ```
 
-## Usage: Obtain Access Grant, Probe Scope, and Access Data <a name="usages"></a>
+## Usage <a name="usages"></a>
+
+*Adrian to add intro text that gives more context and explanation about what's included in this code snippet. We could consdider breaking up the snippet into smaller chunks, but if it's a better user experience for a dev to just grab the whole thing at once, I think we just need to tee it up with a more thorough explanationi of what's included re: Obtain Access Grant, Probe Scope, and Access Data*
 
 Below are psuedo code snippets showing SDK used with Node JS Express server.
 
