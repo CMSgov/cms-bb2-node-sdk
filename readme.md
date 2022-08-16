@@ -285,10 +285,10 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
 
 
 
-## About The Blue Button 2.0 API
+## About the Blue Button 2.0 API
 The [Blue Button 2.0 API](https://bluebutton.cms.gov/) provides Medicare enrollee claims data to applications using the [OAuth2.0 authorization flow](https://datatracker.ietf.org/doc/html/rfc6749). We aim to provide a developer-friendly, standards-based API that enables people with Medicare to connect their claims data to the applications, services, and research programs they trust.
 
 
-## Help And Support
+## Help and Support
 Got questions? Need help troubleshooting? Want to propose a new feature? Contact the Blue Button 2.0 team and connect with the community in our [Google Group](https://groups.google.com/forum/#!forum/Developer-group-for-cms-blue-button-api). 
 
