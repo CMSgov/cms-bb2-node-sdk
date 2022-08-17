@@ -65,10 +65,12 @@ export async function getFhirResourceByPath(
   let newAuthToken = authToken;
 
   // now the on demand token refresh can be disabled
+  console.log("Checking disable token refresh flag...");
   if (bb2.tokenRefreshOnExpire) {
     // rare edge case: access token in authToken become expired right after below check
     // and before subsequent fhir end point call, in that case, a correctional action
     // by the app logic might be a recommended practice.
+    console.log("Checking token expred or not...");
     if (moment(authToken.expiresAt).isBefore(moment())) {
       newAuthToken = await refreshAuthToken(authToken, bb2);
     }
