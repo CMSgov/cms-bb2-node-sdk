@@ -28,6 +28,10 @@ const bb_custom_retry_disabled = new BlueButton(
   `${__dirname}/testConfigs/.bluebutton-config-disable-retry.json`
 );
 
+const bb_custom_on_expire_token_refresh_disabled = new BlueButton(
+  `${__dirname}/testConfigs/.bluebutton-config-disable-token-refresh-on-expire.json`
+);
+
 const BB2_PATIENT_URL = `${String(bb.baseUrl)}/v${bb.version}/fhir/Patient/`;
 
 const BB2_COVERAGE_URL = `${String(bb.baseUrl)}/v${bb.version}/fhir/Coverage/`;
@@ -272,7 +276,7 @@ test("fhir query with expired token that is automatically refreshed", async () =
     return Promise.resolve(AUTH_TOKEN_REFRESHED_RESPONSE_MOCK);
   });
 
-  const response = await bb.getProfileData(AUTH_TOKEN_EXPIRED_MOCK);
+  const response = await bb.getPatientData(AUTH_TOKEN_EXPIRED_MOCK);
 
   expect(response.response?.status).toEqual(200);
   expect(response.response?.data).toEqual(patient.data);
@@ -282,6 +286,30 @@ test("fhir query with expired token that is automatically refreshed", async () =
   });
   expect(mockedAxios.get).toHaveBeenCalledTimes(1);
   expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+});
+
+test("fhir query with expired token that is NOT automatically refreshed due to on demand token refresh disabled", async () => {
+  mockedAxios.get.mockImplementation(() => {
+    return Promise.resolve(patient);
+  });
+
+  mockedAxios.post.mockImplementation(() => {
+    return Promise.resolve(AUTH_TOKEN_REFRESHED_RESPONSE_MOCK);
+  });
+
+  const response =
+    await bb_custom_on_expire_token_refresh_disabled.getPatientData(
+      AUTH_TOKEN_EXPIRED_MOCK
+    );
+
+  expect(response.response?.status).toEqual(200);
+  expect(response.response?.data).toEqual(patient.data);
+  expect(response.token).toEqual({
+    ...AUTH_TOKEN_EXPIRED_MOCK,
+    expiresAt: response.token.expiresAt,
+  });
+  expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+  expect(mockedAxios.post).toHaveBeenCalledTimes(0);
 });
 
 test("fhir search with page navigation.", async () => {

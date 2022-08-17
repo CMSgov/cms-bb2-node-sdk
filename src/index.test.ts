@@ -84,6 +84,8 @@ test("empty constructor should use top level .bluebutton-config.json file (if ex
   expect(bb.clientSecret).toBe(CLIENT_SECRET);
   expect(bb.version).toBe(VERSION);
   expect(bb.baseUrl).toBe(`https://api.bluebutton.cms.gov`);
+  // check on demand token refresh is on by default
+  expect(bb.tokenRefreshOnExpire).toEqual(true);
 
   fs.unlinkSync(pathToFile);
 });
@@ -180,4 +182,11 @@ test("should throw a helpful error if backoffFactor is a negative number", () =>
       )
     );
   }
+});
+
+test("check on demand token refresh can be disabled from config: tokenRefreshOnExpire can be set from config", () => {
+  const bb = new BlueButton(
+    `${__dirname}/testConfigs/.bluebutton-config-disable-token-refresh-on-expire.json`
+  );
+  expect(bb.tokenRefreshOnExpire).toEqual(false);
 });
