@@ -50,6 +50,7 @@ export type BlueButtonJsonConfig = {
   version?: string;
   environment?: Environments;
   retrySettings?: RetryConfig;
+  tokenRefreshOnExpire?: boolean;
 };
 
 export type BlueButtonConfig = string | BlueButtonJsonConfig;
@@ -64,6 +65,7 @@ export class BlueButton {
   version: string;
   baseUrl: string;
   retrySettings: RetryConfig;
+  tokenRefreshOnExpire: boolean;
 
   constructor(config?: BlueButtonConfig) {
     let bbJsonConfig;
@@ -136,6 +138,7 @@ export class BlueButton {
     this.callbackUrl = bbJsonConfig.callbackUrl;
     this.clientSecret = bbJsonConfig.clientSecret;
     this.version = bbJsonConfig.version;
+    this.tokenRefreshOnExpire = bbJsonConfig.tokenRefreshOnExpire;
   }
 
   normalizeConfig(config: BlueButtonJsonConfig) {
@@ -154,6 +157,10 @@ export class BlueButton {
       callbackUrl: config.callbackUrl,
       retrySettings: config.retrySettings,
       version: config.version ? config.version : "2",
+      tokenRefreshOnExpire:
+        config?.tokenRefreshOnExpire == null
+          ? true
+          : config.tokenRefreshOnExpire,
       baseUrl:
         config.environment === Environments.PRODUCTION
           ? PRODUCTION_BASE_URL

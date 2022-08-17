@@ -54,6 +54,7 @@ the SDK needs to be properly configured to work, the parameters are:
 - the version number of the API
 - the app's environment (web location where the app is registered)
 - The FHIR call retry settings
+- Enable / Disable Token refresh if FHIR request processing detected the access token expired
 
 the configuration is in json format and stored in a local file, the default location
 is current working directory with file name: .bluebutton-config.json
@@ -84,6 +85,14 @@ OAUTH2.0 parameters: clientId, clientSecret, callbackUrl, they are mandatory and
 
 For application registration and client id and client secret, please refer to:
 [Blue Button 2.0 API Docs - Try the API](https://bluebutton.cms.gov/developers/#try-the-api)
+
+Auth Token Refresh on Expire:
+
+SDK FHIR requests will check if the access token is expired before the data end point call, if the access token is expired, then a token refresh is performed with the refresh token in the current auth token object, this behavior can be disabled by setting configuration parameter as below:
+
+"tokenRefreshOnExpire": false
+
+By default, token_refresh_on_expire is true.
 
 FHIR requests retry:
 
