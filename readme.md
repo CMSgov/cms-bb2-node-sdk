@@ -1,8 +1,6 @@
-
 # Node SDK for Blue Button 2.0 API
 
 The Node software development kit (SDK) for [CMS Blue Button 2.0 (BB2.0) API](https://bluebutton.cms.gov/developers/) provides tools and resources for developers integrating with the Blue Button 2.0 API.
-
 
 # Table of contents
 
@@ -16,12 +14,9 @@ The Node software development kit (SDK) for [CMS Blue Button 2.0 (BB2.0) API](ht
 
 ## Prerequisites <a name="prerequisites"></a>
 
-You'll need a sandbox account and sample access token to access data from the Blue Button 2.0 API. 
+You'll need a sandbox account and sample access token to access data from the Blue Button 2.0 API.
 
-
-To learn how to create a sandbox account and generate a sample access token, see  **[Try the API](https://bluebutton.cms.gov/developers/#try-the-api)**.
- 
-
+To learn how to create a sandbox account and generate a sample access token, see **[Try the API](https://bluebutton.cms.gov/developers/#try-the-api)**.
 
 ## Installation <a name="installation"></a>
 
@@ -51,28 +46,29 @@ $ yarn add --dev @types/cms-bluebutton-sdk
 
 ## Configuration <a name="configuration"></a>
 
-The configuration is in JSON format and stored in a local file. The default location is the current working directory with file name: ```.bluebutton-config.json```
+The configuration is in JSON format and stored in a local file. The default location is the current working directory with file name: `.bluebutton-config.json`
 
 ### Parameters
-| Parameter    | Value Options                   | Description                        |
-| ------------ | ----------------------- | ------------------------------- |
-| ```clientId```     | foo                   | OAuth2.0 client ID of the app     |
-| ```clientSecret``` | bar                  | OAuth2.0 client secret fot the app |
-| ```callbackUrl```  | https://www.fake.com/ | OAuth2.0 callback URL for the app  |
-| ```version``` | 1 or 2     | Blue Button 2.0 API version.  Default version is 2. |
-| ```environment```| SANDBOX or PRODUCTION      | Web location where the app is registered. Default is SANDBOX.
+
+| Parameter      | Value Options         | Description                                                   |
+| -------------- | --------------------- | ------------------------------------------------------------- |
+| `clientId`     | foo                   | OAuth2.0 client ID of the app                                 |
+| `clientSecret` | bar                   | OAuth2.0 client secret fot the app                            |
+| `callbackUrl`  | https://www.fake.com/ | OAuth2.0 callback URL for the app                             |
+| `version`      | 1 or 2                | Blue Button 2.0 API version. Default version is 2.            |
+| `environment`  | SANDBOX or PRODUCTION | Web location where the app is registered. Default is SANDBOX. |
 
 ### Environments and Data
 
 The Blue Button 2.0 API is available in V1 and V2 in a Sandbox and Production environment.
 
-- Sandbox location: https://sandbox.bluebutton.cms.gov 
-- Production location: https://api.bluebutton.cms.gov 
+- Sandbox location: https://sandbox.bluebutton.cms.gov
+- Production location: https://api.bluebutton.cms.gov
 
 Version data formats:
+
 - V1: FHIR STU2
 - V2: FHIR R4
-
 
 Sample configuration JSON with default version and environment:
 
@@ -102,9 +98,13 @@ Example:
 
 ## Usage <a name="usages"></a>
 
-*Adrian to add intro text that gives more context and explanation about what's included in this code snippet. We could consdider breaking up the snippet into smaller chunks, but if it's a better user experience for a dev to just grab the whole thing at once, I think we just need to tee it up with a more thorough explanationi of what's included re: Obtain Access Grant, Probe Scope, and Access Data*
+The following pseudocode shows the SDK used with a Node JS Express server.
+This code walks through:
 
-Below are psuedo code snippets showing SDK used with Node JS Express server.
+1. Obtaining an access token with scope chosen by a user.
+2. Passing the token to query for FHIR data.
+3. Using url links from the response to page through data.
+4. Using the SDK paging support to return all data in one call.
 
 ```
 
@@ -146,7 +146,7 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         }
 
         /**
-        * 1. access token scope where demagraphic info included:
+        * 1. Access token scope with demagraphic info:
         *
         * scope: [
         * "patient/Coverage.read",
@@ -155,7 +155,7 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         * "profile",
         * ]
         *
-        * 2. access token scope where demagraphic info not included:
+        * 2. Access token scope without demagraphic info:
         *
         * scope: [
         * "patient/Coverage.read",
@@ -273,16 +273,14 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
 
 ```
 
-
-
 ## Sample App
+
 For a complete Node JS sample app, see [CMS Blue Button Node JS Sample App](https://github.com/CMSgov/bluebutton-sample-client-nodejs-react).
 
-
 ## About the Blue Button 2.0 API <a name="about"></a>
+
 The [Blue Button 2.0 API](https://bluebutton.cms.gov/) provides Medicare enrollee claims data to applications using the [OAuth2.0 authorization flow](https://datatracker.ietf.org/doc/html/rfc6749). We aim to provide a developer-friendly, standards-based API that enables people with Medicare to connect their claims data to the applications, services, and research programs they trust.
 
-
 ## Help and Support <a name="help"></a>
-Got questions? Need help troubleshooting? Want to propose a new feature? Contact the Blue Button 2.0 team and connect with the community in our [Google Group](https://groups.google.com/forum/#!forum/Developer-group-for-cms-blue-button-api). 
 
+Got questions? Need help troubleshooting? Want to propose a new feature? Contact the Blue Button 2.0 team and connect with the community in our [Google Group](https://groups.google.com/forum/#!forum/Developer-group-for-cms-blue-button-api).
