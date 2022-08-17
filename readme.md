@@ -4,30 +4,23 @@
 The Node software development kit (SDK) for [CMS Blue Button 2.0 (BB2.0) API](https://bluebutton.cms.gov/developers/) provides tools and resources for developers integrating with the Blue Button 2.0 API.
 
 
-# Table of Contents
+# Table of contents
 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Usages: Obtain Access Grant, Probe Scope, and Access Data](#usages)
-- [A Complete Sample App](#samples)
-- [API Versions and Environments](#versions_and_environments)
+- [Usage](#usages)
+- [Sample App](#sample-app)
+- [About](#about)
+- [Help and Support](#help)
 
 ## Prerequisites <a name="prerequisites"></a>
 
 You'll need a sandbox account and sample access token to access data from the Blue Button 2.0 API. 
 
-See  **[Try the API](https://bluebutton.cms.gov/developers/#try-the-api)** for instructions on creating a sandbox account and generating a sample access token.
 
-### Sandbox account
-
-In the developer sandbox, you'll register an app to get a client ID and client secret which are required  to configure the SDK. 
-
-
-### Sample Access Token
-
-To access data from the API, you need an access token. We provide synthetic Medicare beneficiary accounts to use in our developer sandbox. You can use one these synthetic accounts to simulate the authorization flow of the production environment to generate a sample token. 
-
+To learn how to create a sandbox account and generate a sample access token, see  **[Try the API](https://bluebutton.cms.gov/developers/#try-the-api)**.
+ 
 
 
 ## Installation <a name="installation"></a>
@@ -50,7 +43,7 @@ Yarn
 $ yarn add cms-bluebutton-sdk
 ```
 
-Yarn with TypeScript
+Yarn with typescript
 
 ```bash
 $ yarn add --dev @types/cms-bluebutton-sdk
@@ -282,13 +275,14 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
 
 
 
+## Sample App
+For a complete Node JS sample app, see [CMS Blue Button Node JS Sample App](https://github.com/CMSgov/bluebutton-sample-client-nodejs-react).
 
 
-
-## About the Blue Button 2.0 API
+## About the Blue Button 2.0 API <a name="about"></a>
 The [Blue Button 2.0 API](https://bluebutton.cms.gov/) provides Medicare enrollee claims data to applications using the [OAuth2.0 authorization flow](https://datatracker.ietf.org/doc/html/rfc6749). We aim to provide a developer-friendly, standards-based API that enables people with Medicare to connect their claims data to the applications, services, and research programs they trust.
 
 
-## Help and Support
+## Help and Support <a name="help"></a>
 Got questions? Need help troubleshooting? Want to propose a new feature? Contact the Blue Button 2.0 team and connect with the community in our [Google Group](https://groups.google.com/forum/#!forum/Developer-group-for-cms-blue-button-api). 
 
