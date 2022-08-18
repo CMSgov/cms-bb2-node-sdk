@@ -7,7 +7,7 @@ The Node software development kit (SDK) for [CMS Blue Button 2.0 (BB2.0) API](ht
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Usage](#usages)
+- [Usage](#usage)
 - [Sample App](#sample-app)
 - [About](#about)
 - [Help and Support](#help)
@@ -96,15 +96,14 @@ Example:
 
 ```
 
-## Usage <a name="usages"></a>
+## Usage <a name="usage"></a>
 
-The following pseudocode shows the SDK used with a Node JS Express server.
-This code walks through:
+The following pseudocode shows the SDK used with a Node JS Express server. This code walks through:
 
-1. Obtaining an access token with scope chosen by a user.
-2. Passing the token to query for FHIR data.
-3. Using url links from the response to page through data.
-4. Using the SDK paging support to return all data in one call.
+- Obtaining an access token with scope chosen by a user
+- Passing the token to query for FHIR data
+- Using URL links from the response to page through data
+- Using the SDK paging support to return all data in one call
 
 ```
 
