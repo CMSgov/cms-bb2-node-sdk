@@ -58,6 +58,72 @@ The configuration is in JSON format and stored in a local file. The default loca
 | `version`      | 1 or 2                | Blue Button 2.0 API version. Default version is 2.            |
 | `environment`  | SANDBOX or PRODUCTION | Web location where the app is registered. Default is SANDBOX. |
 
+#### Auth Token Refresh on Expire:
+
+SDK FHIR requests will check if the access token is expired before the data end point call, if the access token is expired, then a token refresh is performed with the refresh token in the current auth token object.
+
+#### FHIR requests retry:
+
+Retry is enabled by default for FHIR requests, `retrySettings`: parameters for exponential back off retry algorithm
+
+| retry parameter | value (default)      | Comments                         |
+| --------------- | -------------------- | -------------------------------- |
+| backoffFactor   | 5                    | back off factor in seconds       |
+| total           | 3                    | max retries                      |
+| statusForcelist | [500, 502, 503, 504] | error response codes to retry on |
+
+the exponential back off factor (in seconds) is used to calculate interval between retries by below formular, where i starts from 0:
+
+backoff factor \* (2 \*\* (i - 1))
+
+e.g. for backoff_factor is 5 seconds, it will generate wait intervals: 2.5, 5, 10, ...
+
+to disable the retry: set total = 0
+
+#### There are two ways to configure the SDK when instantiating a `BlueButton` class instance:
+
+- JSON object literal:
+  - Configuration key:value pairs can be used.
+  - Configuration values can be provided from your own application's configuration method.
+  - Example code:
+    ```typescript
+    const bb = BlueButton({
+             "environment": "PRODUCTION",
+             "clientId": "foo",
+             "clientSecret": "bar",
+             "callbackUrl": "https://www.fake.com/callback",
+             "version": 2,
+             "retrySettings": {
+                 "total": 3,
+                 "backoffFactor": 5,
+                 "statusForcelist": [500, 502, 503, 504]
+             }
+          }
+    ```
+- JSON config file:
+  - This is using a configuration file that is in a JSON format.
+  - This is stored in a local file.
+  - The default location is in the current working directory with a file name: .bluebutton-config.json
+  - Example code:
+    ```typescript
+    const bb = BlueButton("settings/my_bb2_sdk_conf.json");
+    ```
+  - Example JSON in file:
+    ```json
+    {
+      "environment": "SANDBOX",
+      "clientId": "foo",
+      "clientSecret": "bar",
+      "callbackUrl": "https://www.fake.com/callback",
+      "version": 2,
+      "retrySettings": {
+        "total": 3,
+        "backoffFactor": 5,
+        "statusForcelist": [500, 502, 503, 504]
+      }
+    }
+    ```
+
 ### Environments and Data
 
 The Blue Button 2.0 API is available in V1 and V2 in a Sandbox and Production environment.
