@@ -1,45 +1,44 @@
-# Blue Button API SDK
+# Node SDK for Blue Button 2.0 API
+
+The Node software development kit (SDK) for [CMS Blue Button 2.0 (BB2.0) API](https://bluebutton.cms.gov/developers/) provides tools and resources for developers integrating with the Blue Button 2.0 API.
 
 # Table of contents
 
-1. [Descritpion](#description)
-2. [Installation](#installation)
-3. [Configuration](#configuration)
-4. [Usages: Obtain Access Grant, Probe Scope, and Access Data](#usages)
-5. [A Complete Sample App](#samples)
-6. [API Versions and Environments](#versions_and_environments)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Sample App](#sample-app)
+- [About](#about)
+- [Help and Support](#help)
 
-## Description <a name="description"></a>
+## Prerequisites <a name="prerequisites"></a>
 
-This is an SDK for interacting with [CMS Blue Button 2.0 API](https://bluebutton.cms.gov/developers/),
-the API allows applications to obtain a beneficiary's (who has login account with medicare.gov) grant
-to access his/her medicare claims data - through OAUTH2 [(RFC 6749)](https://datatracker.ietf.org/doc/html/rfc6749) authorization flow.
+You'll need a sandbox account and sample access token to access data from the Blue Button 2.0 API.
 
-By using the SDK, the development of applications accessing Blue Button 2.0 API can be greatly simplified.
-
-Note, following the OAUTH2 best practices, OAUTH2 PKCE extension [(RFC 7636)](https://datatracker.ietf.org/doc/html/rfc7636) is always enabled.
+To learn how to create a sandbox account and generate a sample access token, see **[Try the API](https://bluebutton.cms.gov/developers/#try-the-api)**.
 
 ## Installation <a name="installation"></a>
 
-Using npm:
+npm
 
 ```bash
 $ npm install cms-bluebutton-sdk
 ```
 
-When develop with typescript
+npm with TypeScript
 
 ```bash
 $ npm install --save-dev @types/cms-bluebutton-sdk
 ```
 
-Using yarn:
+Yarn
 
 ```bash
 $ yarn add cms-bluebutton-sdk
 ```
 
-When develop with typescript
+Yarn with typescript
 
 ```bash
 $ yarn add --dev @types/cms-bluebutton-sdk
@@ -47,65 +46,64 @@ $ yarn add --dev @types/cms-bluebutton-sdk
 
 ## Configuration <a name="configuration"></a>
 
-the SDK needs to be properly configured to work, the parameters are:
+The configuration is in JSON format and stored in a local file. The default location is the current working directory with file name: `.bluebutton-config.json`
 
-- the app's credentials - client id, client secret
-- the app's callback url
-- the version number of the API
-- the app's environment (web location where the app is registered)
-- The FHIR call retry settings
+### Parameters
 
-the configuration is in json format and stored in a local file, the default location
-is current working directory with file name: .bluebutton-config.json
+| Parameter      | Value Options         | Description                                                   |
+| -------------- | --------------------- | ------------------------------------------------------------- |
+| `clientId`     | foo                   | OAuth2.0 client ID of the app                                 |
+| `clientSecret` | bar                   | OAuth2.0 client secret fot the app                            |
+| `callbackUrl`  | https://www.fake.com/ | OAuth2.0 callback URL for the app                             |
+| `version`      | 1 or 2                | Blue Button 2.0 API version. Default version is 2.            |
+| `environment`  | SANDBOX or PRODUCTION | Web location where the app is registered. Default is SANDBOX. |
 
-A sample configuration json:
+### Environments and Data
+
+The Blue Button 2.0 API is available in V1 and V2 in a Sandbox and Production environment.
+
+- Sandbox location: https://sandbox.bluebutton.cms.gov
+- Production location: https://api.bluebutton.cms.gov
+
+Version data formats:
+
+- V1: FHIR STU2
+- V2: FHIR R4
+
+Sample configuration JSON with default version and environment:
 
 ```
 {
   "clientId": "foo",
   "clientSecret": "bar",
   "callbackUrl": "https://www.fake.com/",
-  "retrySettings": {
-    "total": 3,
-    "backoffFactor": 5,
-    "statusForcelist": [500, 502, 503, 504, 508]
-  }
 }
 
 ```
 
-OAUTH2.0 parameters: clientId, clientSecret, callbackUrl, they are mandatory and must be provided
+If needed, you can set your application's target environment and API version.
 
-| parameter    | value                   | Comments                        |
-| ------------ | ----------------------- | ------------------------------- |
-| clientId     | "foo"                   | oauth2 client id of the app     |
-| clientSecret | "bar"                   | oauth2 client secret of the app |
-| callbackUrl  | "https://www.fake.com/" | oauth2 callback url of the app  |
+Example:
 
-For application registration and client id and client secret, please refer to:
-[Blue Button 2.0 API Docs - Try the API](https://bluebutton.cms.gov/developers/#try-the-api)
+```
+{
+  "clientId": "foo",
+  "clientSecret": "bar",
+  "callbackUrl": "https://www.fake.com/",
+  "version": "2",
+  "environment": "PRODUCTION"
+}
 
-FHIR requests retry:
+```
 
-Retry is enabled by default for FHIR requests, retry_settings: parameters for exponential back off retry algorithm
+## Usage <a name="usage"></a>
 
-| retry parameter  | value (default)      | Comments                         |
-| ---------------- | -------------------- | -------------------------------- |
-| backoff_factor   | 5                    | back off factor in seconds       |
-| total            | 3                    | max retries                      |
-| status_forcelist | [500, 502, 503, 504] | error response codes to retry on |
+The following pseudocode shows the SDK used with a Node JS Express server. This code walks through:
 
-the exponential back off factor (in seconds) is used to calculate interval between retries by below formular, where i starts from 0:
-
-backoff factor \* (2 \*\* (i - 1))
-
-e.g. for backoff_factor is 5 seconds, it will generate wait intervals: 2.5, 5, 10, ...
-
-to disable the retry: set total = 0
-
-## Sample Usages: Obtain Access Grant, Probe Scope, and Access Data <a name="usages"></a>
-
-Below are psuedo code snippets showing SDK used with node express server.
+- Obtaining an access token with scope chosen by a user
+- Passing the token to query for FHIR data
+- Using URL links from the response to page through data
+- Using the SDK paging support to return all data in one call
 
 ```
 
@@ -147,7 +145,7 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         }
 
         /**
-        * 1. access token scope where demagraphic info included:
+        * 1. Access token scope with demagraphic info:
         *
         * scope: [
         * "patient/Coverage.read",
@@ -156,7 +154,7 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         * "profile",
         * ]
         *
-        * 2. access token scope where demagraphic info not included:
+        * 2. Access token scope without demagraphic info:
         *
         * scope: [
         * "patient/Coverage.read",
@@ -274,30 +272,14 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
 
 ```
 
-## A Complete Sample App <a name="samples"></a>
+## Sample App
 
-A Node JS React sample app can be found at:
-[CMS Blue Button Node JS Sample App](https://github.com/CMSgov/bluebutton-sample-client-nodejs-react)
+For a complete Node JS sample app, see [CMS Blue Button Node JS Sample App](https://github.com/CMSgov/bluebutton-sample-client-nodejs-react).
 
-## API Versions and Environments <a name="versions_and_environments"></a>
+## About the Blue Button 2.0 API <a name="about"></a>
 
-From two environments: PRODUCTION and SANDBOX, Blue Button API is available in v1 and v2, data served from v1 is in FHIR STU2 format, and data from v2 is in FHIR R4 format, an application's target environment and API version can be set in the SDK configuration as shown by example below:
+The [Blue Button 2.0 API](https://bluebutton.cms.gov/) provides Medicare enrollee claims data to applications using the [OAuth2.0 authorization flow](https://datatracker.ietf.org/doc/html/rfc6749). We aim to provide a developer-friendly, standards-based API that enables people with Medicare to connect their claims data to the applications, services, and research programs they trust.
 
-```
-{
-  "clientId": "foo",
-  "clientSecret": "bar",
-  "callbackUrl": "https://www.fake.com/",
-  "version": "2",
-  "environment": "PRODUCTION"
-}
+## Help and Support <a name="help"></a>
 
-```
-
-The default API version is v2, and default environment is SANDBOX.
-
-Web location of the environments:
-
-[PRODUCTION Environment: https://api.bluebutton.cms.gov](https://api.bluebutton.cms.gov)
-
-[SANDBOX Environment: https://sandbox.bluebutton.cms.gov](https://sandbox.bluebutton.cms.gov)
+Got questions? Need help troubleshooting? Want to propose a new feature? Contact the Blue Button 2.0 team and connect with the community in our [Google Group](https://groups.google.com/forum/#!forum/Developer-group-for-cms-blue-button-api).
