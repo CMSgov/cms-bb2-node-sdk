@@ -38,7 +38,7 @@ Yarn
 $ yarn add cms-bluebutton-sdk
 ```
 
-Yarn with typescript
+Yarn with Typescript
 
 ```bash
 $ yarn add --dev @types/cms-bluebutton-sdk
@@ -98,7 +98,7 @@ Example:
 
 ## Usage <a name="usage"></a>
 
-The following pseudocode shows the SDK used with a Node JS Express server. This code walks through:
+The following code shows the SDK used with a Node JS Express server. This code walks through:
 
 - Obtaining an access token with scope chosen by a user
 - Passing the token to query for FHIR data
