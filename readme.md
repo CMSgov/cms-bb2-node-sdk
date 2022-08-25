@@ -86,7 +86,7 @@ to disable the retry: set total = 0
   - Configuration key:value pairs can be used.
   - Configuration values can be provided from your own application's configuration method.
   - Example code:
-    ```typescript
+    ```TypeScript
     const bb = BlueButton({
              "environment": "PRODUCTION",
              "clientId": "foo",
@@ -105,7 +105,7 @@ to disable the retry: set total = 0
   - This is stored in a local file.
   - The default location is in the current working directory with a file name: .bluebutton-config.json
   - Example code:
-    ```typescript
+    ```TypeScript
     const bb = BlueButton("settings/my_bb2_sdk_conf.json");
     ```
   - Example JSON in file:
@@ -138,20 +138,19 @@ Version data formats:
 
 Sample configuration JSON with default version and environment:
 
-```
+```json
 {
   "clientId": "foo",
   "clientSecret": "bar",
-  "callbackUrl": "https://www.fake.com/",
+  "callbackUrl": "https://www.fake.com/"
 }
-
 ```
 
 If needed, you can set your application's target environment and API version.
 
 Example:
 
-```
+```json
 {
   "clientId": "foo",
   "clientSecret": "bar",
@@ -159,7 +158,6 @@ Example:
   "version": "2",
   "environment": "PRODUCTION"
 }
-
 ```
 
 ## Usage <a name="usage"></a>
@@ -171,7 +169,7 @@ The following code shows the SDK used with a Node JS Express server. This code w
 - Using URL links from the response to page through data
 - Using the SDK paging support to return all data in one call
 
-```
+```TypeScript
 
 import express, { Request, Response } from 'express';
 import { BlueButton } from 'cms-bluebutton-sdk';
