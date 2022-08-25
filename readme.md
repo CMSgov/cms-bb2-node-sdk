@@ -138,7 +138,7 @@ Version data formats:
 
 Sample configuration JSON with default version and environment:
 
-```json
+```JSON
 {
   "clientId": "foo",
   "clientSecret": "bar",
@@ -150,7 +150,7 @@ If needed, you can set your application's target environment and API version.
 
 Example:
 
-```json
+```JSON
 {
   "clientId": "foo",
   "clientSecret": "bar",
