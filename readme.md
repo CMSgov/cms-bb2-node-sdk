@@ -6,7 +6,8 @@ The Node software development kit (SDK) provides tools and resources for develop
 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Configuration](#configuration)
+- [Configuration Parameters](#configuration-parameters)
+- [Configuration Methods](#configuration-methods)
 - [Usage](#usage)
 - [Sample App](#sample-app)
 - [About](#about)
@@ -45,11 +46,7 @@ Yarn with TypeScript
 $ yarn add --dev @types/cms-bluebutton-sdk
 ```
 
-## Configuration <a name="configuration"></a>
-
-The configuration is in JSON format and stored in a local file. The default location is the current working directory with file name: `.bluebutton-config.json`
-
-### Parameters
+## Configuration Parameters<a name="configuration-parameters"></a>
 
 Required SDK configuration parameters include:
 
@@ -61,35 +58,31 @@ Required SDK configuration parameters include:
 | `client_secret` | _`bar`_                              |           | OAuth2.0 client secret of the app |
 | `callback_url`  | _`https://www.example.com/callback`_ |           | OAuth2.0 callback URL of the app  |
 
-#### Auth Token Refresh on Expire
+### Auth Token Refresh on Expire
 
 SDK FHIR requests will check if the access token is expired before the data end point call, if the access token is expired, then a token refresh is performed with the refresh token in the current auth token object.
 
-#### FHIR requests retry
+### FHIR Requests Retry Settings
 
-Retry is enabled by default for FHIR requests, `retrySettings`: parameters for exponential back off retry algorithm
+Retry is enabled by default for FHIR requests. The folllowing parameters are available for exponential back off retry algorithm.
 
-| retry parameter | value (default)      | Comments                         |
-| --------------- | -------------------- | -------------------------------- |
-| backoffFactor   | 5                    | back off factor in seconds       |
-| total           | 3                    | max retries                      |
-| statusForcelist | [500, 502, 503, 504] | error response codes to retry on |
+| Retry parameter   | Value (default)      | Description                         |
+| ----------------- | -------------------- | -------------------------------- |
+| `backoff_factor`    | `5`                    | Backoff factor in seconds       |
+| `total `            | `3`                    | Max retries                      |
+| `status_forcelist`  | [`500`, `502`, `503`, `504`] | Error response codes to retry on |
 
-the exponential back off factor (in seconds) is used to calculate interval between retries by below formular, where i starts from 0:
+The exponential backoff factor (in seconds) is used to calculate interval between retries using the formula `backoff_factor * (2 ** (i - 1))` where `i` starts from 0.
 
-```
-backoff factor \* (2 \*\* (i - 1))
-```
+Example: A `backoff_factor` of 5 seconds generates the wait intervals: 2.5, 5, 10, ...
 
-e.g. for backoff_factor is 5 seconds, it will generate wait intervals: 2.5, 5, 10, ...
+To disable the retry, set `total = 0`.
 
-to disable the retry: set total = 0
-
-### Configuration methods
+## Configuration Methods<a name="configuration-methods"></a>
 
 There are two ways to configure the SDK when instantiating a `BlueButton` class instance:
 
-#### JSON object literal
+### JSON object literal
 
 - Configuration `key:value` pairs can be used.
 - Configuration values can be provided from your own application's configuration method.
@@ -111,7 +104,7 @@ Example:
           }
 ```
 
-#### JSON config file
+### JSON config file
 
 The configuration is in JSON format and stored in a local file. The default location is the current working directory with file name: `.bluebutton-config.json`
 
