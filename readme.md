@@ -1,15 +1,17 @@
 # Node SDK for Blue Button 2.0 API
 
-The Node software development kit (SDK) for [CMS Blue Button 2.0 (BB2.0) API](https://bluebutton.cms.gov/developers/) provides tools and resources for developers integrating with the Blue Button 2.0 API.
+The Node software development kit (SDK) provides tools and resources for developers integrating with the [CMS Blue Button 2.0 (BB2.0) API](https://bluebutton.cms.gov/developers/).
 
 # Table of contents
 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Configuration](#configuration)
+- [Configuration Parameters](#configuration-parameters)
+- [Configuration Methods](#configuration-methods)
 - [Usage](#usage)
 - [Sample App](#sample-app)
 - [About](#about)
+- [License](#license)
 - [Help and Support](#help)
 
 ## Prerequisites <a name="prerequisites"></a>
@@ -44,19 +46,90 @@ Yarn with TypeScript
 $ yarn add --dev @types/cms-bluebutton-sdk
 ```
 
-## Configuration <a name="configuration"></a>
+## Configuration Parameters<a name="configuration-parameters"></a>
+
+Required SDK configuration parameters include:
+
+| Parameter       | Value                                | Default   | Description                       |
+| --------------- | ------------------------------------ | --------- | --------------------------------- |
+| `environment`   | `SANDBOX` or `PRODUCTION`            | `SANDBOX` | Blue Button 2.0 API environment   |
+| `version`       | `1` or `2`                           | `2`       | Blue Button 2.0 version           |
+| `client_id`     | _`foo`_                              |           | OAuth2.0 client ID of the app     |
+| `client_secret` | _`bar`_                              |           | OAuth2.0 client secret of the app |
+| `callback_url`  | _`https://www.example.com/callback`_ |           | OAuth2.0 callback URL of the app  |
+
+### Auth Token Refresh on Expire
+
+SDK FHIR requests will check if the access token is expired before the data end point call, if the access token is expired, then a token refresh is performed with the refresh token in the current auth token object.
+
+### FHIR Requests Retry Settings
+
+Retry is enabled by default for FHIR requests. The folllowing parameters are available for exponential back off retry algorithm.
+
+| Retry parameter   | Value (default)      | Description                         |
+| ----------------- | -------------------- | -------------------------------- |
+| `backoff_factor`    | `5`                    | Backoff factor in seconds       |
+| `total `            | `3`                    | Max retries                      |
+| `status_forcelist`  | [`500`, `502`, `503`, `504`] | Error response codes to retry on |
+
+The exponential backoff factor (in seconds) is used to calculate interval between retries using the formula `backoff_factor * (2 ** (i - 1))` where `i` starts from 0.
+
+Example: A `backoff_factor` of 5 seconds generates the wait intervals: 2.5, 5, 10, ...
+
+To disable the retry, set `total = 0`.
+
+## Configuration Methods<a name="configuration-methods"></a>
+
+There are two ways to configure the SDK when instantiating a `BlueButton` class instance:
+
+### JSON object literal
+
+- Configuration `key:value` pairs can be used.
+- Configuration values can be provided from your own application's configuration method.
+
+Example:
+
+```TypeScript
+    const bb = BlueButton({
+             "environment": "PRODUCTION",
+             "clientId": "foo",
+             "clientSecret": "bar",
+             "callbackUrl": "https://www.fake.com/callback",
+             "version": 2,
+             "retrySettings": {
+                 "total": 3,
+                 "backoffFactor": 5,
+                 "statusForcelist": [500, 502, 503, 504]
+             }
+          }
+```
+
+### JSON config file
 
 The configuration is in JSON format and stored in a local file. The default location is the current working directory with file name: `.bluebutton-config.json`
 
-### Parameters
+Example code:
 
-| Parameter      | Value Options         | Description                                                   |
-| -------------- | --------------------- | ------------------------------------------------------------- |
-| `clientId`     | foo                   | OAuth2.0 client ID of the app                                 |
-| `clientSecret` | bar                   | OAuth2.0 client secret fot the app                            |
-| `callbackUrl`  | https://www.fake.com/ | OAuth2.0 callback URL for the app                             |
-| `version`      | 1 or 2                | Blue Button 2.0 API version. Default version is 2.            |
-| `environment`  | SANDBOX or PRODUCTION | Web location where the app is registered. Default is SANDBOX. |
+```TypeScript
+    const bb = BlueButton("settings/my_bb2_sdk_conf.json");
+```
+
+Example JSON in file:
+
+```JSON
+    {
+      "environment": "SANDBOX",
+      "clientId": "foo",
+      "clientSecret": "bar",
+      "callbackUrl": "https://www.fake.com/callback",
+      "version": 2,
+      "retrySettings": {
+        "total": 3,
+        "backoffFactor": 5,
+        "statusForcelist": [500, 502, 503, 504]
+      }
+    }
+```
 
 ### Environments and Data
 
@@ -72,20 +145,19 @@ Version data formats:
 
 Sample configuration JSON with default version and environment:
 
-```
+```JSON
 {
   "clientId": "foo",
   "clientSecret": "bar",
-  "callbackUrl": "https://www.fake.com/",
+  "callbackUrl": "https://www.fake.com/"
 }
-
 ```
 
 If needed, you can set your application's target environment and API version.
 
 Example:
 
-```
+```JSON
 {
   "clientId": "foo",
   "clientSecret": "bar",
@@ -93,7 +165,6 @@ Example:
   "version": "2",
   "environment": "PRODUCTION"
 }
-
 ```
 
 ## Usage <a name="usage"></a>
@@ -105,8 +176,7 @@ The following code shows the SDK used with a Node JS Express server. This code w
 - Using URL links from the response to page through data
 - Using the SDK paging support to return all data in one call
 
-```
-
+```TypeScript
 import express, { Request, Response } from 'express';
 import { BlueButton } from 'cms-bluebutton-sdk';
 import { AuthorizationToken } from 'cms-bluebutton-sdk';
@@ -269,7 +339,6 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
     res.json(results)
 
 });
-
 ```
 
 ## Sample App
@@ -279,6 +348,12 @@ For a complete Node JS sample app, see [CMS Blue Button Node JS Sample App](http
 ## About the Blue Button 2.0 API <a name="about"></a>
 
 The [Blue Button 2.0 API](https://bluebutton.cms.gov/) provides Medicare enrollee claims data to applications using the [OAuth2.0 authorization flow](https://datatracker.ietf.org/doc/html/rfc6749). We aim to provide a developer-friendly, standards-based API that enables people with Medicare to connect their claims data to the applications, services, and research programs they trust.
+
+## License<a name="license"></a>
+
+The CMS Blue Button 2.0 Node SDK is licensed under the Creative Commons Zero v1.0 Universal. For more details, see [License](https://github.com/CMSgov/cms-bb2-node-sdk/blob/main/LICENSE).
+
+_Note: We do our best to keep our SDKs up to date with vulnerability patching, but you are responsible for conducting your own review and testing before implementation._
 
 ## Help and Support <a name="help"></a>
 
