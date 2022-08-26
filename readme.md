@@ -50,16 +50,16 @@ $ yarn add --dev @types/cms-bluebutton-sdk
 The configuration is in JSON format and stored in a local file. The default location is the current working directory with file name: `.bluebutton-config.json`
 
 ### Parameters
+
 Required SDK configuration parameters include:
 
-| Parameter     | Value                           | Default |Description                                |
-| ------------- | ------------------------------- |----| --------------------------------------- |
-| `environment` | `SANDBOX` or `PRODUCTION`     |`SANDBOX` | Blue Button 2.0 API environment |
-| `version`       | `1` or `2`                        | `2`  | Blue Button 2.0 version            |
-| `client_id`    | *`foo`*                          | |OAuth2.0 client ID of the app             |
-| `client_secret` | *`bar`*                           | |OAuth2.0 client secret of the app         |
-| `callback_url`  | *`https://www.example.com/callback`* | |OAuth2.0 callback URL of the app          |
-
+| Parameter       | Value                                | Default   | Description                       |
+| --------------- | ------------------------------------ | --------- | --------------------------------- |
+| `environment`   | `SANDBOX` or `PRODUCTION`            | `SANDBOX` | Blue Button 2.0 API environment   |
+| `version`       | `1` or `2`                           | `2`       | Blue Button 2.0 version           |
+| `client_id`     | _`foo`_                              |           | OAuth2.0 client ID of the app     |
+| `client_secret` | _`bar`_                              |           | OAuth2.0 client secret of the app |
+| `callback_url`  | _`https://www.example.com/callback`_ |           | OAuth2.0 callback URL of the app  |
 
 #### Auth Token Refresh on Expire
 
@@ -77,23 +77,26 @@ Retry is enabled by default for FHIR requests, `retrySettings`: parameters for e
 
 the exponential back off factor (in seconds) is used to calculate interval between retries by below formular, where i starts from 0:
 
+```
 backoff factor \* (2 \*\* (i - 1))
+```
 
 e.g. for backoff_factor is 5 seconds, it will generate wait intervals: 2.5, 5, 10, ...
 
 to disable the retry: set total = 0
 
 ### Configuration methods
+
 There are two ways to configure the SDK when instantiating a `BlueButton` class instance:
 
 #### JSON object literal
-  - Configuration `key:value` pairs can be used.
-  - Configuration values can be provided from your own application's configuration method.
+
+- Configuration `key:value` pairs can be used.
+- Configuration values can be provided from your own application's configuration method.
 
 Example:
 
-```
-    TypeScript
+```TypeScript
     const bb = BlueButton({
              "environment": "PRODUCTION",
              "clientId": "foo",
@@ -107,22 +110,20 @@ Example:
              }
           }
 ```
-    
-#### JSON config file
- The configuration is in JSON format and stored in a local file. The default location is the current working directory with file name: `.bluebutton-config.json`
 
+#### JSON config file
+
+The configuration is in JSON format and stored in a local file. The default location is the current working directory with file name: `.bluebutton-config.json`
 
 Example code:
 
-```
-    TypeScript
+```TypeScript
     const bb = BlueButton("settings/my_bb2_sdk_conf.json");
 ```
 
 Example JSON in file:
 
-```
-json
+```JSON
     {
       "environment": "SANDBOX",
       "clientId": "foo",
@@ -183,7 +184,6 @@ The following code shows the SDK used with a Node JS Express server. This code w
 - Using the SDK paging support to return all data in one call
 
 ```TypeScript
-
 import express, { Request, Response } from 'express';
 import { BlueButton } from 'cms-bluebutton-sdk';
 import { AuthorizationToken } from 'cms-bluebutton-sdk';
@@ -346,7 +346,6 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
     res.json(results)
 
 });
-
 ```
 
 ## Sample App
@@ -358,9 +357,10 @@ For a complete Node JS sample app, see [CMS Blue Button Node JS Sample App](http
 The [Blue Button 2.0 API](https://bluebutton.cms.gov/) provides Medicare enrollee claims data to applications using the [OAuth2.0 authorization flow](https://datatracker.ietf.org/doc/html/rfc6749). We aim to provide a developer-friendly, standards-based API that enables people with Medicare to connect their claims data to the applications, services, and research programs they trust.
 
 ## License<a name="license"></a>
+
 The CMS Blue Button 2.0 Node SDK is licensed under the Creative Commons Zero v1.0 Universal. For more details, see [License](https://github.com/CMSgov/cms-bb2-node-sdk/blob/main/LICENSE).
 
-*Note: We do our best to keep our SDKs up to date with vulnerability patching, but you are responsible for conducting your own review and testing before implementation.*
+_Note: We do our best to keep our SDKs up to date with vulnerability patching, but you are responsible for conducting your own review and testing before implementation._
 
 ## Help and Support <a name="help"></a>
 
