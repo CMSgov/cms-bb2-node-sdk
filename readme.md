@@ -50,13 +50,13 @@ $ yarn add --dev @types/cms-bluebutton-sdk
 
 Required SDK configuration parameters include:
 
-| Parameter       | Value                                | Default   | Description                       |
-| --------------- | ------------------------------------ | --------- | --------------------------------- |
-| `environment`   | `SANDBOX` or `PRODUCTION`            | `SANDBOX` | Blue Button 2.0 API environment   |
-| `version`       | `1` or `2`                           | `2`       | Blue Button 2.0 version           |
-| `client_id`     | _`foo`_                              |           | OAuth2.0 client ID of the app     |
-| `client_secret` | _`bar`_                              |           | OAuth2.0 client secret of the app |
-| `callback_url`  | _`https://www.example.com/callback`_ |           | OAuth2.0 callback URL of the app  |
+| Parameter      | Value                                | Default   | Description                       |
+| -------------- | ------------------------------------ | --------- | --------------------------------- |
+| `environment`  | `SANDBOX` or `PRODUCTION`            | `SANDBOX` | Blue Button 2.0 API environment   |
+| `version`      | `1` or `2`                           | `2`       | Blue Button 2.0 version           |
+| `clientId`     | _`foo`_                              |           | OAuth2.0 client ID of the app     |
+| `clientSecret` | _`bar`_                              |           | OAuth2.0 client secret of the app |
+| `callbackUrl`  | _`https://www.example.com/callback`_ |           | OAuth2.0 callback URL of the app  |
 
 ### Auth Token Refresh on Expire
 
@@ -66,15 +66,15 @@ SDK FHIR requests will check if the access token is expired before the data end 
 
 Retry is enabled by default for FHIR requests. The folllowing parameters are available for exponential back off retry algorithm.
 
-| Retry parameter   | Value (default)      | Description                         |
-| ----------------- | -------------------- | -------------------------------- |
-| `backoff_factor`    | `5`                    | Backoff factor in seconds       |
-| `total `            | `3`                    | Max retries                      |
-| `status_forcelist`  | [`500`, `502`, `503`, `504`] | Error response codes to retry on |
+| Retry parameter   | Value (default)              | Description                      |
+| ----------------- | ---------------------------- | -------------------------------- |
+| `backoffFactor`   | `5`                          | Backoff factor in seconds        |
+| `total `          | `3`                          | Max retries                      |
+| `statusForcelist` | [`500`, `502`, `503`, `504`] | Error response codes to retry on |
 
-The exponential backoff factor (in seconds) is used to calculate interval between retries using the formula `backoff_factor * (2 ** (i - 1))` where `i` starts from 0.
+The exponential backoff factor (in seconds) is used to calculate interval between retries using the formula `backoffFactor * (2 ** (i - 1))` where `i` starts from 0.
 
-Example: A `backoff_factor` of 5 seconds generates the wait intervals: 2.5, 5, 10, ...
+Example: A `backoffFactor` of 5 seconds generates the wait intervals: 2.5, 5, 10, ...
 
 To disable the retry, set `total = 0`.
 
