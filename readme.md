@@ -58,11 +58,11 @@ Required SDK configuration parameters include:
 | `clientSecret` | _`bar`_                              |           | OAuth2.0 client secret of the app |
 | `callbackUrl`  | _`https://www.example.com/callback`_ |           | OAuth2.0 callback URL of the app  |
 
-### Auth Token Refresh on Expire
+### Auth Token Refresh on Expire - `tokenRefreshOnExpire`
 
-SDK FHIR requests will check if the access token is expired before the data end point call, if the access token is expired, then a token refresh is performed with the refresh token in the current auth token object.
+SDK FHIR requests will check if the access token is expired before the data end point call, if the access token is expired, then a token refresh is performed with the refresh token in the current auth token object, by default, `tokenRefreshOnExpire` is true, to disable it, set `tokenRefreshOnExpire` to false.
 
-### FHIR Requests Retry Settings
+### FHIR Requests Retry Settings - `retrySettings`
 
 Retry is enabled by default for FHIR requests. The folllowing parameters are available for exponential back off retry algorithm.
 
@@ -108,9 +108,14 @@ Example:
 
 The configuration is in JSON format and stored in a local file. The default location is the current working directory with file name: `.bluebutton-config.json`
 
+
+"tokenRefreshOnExpire": false
+
+By default, "tokenRefreshOnExpire" is true.
+
 Example code:
 
-```TypeScript
+```Typescript
     const bb = BlueButton("settings/my_bb2_sdk_conf.json");
 ```
 
