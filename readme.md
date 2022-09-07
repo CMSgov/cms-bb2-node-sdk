@@ -58,9 +58,9 @@ Required SDK configuration parameters include:
 | `clientSecret` | _`your_client_secret`_                              |           | OAuth2.0 client secret of the app |
 | `callbackUrl`  | _`https://www.example.com/callback`_ |           | OAuth2.0 callback URL of the app  |
 
-### Auth Token Refresh on Expire - `tokenRefreshOnExpire`
+### Access Token Refresh on Expire - `tokenRefreshOnExpire`
 
-SDK FHIR requests will check if the access token is expired before the data end point call, if the access token is expired, then a token refresh is performed with the refresh token in the current auth token object, by default, `tokenRefreshOnExpire` is true, to disable it, set `tokenRefreshOnExpire` to false.
+SDK FHIR requests check whether the access token is expired before the data endpoint call. By default, an expired token will refresh. To disable token refresh, set `token_refresh_on_expire` to `false`.
 
 ### FHIR Requests Retry Settings - `retrySettings`
 
