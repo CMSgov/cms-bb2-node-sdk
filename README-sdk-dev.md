@@ -76,21 +76,65 @@ yarn build:types
 
 The resulting distribution files with be created in the `dist/` directory.
 
-### Consuming SDK Package
+### Publish SDK
 
-Consume locally (as a good test before publishing):
+To publish the sdk, at the base directory of the SDK local repositoriy, run the following npm command:
 
-After built and generated typescript types (needed if to be consumed by typescript project), the sdk can be consumed by other projects as shown by below example:
+```
+npm publish
+```
+
+Note that a package can be published as 'private' in alternative ways, e.g., just run:
 
 ```
 mkdir my_proj
 cd my_proj
-yarn init
-yarn add <path to local cms-bluebutton-sdk local repository base directory>
-
-continue adding other dependencies, e.g. express, ts-node, etc., ...
-
-yarn add express @types/express ts-node
-yarn add <other dependencies>
+npm init --scope=@cms-bluebutton-dev
+...
 ```
+
+This will create a pacakge project 'my_proj' with organization scope (private), or:
+
+```
+npm config set init-private true
+mkdir my_proj
+cd my_proj
+yarn init
+...
+```
+Setting npm config global settings will make subsequently created pacakge projects 'private'.
+
+Note that publishing package 'private' is a npm option that requires payment.
+
+### Consuming SDK
+
+1. Consuming from npm registry:
+
+    ```
+    mkdir my_proj
+    cd my_proj
+    yarn init
+    yarn add cms-bluebutton-sdk
+
+    continue adding other dependencies, e.g. express, ts-node, etc., ...
+
+    yarn add express @types/express ts-node
+    yarn add <other dependencies>
+    ```
+
+2. Consuming from a local SDK repository (as a good test before publishing):
+
+    After built and generated typescript types (needed if to be consumed by typescript project), the sdk can be consumed by other projects as shown by below example:
+
+    ```
+    mkdir my_proj
+    cd my_proj
+    yarn init
+    yarn add <path to local cms-bluebutton-sdk local repository base directory>
+
+    continue adding other dependencies, e.g. express, ts-node, etc., ...
+
+    yarn add express @types/express ts-node
+    yarn add <other dependencies>
+    ```
 
