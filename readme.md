@@ -12,6 +12,7 @@ The Node software development kit (SDK) provides tools and resources for develop
 - [Sample App](#sample-app)
 - [About](#about)
 - [License](#license)
+- [Security](#security)
 - [Help and Support](#help)
 
 ## Prerequisites <a name="prerequisites"></a>
@@ -364,7 +365,11 @@ The [Blue Button 2.0 API](https://bluebutton.cms.gov/) provides Medicare enrolle
 
 The CMS Blue Button 2.0 Node SDK is licensed under the Creative Commons Zero v1.0 Universal. For more details, see [License](https://github.com/CMSgov/cms-bb2-node-sdk/blob/main/LICENSE).
 
-*Note: We do our best to keep our SDKs up to date with vulnerability patching and security testing, but you are responsible for your own review and testing before implementation.*
+
+## Security<a name="Security"></a>
+We do our best to keep our SDKs up to date with vulnerability patching and security testing, but you are responsible for your own review and testing before implementation.
+
+To report vulnerabilities, please see the [CMS Vulnerability Disclosure Policy](https://www.cms.gov/vulnerability-disclosure-policy) and follow the directions for reporting. 
 
 ## Help and Support <a name="help"></a>
 
