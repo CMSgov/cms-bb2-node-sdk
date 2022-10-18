@@ -123,6 +123,21 @@ test("should throw a helpful error if the string constructor is used that can't 
   }
 });
 
+test("should throw a helpful error if the ENV value is not a valid one", () => {
+  const pathToFile = `${__dirname}/testConfigs/.bluebutton-config-invalid-env.json`;
+
+  try {
+    new BlueButton(pathToFile);
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      const msg_expected = `Failed to load config file at: ${pathToFile}, Error: Invalid environment (='LOCAL'): must be PRODUCTION or SANDBOX`;
+      expect(e.message).toEqual(msg_expected);
+    } else {
+      fail("Expect an error of type 'Error', but got ${e}");
+    }
+  }
+});
+
 test("should throw a helpful error if no client id is provided", () => {
   try {
     new BlueButton(`${__dirname}/testConfigs/.missing-client-id-config.json`);
