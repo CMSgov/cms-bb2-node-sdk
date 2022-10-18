@@ -67,10 +67,13 @@ test("empty constructor should use top level .bluebutton-config.json file (if ex
 
   try {
     new BlueButton();
-  } catch (e) {
-    expect(e).toEqual(
-      new Error(`Failed to load config file at: ${pathToFile}`)
-    );
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      const msg_expected = `Failed to load config file at: ${pathToFile}, Error: ENOENT: no such file or directory, open '${pathToFile}'`;
+      expect(e.message).toEqual(msg_expected);
+    } else {
+      fail("Expect an error of type 'Error', but got ${e}");
+    }
   }
 
   fs.copyFileSync(
@@ -105,15 +108,18 @@ test("string constructor arg should be the path to a json config file it should 
   expect(bb.baseUrl).toBe(`https://api.bluebutton.cms.gov`);
 });
 
-test("should throw a helpful error if there a string constructor is used that cant be resolved to a file location", () => {
+test("should throw a helpful error if the string constructor is used that can't be resolved to a file location", () => {
   const pathToFile = `${__dirname}/notRealDirectory/.bluebutton-config.json`;
 
   try {
     new BlueButton(pathToFile);
-  } catch (e) {
-    expect(e).toEqual(
-      new Error(`Failed to load config file at: ${pathToFile}`)
-    );
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      const msg_expected = `Failed to load config file at: ${pathToFile}, Error: ENOENT: no such file or directory, open '${pathToFile}'`;
+      expect(e.message).toEqual(msg_expected);
+    } else {
+      fail("Expect an error of type 'Error', but got ${e}");
+    }
   }
 });
 
