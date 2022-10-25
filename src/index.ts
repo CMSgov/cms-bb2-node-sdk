@@ -79,7 +79,7 @@ export class BlueButton {
         bbJsonConfig = this.normalizeConfig(jsonConfig);
       } catch (e) {
         throw new Error(
-          `Failed to load config file at: ${DEFAULT_CONFIG_FILE_LOCATION}`
+          `Failed to load config file at: ${DEFAULT_CONFIG_FILE_LOCATION}, ${e}`
         );
       }
     } else if (typeof config === "string") {
@@ -88,7 +88,7 @@ export class BlueButton {
         const jsonConfig = JSON.parse(rawdata.toString());
         bbJsonConfig = this.normalizeConfig(jsonConfig);
       } catch (e) {
-        throw new Error(`Failed to load config file at: ${config}`);
+        throw new Error(`Failed to load config file at: ${config}, ${e}`);
       }
     } else {
       bbJsonConfig = this.normalizeConfig(config);
@@ -145,7 +145,7 @@ export class BlueButton {
       !Object.values(Environments).includes(config.environment)
     ) {
       throw new Error(
-        `Invalid environment: must be ${Environments.PRODUCTION} or ${Environments.SANDBOX}`
+        `Invalid environment (='${config.environment}'): must be ${Environments.PRODUCTION} or ${Environments.SANDBOX}`
       );
     }
 
