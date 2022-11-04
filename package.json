@@ -1,6 +1,6 @@
 {
   "name": "cms-bluebutton-sdk",
-  "version": "0.1.0",
+  "version": "1.0",
   "description": "An sdk used for interacting with the CMS Blue Button 2.0 API",
   "main": "dist/cms-bluebutton-sdk.cjs.js",
   "module": "dist/cms-bluebutton-sdk.esm.js",
