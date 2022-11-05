@@ -6,6 +6,5 @@
     "strict": true,
     "esModuleInterop": true
   },
-  // need to exclude to avoid: error TS5055: Cannot write file './build/.../xxx.ts' because it would overwrite input file.
   "exclude": ["./build/**/*"]
 }
