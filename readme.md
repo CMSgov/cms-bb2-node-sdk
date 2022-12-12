@@ -55,8 +55,8 @@ Required SDK configuration parameters include:
 | -------------- | ------------------------------------ | --------- | --------------------------------- |
 | `environment`  | `SANDBOX` or `PRODUCTION`            | `SANDBOX` | Blue Button 2.0 API environment   |
 | `version`      | `1` or `2`                           | `2`       | Blue Button 2.0 version           |
-| `clientId`     | _`your_client_id`_                              |           | OAuth2.0 client ID of the app     |
-| `clientSecret` | _`your_client_secret`_                              |           | OAuth2.0 client secret of the app |
+| `clientId`     | _`your_client_id`_                   |           | OAuth2.0 client ID of the app     |
+| `clientSecret` | _`your_client_secret`_               |           | OAuth2.0 client secret of the app |
 | `callbackUrl`  | _`https://www.example.com/callback`_ |           | OAuth2.0 callback URL of the app  |
 
 ### Access Token Refresh on Expire - `tokenRefreshOnExpire`
@@ -109,7 +109,6 @@ Example:
 
 The configuration is in JSON format and stored in a local file. The default location is the current working directory with file name: `.bluebutton-config.json`
 
-
 By default, `tokenRefreshOnExpire` is true.
 
 Example code:
@@ -144,7 +143,7 @@ The Blue Button 2.0 API is available in V1 and V2 in a sandbox and production en
 
 Version data formats:
 
-- V1: FHIR STU2
+- V1: FHIR STU3
 - V2: FHIR R4
 
 Sample configuration JSON with default version and environment:
@@ -240,11 +239,11 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         // your app logic can fetch the beneficiary's data in specific ways.
         // Example: download EOB periodically
 
-        // The access token kept in var authToken can expire. 
+        // The access token kept in var authToken can expire.
         // SDK FHIR call will detect expiration and refresh the token
         // Example FHIR call:  getExplanationOfBenefitData
 
-        // You can also configure your app to call refreshAuthToken 
+        // You can also configure your app to call refreshAuthToken
         // for an access token refresh before the FHIR calls:
         // Example:  authToken = await bb.refreshAuthToken(authToken);
 
@@ -261,16 +260,16 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         profileResults = await bb.getProfileData(authToken);
         authToken = profileResults.token;
 
-        // Note that above FHIR data calls 
+        // Note that above FHIR data calls
         // (getExplanationOfBenefitData, getPatientData, and getCoverageData)
         // send FHIR search requests to Blue Button 2.0 API
-        // and the data returned is a FHIR resource bundle of the 
-        // first 10 resources. Example: If the current beneficiary 
+        // and the data returned is a FHIR resource bundle of the
+        // first 10 resources. Example: If the current beneficiary
         // has 55 ExplanationOfBenefit resources,
-        // the call to getExplanationOfBenefitData will return the 
+        // the call to getExplanationOfBenefitData will return the
         // first 10 of them.
-        // To retrive all the ExplanationOfBenefit resources, 
-        // call getPages: 
+        // To retrive all the ExplanationOfBenefit resources,
+        // call getPages:
 
         const eobbundle = eobResults.response?.data;
         // getPages will navigate from the bundle (eobbundle) and return a list of all
@@ -280,7 +279,7 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         authToken = eobs.token;
 
         // The app can choose more fine grained control of pagination:
-        // Example: fetch 1st page, fetch last page, fetch next page, 
+        // Example: fetch 1st page, fetch last page, fetch next page,
         // fetch previous page:
         const firstPgURL = bb.extractPageNavUrl(eobbundle, "first");
         if (firstPgURL) {
@@ -326,10 +325,10 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         const coverages = await bb.getPages(coveragebundle, authToken);
         authToken = coverages.token;
 
-        // You can apply getPages on non-bundle resources or bundles 
-        // without navigation links. In that case, no page navigation 
+        // You can apply getPages on non-bundle resources or bundles
+        // without navigation links. In that case, no page navigation
         // occurs and a list of the original resource is returned,
-        // Example: The below code calls getPages on a profile result 
+        // Example: The below code calls getPages on a profile result
         // which might not be a bundle resource.
         const pfbundle = profileResults.response?.data;
         const pfs = await bb.getPages(pfbundle, authToken);
@@ -365,11 +364,11 @@ The [Blue Button 2.0 API](https://bluebutton.cms.gov/) provides Medicare enrolle
 
 The CMS Blue Button 2.0 Node SDK is licensed under the Creative Commons Zero v1.0 Universal. For more details, see [License](https://github.com/CMSgov/cms-bb2-node-sdk/blob/main/LICENSE).
 
-
 ## Security<a name="Security"></a>
+
 We do our best to keep our SDKs up to date with vulnerability patching and security testing, but you are responsible for your own review and testing before implementation.
 
-To report vulnerabilities, please see the [CMS Vulnerability Disclosure Policy](https://www.cms.gov/vulnerability-disclosure-policy) and follow the directions for reporting. 
+To report vulnerabilities, please see the [CMS Vulnerability Disclosure Policy](https://www.cms.gov/vulnerability-disclosure-policy) and follow the directions for reporting.
 
 ## Help and Support <a name="help"></a>
 
