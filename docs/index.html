@@ -80,12 +80,19 @@
         <div class="col-8 col-content">
           <div class="tsd-panel tsd-typography">
             <a
-              href="#blue-button-api-sdk"
-              id="blue-button-api-sdk"
+              href="#node-sdk-for-blue-button-20-api"
+              id="node-sdk-for-blue-button-20-api"
               style="color: inherit; text-decoration: none"
             >
-              <h1>Blue Button API SDK</h1>
+              <h1>Node SDK for Blue Button 2.0 API</h1>
             </a>
+            <p>
+              The Node software development kit (SDK) provides tools and
+              resources for developers integrating with the
+              <a href="https://bluebutton.cms.gov/developers/"
+                >CMS Blue Button 2.0 (BB2.0) API</a
+              >.
+            </p>
 
             <a
               href="#table-of-contents"
@@ -94,52 +101,40 @@
             >
               <h1>Table of contents</h1>
             </a>
-            <ol>
-              <li><a href="#description">Descritpion</a></li>
+            <ul>
+              <li><a href="#prerequisites">Prerequisites</a></li>
               <li><a href="#installation">Installation</a></li>
-              <li><a href="#configuration">Configuration</a></li>
               <li>
-                <a href="#usages"
-                  >Usages: Obtain Access Grant, Probe Scope, and Access Data</a
-                >
+                <a href="#configuration-parameters">Configuration Parameters</a>
               </li>
-              <li><a href="#samples">A Complete Sample App</a></li>
               <li>
-                <a href="#versions_and_environments"
-                  >API Versions and Environments</a
-                >
+                <a href="#configuration-methods">Configuration Methods</a>
               </li>
-            </ol>
+              <li><a href="#usage">Usage</a></li>
+              <li><a href="#sample-app">Sample App</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#license">License</a></li>
+              <li><a href="#security">Security</a></li>
+              <li><a href="#help">Help and Support</a></li>
+            </ul>
 
             <a
-              href="#description-"
-              id="description-"
+              href="#prerequisites-"
+              id="prerequisites-"
               style="color: inherit; text-decoration: none"
             >
-              <h2>Description <a name="description"></a></h2>
+              <h2>Prerequisites <a name="prerequisites"></a></h2>
             </a>
             <p>
-              This is an SDK for interacting with
-              <a href="https://bluebutton.cms.gov/developers/"
-                >CMS Blue Button 2.0 API</a
-              >, the API allows applications to obtain a beneficiary&#39;s (who
-              has login account with medicare.gov) grant to access his/her
-              medicare claims data - through OAUTH2
-              <a href="https://datatracker.ietf.org/doc/html/rfc6749"
-                >(RFC 6749)</a
-              >
-              authorization flow.
+              You&#39;ll need a sandbox account and sample access token to
+              access data from the Blue Button 2.0 API.
             </p>
             <p>
-              By using the SDK, the development of applications accessing Blue
-              Button 2.0 API can be greatly simplified.
-            </p>
-            <p>
-              Note, following the OAUTH2 best practices, OAUTH2 PKCE extension
-              <a href="https://datatracker.ietf.org/doc/html/rfc7636"
-                >(RFC 7636)</a
-              >
-              is always enabled.
+              To learn how to create a sandbox account and generate a sample
+              access token, see
+              <a href="https://bluebutton.cms.gov/developers/#try-the-api"
+                >Try the API</a
+              >.
             </p>
 
             <a
@@ -149,195 +144,346 @@
             >
               <h2>Installation <a name="installation"></a></h2>
             </a>
-            <p>Using npm:</p>
-            <pre><code class="language-bash"><span class="hl-0">$ npm install cms-bluebutton-sdk</span>
+            <p>npm</p>
+            <pre><code class="language-bash"><span class="hl-0">npm install cms-bluebutton-sdk</span>
 </code></pre>
-            <p>When develop with typescript</p>
-            <pre><code class="language-bash"><span class="hl-0">$ npm install --save-dev @types/cms-bluebutton-sdk</span>
+            <p>npm with TypeScript</p>
+            <pre><code class="language-bash"><span class="hl-0">npm install --save-dev @types/cms-bluebutton-sdk</span>
 </code></pre>
-            <p>Using yarn:</p>
-            <pre><code class="language-bash"><span class="hl-0">$ yarn add cms-bluebutton-sdk</span>
+            <p>Yarn</p>
+            <pre><code class="language-bash"><span class="hl-0">yarn add cms-bluebutton-sdk</span>
 </code></pre>
-            <p>When develop with typescript</p>
-            <pre><code class="language-bash"><span class="hl-0">$ yarn add --dev @types/cms-bluebutton-sdk</span>
+            <p>Yarn with TypeScript</p>
+            <pre><code class="language-bash"><span class="hl-0">yarn add --dev @types/cms-bluebutton-sdk</span>
 </code></pre>
 
             <a
-              href="#configuration-"
-              id="configuration-"
-              style="color: inherit; text-decoration: none"
-            >
-              <h2>Configuration <a name="configuration"></a></h2>
-            </a>
-            <p>
-              the SDK needs to be properly configured to work, the parameters
-              are:
-            </p>
-            <ul>
-              <li>the app&#39;s credentials - client id, client secret</li>
-              <li>the app&#39;s callback url</li>
-              <li>the version number of the API</li>
-              <li>
-                the app&#39;s environment (web location where the app is
-                registered)
-              </li>
-              <li>The FHIR call retry settings</li>
-            </ul>
-            <p>
-              the configuration is in json format and stored in a local file,
-              the default location is current working directory with file name:
-              .bluebutton-config.json
-            </p>
-            <p>A sample configuration json:</p>
-            <pre><code><span class="hl-0">{</span><br/><span class="hl-0">  </span><span class="hl-1">&quot;clientId&quot;</span><span class="hl-0">: </span><span class="hl-1">&quot;foo&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-1">&quot;clientSecret&quot;</span><span class="hl-0">: </span><span class="hl-1">&quot;bar&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-1">&quot;callbackUrl&quot;</span><span class="hl-0">: </span><span class="hl-1">&quot;https://www.fake.com/&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-1">&quot;retrySettings&quot;</span><span class="hl-0">: {</span><br/><span class="hl-0">    </span><span class="hl-1">&quot;total&quot;</span><span class="hl-2">:</span><span class="hl-0"> </span><span class="hl-3">3</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-1">&quot;backoffFactor&quot;</span><span class="hl-2">:</span><span class="hl-0"> </span><span class="hl-3">5</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-1">&quot;statusForcelist&quot;</span><span class="hl-2">:</span><span class="hl-0"> [</span><span class="hl-3">500</span><span class="hl-0">, </span><span class="hl-3">502</span><span class="hl-0">, </span><span class="hl-3">503</span><span class="hl-0">, </span><span class="hl-3">504</span><span class="hl-0">, </span><span class="hl-3">508</span><span class="hl-0">]</span><br/><span class="hl-0">  }</span><br/><span class="hl-0">}</span><br/>
-</code></pre>
-            <p>
-              OAUTH2.0 parameters: clientId, clientSecret, callbackUrl, they are
-              mandatory and must be provided
-            </p>
-            <table>
-              <thead>
-                <tr>
-                  <th>parameter</th>
-                  <th>value</th>
-                  <th>Comments</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>clientId</td>
-                  <td>&quot;foo&quot;</td>
-                  <td>oauth2 client id of the app</td>
-                </tr>
-                <tr>
-                  <td>clientSecret</td>
-                  <td>&quot;bar&quot;</td>
-                  <td>oauth2 client secret of the app</td>
-                </tr>
-                <tr>
-                  <td>callbackUrl</td>
-                  <td>
-                    &quot;<a href='https://www.fake.com/"'
-                      >https://www.fake.com/&quot;</a
-                    >
-                  </td>
-                  <td>oauth2 callback url of the app</td>
-                </tr>
-              </tbody>
-            </table>
-            <p>
-              For application registration and client id and client secret,
-              please refer to:
-              <a href="https://bluebutton.cms.gov/developers/#try-the-api"
-                >Blue Button 2.0 API Docs - Try the API</a
-              >
-            </p>
-            <p>FHIR requests retry:</p>
-            <p>
-              Retry is enabled by default for FHIR requests, retry_settings:
-              parameters for exponential back off retry algorithm
-            </p>
-            <table>
-              <thead>
-                <tr>
-                  <th>retry parameter</th>
-                  <th>value (default)</th>
-                  <th>Comments</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>backoff_factor</td>
-                  <td>5</td>
-                  <td>back off factor in seconds</td>
-                </tr>
-                <tr>
-                  <td>total</td>
-                  <td>3</td>
-                  <td>max retries</td>
-                </tr>
-                <tr>
-                  <td>status_forcelist</td>
-                  <td>[500, 502, 503, 504]</td>
-                  <td>error response codes to retry on</td>
-                </tr>
-              </tbody>
-            </table>
-            <p>
-              the exponential back off factor (in seconds) is used to calculate
-              interval between retries by below formular, where i starts from 0:
-            </p>
-            <p>backoff factor * (2 ** (i - 1))</p>
-            <p>
-              e.g. for backoff_factor is 5 seconds, it will generate wait
-              intervals: 2.5, 5, 10, ...
-            </p>
-            <p>to disable the retry: set total = 0</p>
-
-            <a
-              href="#sample-usages-obtain-access-grant-probe-scope-and-access-data-"
-              id="sample-usages-obtain-access-grant-probe-scope-and-access-data-"
+              href="#configuration-parameters"
+              id="configuration-parameters"
               style="color: inherit; text-decoration: none"
             >
               <h2>
-                Sample Usages: Obtain Access Grant, Probe Scope, and Access Data
-                <a name="usages"></a>
+                Configuration Parameters<a name="configuration-parameters"></a>
               </h2>
             </a>
+            <p>Required SDK configuration parameters include:</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>Value</th>
+                  <th>Default</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>environment</code></td>
+                  <td><code>SANDBOX</code> or <code>PRODUCTION</code></td>
+                  <td><code>SANDBOX</code></td>
+                  <td>Blue Button 2.0 API environment</td>
+                </tr>
+                <tr>
+                  <td><code>version</code></td>
+                  <td><code>1</code> or <code>2</code></td>
+                  <td><code>2</code></td>
+                  <td>Blue Button 2.0 version</td>
+                </tr>
+                <tr>
+                  <td><code>clientId</code></td>
+                  <td>
+                    <em><code>your_client_id</code></em>
+                  </td>
+                  <td></td>
+                  <td>OAuth2.0 client ID of the app</td>
+                </tr>
+                <tr>
+                  <td><code>clientSecret</code></td>
+                  <td>
+                    <em><code>your_client_secret</code></em>
+                  </td>
+                  <td></td>
+                  <td>OAuth2.0 client secret of the app</td>
+                </tr>
+                <tr>
+                  <td><code>callbackUrl</code></td>
+                  <td>
+                    <em><code>https://www.example.com/callback</code></em>
+                  </td>
+                  <td></td>
+                  <td>OAuth2.0 callback URL of the app</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <a
+              href="#access-token-refresh-on-expire---tokenrefreshonexpire"
+              id="access-token-refresh-on-expire---tokenrefreshonexpire"
+              style="color: inherit; text-decoration: none"
+            >
+              <h3>
+                Access Token Refresh on Expire -
+                <code>tokenRefreshOnExpire</code>
+              </h3>
+            </a>
             <p>
-              Below are psuedo code snippets showing SDK used with node express
-              server.
+              SDK FHIR requests check whether the access token is expired before
+              the data endpoint call. By default, an expired token will refresh.
+              To disable token refresh, set
+              <code>token_refresh_on_expire</code> to <code>false</code>.
             </p>
-            <pre><code><br/><span class="hl-4">import</span><span class="hl-0"> </span><span class="hl-2">express</span><span class="hl-0">, { </span><span class="hl-2">Request</span><span class="hl-0">, </span><span class="hl-2">Response</span><span class="hl-0"> } </span><span class="hl-4">from</span><span class="hl-0"> </span><span class="hl-1">&#39;express&#39;</span><span class="hl-0">;</span><br/><span class="hl-4">import</span><span class="hl-0"> </span><span class="hl-2">BlueButton</span><span class="hl-0"> </span><span class="hl-4">from</span><span class="hl-0"> </span><span class="hl-1">&#39;cms-bluebutton-sdk&#39;</span><span class="hl-0">;</span><br/><span class="hl-4">import</span><span class="hl-0"> { </span><span class="hl-2">AuthorizationToken</span><span class="hl-0"> } </span><span class="hl-4">from</span><span class="hl-0"> </span><span class="hl-1">&#39;cms-bluebutton-sdk&#39;</span><span class="hl-0">;</span><br/><br/><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">app</span><span class="hl-0"> = </span><span class="hl-7">express</span><span class="hl-0">();</span><br/><br/><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">bb</span><span class="hl-0"> = </span><span class="hl-5">new</span><span class="hl-0"> </span><span class="hl-7">BlueButton</span><span class="hl-0">();</span><br/><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">authData</span><span class="hl-0"> = </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">generateAuthData</span><span class="hl-0">();</span><br/><br/><span class="hl-8">// AuthorizationToken holds access grant info:</span><br/><span class="hl-8">// access token, expire in, expire at, token type, scope, refreh token, etc.</span><br/><span class="hl-8">// it is associated with current logged in user in real app,</span><br/><span class="hl-8">// check SDK js docs for more details.</span><br/><br/><span class="hl-5">let</span><span class="hl-0"> </span><span class="hl-2">authToken</span><span class="hl-0">: </span><span class="hl-9">AuthorizationToken</span><span class="hl-0">;</span><br/><br/><span class="hl-8">// start authorize flow: response with URL to redirect to Medicare.gov beneficiary login</span><br/><span class="hl-2">app</span><span class="hl-0">.</span><span class="hl-7">get</span><span class="hl-0">(</span><span class="hl-1">&#39;/&#39;</span><span class="hl-0">, (</span><span class="hl-2">req</span><span class="hl-0">, </span><span class="hl-2">res</span><span class="hl-0">) </span><span class="hl-5">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">redirectUrl</span><span class="hl-0"> = </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">generateAuthorizeUrl</span><span class="hl-0">(</span><span class="hl-2">authData</span><span class="hl-0">);</span><br/><span class="hl-0">    </span><span class="hl-2">res</span><span class="hl-0">.</span><span class="hl-7">redirect</span><span class="hl-0">(</span><span class="hl-2">redirectUrl</span><span class="hl-0">);</span><br/><span class="hl-0">})</span><br/><br/><span class="hl-8">// oauth2 call back: obtain access token, optionally check scope, and fetch data</span><br/><span class="hl-2">app</span><span class="hl-0">.</span><span class="hl-7">get</span><span class="hl-0">(</span><span class="hl-1">&#39;api/bluebutton/callback&#39;</span><span class="hl-0">, </span><span class="hl-5">async</span><span class="hl-0"> (</span><span class="hl-2">req</span><span class="hl-0">: </span><span class="hl-9">Request</span><span class="hl-0">, </span><span class="hl-2">res</span><span class="hl-0">: </span><span class="hl-9">Response</span><span class="hl-0">) </span><span class="hl-5">=&gt;</span><span class="hl-0"> {</span><br/><br/><span class="hl-0">  </span><span class="hl-5">let</span><span class="hl-0"> </span><span class="hl-2">results</span><span class="hl-0"> = {};</span><br/><span class="hl-0">    </span><span class="hl-4">try</span><span class="hl-0"> {</span><br/><span class="hl-0">        </span><span class="hl-2">authToken</span><span class="hl-0"> = </span><span class="hl-4">await</span><span class="hl-0"> </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">getAuthorizationToken</span><span class="hl-0">(</span><span class="hl-2">authData</span><span class="hl-0">, </span><span class="hl-2">req</span><span class="hl-0">.</span><span class="hl-2">query</span><span class="hl-0">.</span><span class="hl-2">code</span><span class="hl-0">, </span><span class="hl-2">req</span><span class="hl-0">.</span><span class="hl-2">query</span><span class="hl-0">.</span><span class="hl-2">state</span><span class="hl-0">, </span><span class="hl-2">req</span><span class="hl-0">.</span><span class="hl-2">query</span><span class="hl-0">.</span><span class="hl-2">error</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-8">// now access token obtained, note, during authorization, the beneficiary can grant</span><br/><span class="hl-0">        </span><span class="hl-8">// access to his/her demographic data and claims data or only claims data, check the scope</span><br/><span class="hl-0">        </span><span class="hl-8">// of the current access token as shown below:</span><br/><span class="hl-0">        </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">scopes</span><span class="hl-0">: </span><span class="hl-9">string</span><span class="hl-0">[] = </span><span class="hl-2">authToken</span><span class="hl-0">.</span><span class="hl-2">scope</span><span class="hl-0">;</span><br/><span class="hl-0">        </span><span class="hl-8">// iterate scope entries here or check if a permission is in the scope</span><br/><span class="hl-0">        </span><span class="hl-4">if</span><span class="hl-0"> (</span><span class="hl-2">authToken</span><span class="hl-0">.</span><span class="hl-2">scope</span><span class="hl-0">.</span><span class="hl-7">index</span><span class="hl-0">(</span><span class="hl-1">&quot;patient/Patient.read&quot;</span><span class="hl-0">) &gt; -</span><span class="hl-3">1</span><span class="hl-0">) {</span><br/><span class="hl-0">            </span><span class="hl-8">// patient info access granted</span><br/><span class="hl-0">        }</span><br/><br/><span class="hl-0">        </span><span class="hl-8">/**</span><br/><span class="hl-8">        * 1. access token scope where demagraphic info included:</span><br/><span class="hl-8">        *</span><br/><span class="hl-8">        * scope: [</span><br/><span class="hl-8">        * &quot;patient/Coverage.read&quot;,</span><br/><span class="hl-8">        * &quot;patient/ExplanationOfBenefit.read&quot;,</span><br/><span class="hl-8">        * &quot;patient/Patient.read&quot;,</span><br/><span class="hl-8">        * &quot;profile&quot;,</span><br/><span class="hl-8">        * ]</span><br/><span class="hl-8">        *</span><br/><span class="hl-8">        * 2. access token scope where demagraphic info not included:</span><br/><span class="hl-8">        *</span><br/><span class="hl-8">        * scope: [</span><br/><span class="hl-8">        * &quot;patient/Coverage.read&quot;,</span><br/><span class="hl-8">        * &quot;patient/ExplanationOfBenefit.read&quot;,</span><br/><span class="hl-8">        * ]</span><br/><span class="hl-8">        */</span><br/><br/><span class="hl-0">        </span><span class="hl-8">// data flow: after access granted</span><br/><span class="hl-0">        </span><span class="hl-8">// the app logic can fetch the beneficiary&#39;s data in app specific ways:</span><br/><span class="hl-0">        </span><span class="hl-8">// e.g. download EOB periodically etc.</span><br/><br/><span class="hl-0">        </span><span class="hl-8">// Access token kept in var authToken can expire, SDK fhir call (e.g. getExplanationOfBenefitData)</span><br/><span class="hl-0">        </span><span class="hl-8">// will detect that and perform token refresh accordingly.</span><br/><br/><span class="hl-0">        </span><span class="hl-8">// Alternatively app logic can call refreshAuthToken to perform a token refresh</span><br/><span class="hl-0">        </span><span class="hl-8">// preemptively before the fhir calls:</span><br/><span class="hl-0">        </span><span class="hl-8">// authToken = await bb.refreshAuthToken(authToken);</span><br/><br/><span class="hl-0">        </span><span class="hl-2">eobResults</span><span class="hl-0"> = </span><span class="hl-4">await</span><span class="hl-0"> </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">getExplanationOfBenefitData</span><span class="hl-0">(</span><span class="hl-2">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-8">// Note, below assignment is needed to pass on the auth token in case it got updated during the fhir call</span><br/><span class="hl-0">        </span><span class="hl-2">authToken</span><span class="hl-0"> = </span><span class="hl-2">eobResults</span><span class="hl-0">.</span><span class="hl-2">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-2">patientResults</span><span class="hl-0"> = </span><span class="hl-4">await</span><span class="hl-0"> </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">getPatientData</span><span class="hl-0">(</span><span class="hl-2">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-2">authToken</span><span class="hl-0"> = </span><span class="hl-2">patientResults</span><span class="hl-0">.</span><span class="hl-2">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-2">coverageResults</span><span class="hl-0"> = </span><span class="hl-4">await</span><span class="hl-0"> </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">getCoverageData</span><span class="hl-0">(</span><span class="hl-2">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-2">authToken</span><span class="hl-0"> = </span><span class="hl-2">coverageResults</span><span class="hl-0">.</span><span class="hl-2">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-2">profileResults</span><span class="hl-0"> = </span><span class="hl-4">await</span><span class="hl-0"> </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">getProfileData</span><span class="hl-0">(</span><span class="hl-2">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-2">authToken</span><span class="hl-0"> = </span><span class="hl-2">profileResults</span><span class="hl-0">.</span><span class="hl-2">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-8">// Note that above FHIR data calls (getExplanationOfBenefitData/getPatientData/getCoverageData)</span><br/><span class="hl-0">        </span><span class="hl-8">// are sending FHIR search requests to Blue Button 2.0 API, and the data returned is a FHIR resource</span><br/><span class="hl-0">        </span><span class="hl-8">// bundles of the first 10 resources, e.g. if the current beneficiary has 55 ExplanationOfBenefit resources,</span><br/><span class="hl-0">        </span><span class="hl-8">// the call to getExplanationOfBenefitData will return the first 10 of them,</span><br/><span class="hl-0">        </span><span class="hl-8">// to retrive all the ExplanationOfBenefit resources, call getPages as shown below:</span><br/><br/><span class="hl-0">        </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">eobbundle</span><span class="hl-0"> = </span><span class="hl-2">eobResults</span><span class="hl-0">.</span><span class="hl-2">response</span><span class="hl-0">?.</span><span class="hl-2">data</span><span class="hl-0">;</span><br/><span class="hl-0">        </span><span class="hl-8">// getPages will navigate from the bundle (eobbundle) and return a list of all</span><br/><span class="hl-0">        </span><span class="hl-8">// the &#39;pages&#39;</span><br/><span class="hl-0">        </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">eobs</span><span class="hl-0"> = </span><span class="hl-4">await</span><span class="hl-0"> </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">getPages</span><span class="hl-0">(</span><span class="hl-2">eobbundle</span><span class="hl-0">, </span><span class="hl-2">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-8">// this is needed to pass on the auth token in case it got updated during the call</span><br/><span class="hl-0">        </span><span class="hl-2">authToken</span><span class="hl-0"> = </span><span class="hl-2">eobs</span><span class="hl-0">.</span><span class="hl-2">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-8">// alternatively, the app can choose more fine grained control of pagination:</span><br/><span class="hl-0">        </span><span class="hl-8">// e.g. fetch 1st page, fetch last page, fetch next page, fetch previous page,</span><br/><span class="hl-0">        </span><span class="hl-8">// as shown by below lines of code:</span><br/><span class="hl-0">        </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">firstPgURL</span><span class="hl-0"> = </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">extractPageNavUrl</span><span class="hl-0">(</span><span class="hl-2">eobbundle</span><span class="hl-0">, </span><span class="hl-1">&quot;first&quot;</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-4">if</span><span class="hl-0"> (</span><span class="hl-2">firstPgURL</span><span class="hl-0">) {</span><br/><span class="hl-0">            </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">fistPage</span><span class="hl-0"> = </span><span class="hl-4">await</span><span class="hl-0"> </span><span class="hl-5">this</span><span class="hl-0">.</span><span class="hl-7">getCustomData</span><span class="hl-0">(</span><span class="hl-2">firstPgURL</span><span class="hl-0">, </span><span class="hl-2">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">            </span><span class="hl-8">// pass on token</span><br/><span class="hl-0">            </span><span class="hl-2">authToken</span><span class="hl-0"> = </span><span class="hl-2">firstPage</span><span class="hl-0">.</span><span class="hl-2">token</span><span class="hl-0">;</span><br/><span class="hl-0">            </span><span class="hl-8">// harvest bundle json</span><br/><span class="hl-0">            </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">firstBundle</span><span class="hl-0"> = </span><span class="hl-2">firstPage</span><span class="hl-0">.</span><span class="hl-2">response</span><span class="hl-0">?.</span><span class="hl-2">data</span><span class="hl-0">;</span><br/><span class="hl-0">        }</span><br/><span class="hl-0">        </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">lastPgURL</span><span class="hl-0"> = </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">extractPageNavUrl</span><span class="hl-0">(</span><span class="hl-2">eobbundle</span><span class="hl-0">, </span><span class="hl-1">&quot;last&quot;</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-4">if</span><span class="hl-0"> (</span><span class="hl-2">lastPgURL</span><span class="hl-0">) {</span><br/><span class="hl-0">            </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">lastPage</span><span class="hl-0"> = </span><span class="hl-4">await</span><span class="hl-0"> </span><span class="hl-5">this</span><span class="hl-0">.</span><span class="hl-7">getCustomData</span><span class="hl-0">(</span><span class="hl-2">lastPgURL</span><span class="hl-0">, </span><span class="hl-2">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">            </span><span class="hl-8">// pass on token</span><br/><span class="hl-0">            </span><span class="hl-2">authToken</span><span class="hl-0"> = </span><span class="hl-2">lastPage</span><span class="hl-0">.</span><span class="hl-2">token</span><span class="hl-0">;</span><br/><span class="hl-0">            </span><span class="hl-8">// harvest bundle json</span><br/><span class="hl-0">            </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">lastBundle</span><span class="hl-0"> = </span><span class="hl-2">lastPage</span><span class="hl-0">.</span><span class="hl-2">response</span><span class="hl-0">?.</span><span class="hl-2">data</span><span class="hl-0">;</span><br/><span class="hl-0">        }</span><br/><span class="hl-0">        </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">nextPgURL</span><span class="hl-0"> = </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">extractPageNavUrl</span><span class="hl-0">(</span><span class="hl-2">eobbundle</span><span class="hl-0">, </span><span class="hl-1">&quot;next&quot;</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-4">if</span><span class="hl-0"> (</span><span class="hl-2">nextPgURL</span><span class="hl-0">) {</span><br/><span class="hl-0">            </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">nextPage</span><span class="hl-0"> = </span><span class="hl-4">await</span><span class="hl-0"> </span><span class="hl-5">this</span><span class="hl-0">.</span><span class="hl-7">getCustomData</span><span class="hl-0">(</span><span class="hl-2">nextPgURL</span><span class="hl-0">, </span><span class="hl-2">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">            </span><span class="hl-8">// pass on token</span><br/><span class="hl-0">            </span><span class="hl-2">authToken</span><span class="hl-0"> = </span><span class="hl-2">nextPage</span><span class="hl-0">.</span><span class="hl-2">token</span><span class="hl-0">;</span><br/><span class="hl-0">            </span><span class="hl-8">// harvest bundle json</span><br/><span class="hl-0">            </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">nextBundle</span><span class="hl-0"> = </span><span class="hl-2">nextPage</span><span class="hl-0">.</span><span class="hl-2">response</span><span class="hl-0">?.</span><span class="hl-2">data</span><span class="hl-0">;</span><br/><span class="hl-0">        }</span><br/><span class="hl-0">        </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">prevPgURL</span><span class="hl-0"> = </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">extractPageNavUrl</span><span class="hl-0">(</span><span class="hl-2">eobbundle</span><span class="hl-0">, </span><span class="hl-1">&quot;previous&quot;</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-4">if</span><span class="hl-0"> (</span><span class="hl-2">prevPgURL</span><span class="hl-0">) {</span><br/><span class="hl-0">            </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">prevPage</span><span class="hl-0"> = </span><span class="hl-4">await</span><span class="hl-0"> </span><span class="hl-5">this</span><span class="hl-0">.</span><span class="hl-7">getCustomData</span><span class="hl-0">(</span><span class="hl-2">prevPgURL</span><span class="hl-0">, </span><span class="hl-2">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">            </span><span class="hl-8">// pass on token</span><br/><span class="hl-0">            </span><span class="hl-2">authToken</span><span class="hl-0"> = </span><span class="hl-2">prevPage</span><span class="hl-0">.</span><span class="hl-2">token</span><span class="hl-0">;</span><br/><span class="hl-0">            </span><span class="hl-8">// harvest bundle json</span><br/><span class="hl-0">            </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">prevBundle</span><span class="hl-0"> = </span><span class="hl-2">prevPage</span><span class="hl-0">.</span><span class="hl-2">response</span><span class="hl-0">?.</span><span class="hl-2">data</span><span class="hl-0">;</span><br/><span class="hl-0">        }</span><br/><br/><span class="hl-0">        </span><span class="hl-8">// get all patient(s) by calling getPages - note this is trivial since there is only</span><br/><span class="hl-0">        </span><span class="hl-8">// 1 patient resource</span><br/><span class="hl-0">        </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">ptbundle</span><span class="hl-0"> = </span><span class="hl-2">patientResults</span><span class="hl-0">.</span><span class="hl-2">response</span><span class="hl-0">?.</span><span class="hl-2">data</span><span class="hl-0">;</span><br/><span class="hl-0">        </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">pts</span><span class="hl-0"> = </span><span class="hl-4">await</span><span class="hl-0"> </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">getPages</span><span class="hl-0">(</span><span class="hl-2">ptbundle</span><span class="hl-0">, </span><span class="hl-2">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-2">authToken</span><span class="hl-0"> = </span><span class="hl-2">pts</span><span class="hl-0">.</span><span class="hl-2">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-8">// get all coverages by calling getPages</span><br/><span class="hl-0">        </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">coveragebundle</span><span class="hl-0"> = </span><span class="hl-2">coverageResults</span><span class="hl-0">.</span><span class="hl-2">response</span><span class="hl-0">?.</span><span class="hl-2">data</span><span class="hl-0">;</span><br/><span class="hl-0">        </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">coverages</span><span class="hl-0"> = </span><span class="hl-4">await</span><span class="hl-0"> </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">getPages</span><span class="hl-0">(</span><span class="hl-2">coveragebundle</span><span class="hl-0">, </span><span class="hl-2">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-2">authToken</span><span class="hl-0"> = </span><span class="hl-2">coverages</span><span class="hl-0">.</span><span class="hl-2">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-8">// Note, getPages can be applied on non bundle resources or bundles without navigation links,</span><br/><span class="hl-0">        </span><span class="hl-8">// in that case, no page navigation occurs and a list of the original resource will be returned,</span><br/><span class="hl-0">        </span><span class="hl-8">// e.g. below code calls getPages on a profile result which might not be a bundle resource.</span><br/><span class="hl-0">        </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">pfbundle</span><span class="hl-0"> = </span><span class="hl-2">profileResults</span><span class="hl-0">.</span><span class="hl-2">response</span><span class="hl-0">?.</span><span class="hl-2">data</span><span class="hl-0">;</span><br/><span class="hl-0">        </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-6">pfs</span><span class="hl-0"> = </span><span class="hl-4">await</span><span class="hl-0"> </span><span class="hl-2">bb</span><span class="hl-0">.</span><span class="hl-7">getPages</span><span class="hl-0">(</span><span class="hl-2">pfbundle</span><span class="hl-0">, </span><span class="hl-2">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-2">authToken</span><span class="hl-0"> = </span><span class="hl-2">pfs</span><span class="hl-0">.</span><span class="hl-2">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-8">// getPages return an object of structure:</span><br/><span class="hl-0">        </span><span class="hl-8">// {token: &lt;authToken&gt;, pages: [&lt;bundle of 10 resources&gt;, &lt;bundle of 10 resources&gt;, ...]}</span><br/><span class="hl-0">        </span><span class="hl-2">results</span><span class="hl-0"> = {</span><br/><span class="hl-0">          </span><span class="hl-2">eob:</span><span class="hl-0"> </span><span class="hl-2">eobs</span><span class="hl-0">.</span><span class="hl-2">pages</span><span class="hl-0">,</span><br/><span class="hl-0">          </span><span class="hl-2">patient:</span><span class="hl-0"> </span><span class="hl-2">pts</span><span class="hl-0">.</span><span class="hl-2">pages</span><span class="hl-0">,</span><br/><span class="hl-0">          </span><span class="hl-2">coverage:</span><span class="hl-0"> </span><span class="hl-2">coverages</span><span class="hl-0">.</span><span class="hl-2">pages</span><span class="hl-0">,</span><br/><span class="hl-0">          </span><span class="hl-2">profile:</span><span class="hl-0"> </span><span class="hl-2">pfs</span><span class="hl-0">.</span><span class="hl-2">pages</span><span class="hl-0">,</span><br/><span class="hl-0">        };</span><br/><br/><span class="hl-0">    } </span><span class="hl-4">catch</span><span class="hl-0"> (</span><span class="hl-2">e</span><span class="hl-0">) {</span><br/><span class="hl-0">        </span><span class="hl-2">console</span><span class="hl-0">.</span><span class="hl-7">log</span><span class="hl-0">(</span><span class="hl-2">e</span><span class="hl-0">);</span><br/><span class="hl-0">    }</span><br/><br/><span class="hl-0">    </span><span class="hl-2">res</span><span class="hl-0">.</span><span class="hl-7">json</span><span class="hl-0">(</span><span class="hl-2">results</span><span class="hl-0">)</span><br/><br/><span class="hl-0">});</span><br/>
+
+            <a
+              href="#fhir-requests-retry-settings---retrysettings"
+              id="fhir-requests-retry-settings---retrysettings"
+              style="color: inherit; text-decoration: none"
+            >
+              <h3>FHIR Requests Retry Settings - <code>retrySettings</code></h3>
+            </a>
+            <p>
+              Retry is enabled by default for FHIR requests. The folllowing
+              parameters are available for exponential back off retry algorithm.
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Retry parameter</th>
+                  <th>Value (default)</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>backoffFactor</code></td>
+                  <td><code>5</code></td>
+                  <td>Backoff factor in seconds</td>
+                </tr>
+                <tr>
+                  <td><code>total </code></td>
+                  <td><code>3</code></td>
+                  <td>Max retries</td>
+                </tr>
+                <tr>
+                  <td><code>statusForcelist</code></td>
+                  <td>
+                    [<code>500</code>, <code>502</code>, <code>503</code>,
+                    <code>504</code>]
+                  </td>
+                  <td>Error response codes to retry on</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              The exponential backoff factor (in seconds) is used to calculate
+              interval between retries using the formula
+              <code>backoffFactor * (2 ** (i - 1))</code> where
+              <code>i</code> starts from 0.
+            </p>
+            <p>
+              Example: A <code>backoffFactor</code> of 5 seconds generates the
+              wait intervals: 2.5, 5, 10, ...
+            </p>
+            <p>To disable the retry, set <code>total = 0</code>.</p>
+
+            <a
+              href="#configuration-methods"
+              id="configuration-methods"
+              style="color: inherit; text-decoration: none"
+            >
+              <h2>Configuration Methods<a name="configuration-methods"></a></h2>
+            </a>
+            <p>
+              There are two ways to configure the SDK when instantiating a
+              <code>BlueButton</code> class instance:
+            </p>
+
+            <a
+              href="#json-object-literal"
+              id="json-object-literal"
+              style="color: inherit; text-decoration: none"
+            >
+              <h3>JSON object literal</h3>
+            </a>
+            <ul>
+              <li>Configuration <code>key:value</code> pairs can be used.</li>
+              <li>
+                Configuration values can be provided from your own
+                application&#39;s configuration method.
+              </li>
+            </ul>
+            <p>Example:</p>
+            <pre><code class="language-TypeScript"><span class="hl-0">    </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">bb</span><span class="hl-0"> = </span><span class="hl-3">BlueButton</span><span class="hl-0">({</span><br/><span class="hl-0">             </span><span class="hl-4">&quot;environment&quot;</span><span class="hl-5">:</span><span class="hl-0"> </span><span class="hl-4">&quot;PRODUCTION&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">             </span><span class="hl-4">&quot;clientId&quot;</span><span class="hl-5">:</span><span class="hl-0"> </span><span class="hl-4">&quot;foo&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">             </span><span class="hl-4">&quot;clientSecret&quot;</span><span class="hl-5">:</span><span class="hl-0"> </span><span class="hl-4">&quot;bar&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">             </span><span class="hl-4">&quot;callbackUrl&quot;</span><span class="hl-5">:</span><span class="hl-0"> </span><span class="hl-4">&quot;https://www.fake.com/callback&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">             </span><span class="hl-4">&quot;version&quot;</span><span class="hl-5">:</span><span class="hl-0"> </span><span class="hl-6">2</span><span class="hl-0">,</span><br/><span class="hl-0">             </span><span class="hl-4">&quot;retrySettings&quot;</span><span class="hl-5">:</span><span class="hl-0"> {</span><br/><span class="hl-0">                 </span><span class="hl-4">&quot;total&quot;</span><span class="hl-5">:</span><span class="hl-0"> </span><span class="hl-6">3</span><span class="hl-0">,</span><br/><span class="hl-0">                 </span><span class="hl-4">&quot;backoffFactor&quot;</span><span class="hl-5">:</span><span class="hl-0"> </span><span class="hl-6">5</span><span class="hl-0">,</span><br/><span class="hl-0">                 </span><span class="hl-4">&quot;statusForcelist&quot;</span><span class="hl-5">:</span><span class="hl-0"> [</span><span class="hl-6">500</span><span class="hl-0">, </span><span class="hl-6">502</span><span class="hl-0">, </span><span class="hl-6">503</span><span class="hl-0">, </span><span class="hl-6">504</span><span class="hl-0">]</span><br/><span class="hl-0">             }</span><br/><span class="hl-0">          }</span>
 </code></pre>
 
             <a
-              href="#a-complete-sample-app-"
-              id="a-complete-sample-app-"
+              href="#json-config-file"
+              id="json-config-file"
               style="color: inherit; text-decoration: none"
             >
-              <h2>A Complete Sample App <a name="samples"></a></h2>
+              <h3>JSON config file</h3>
             </a>
             <p>
-              A Node JS React sample app can be found at:
+              The configuration is in JSON format and stored in a local file.
+              The default location is the current working directory with file
+              name: <code>.bluebutton-config.json</code>
+            </p>
+            <p>By default, <code>tokenRefreshOnExpire</code> is true.</p>
+            <p>Example code:</p>
+            <pre><code class="language-Typescript"><span class="hl-0">    </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">bb</span><span class="hl-0"> = </span><span class="hl-3">BlueButton</span><span class="hl-0">(</span><span class="hl-4">&quot;settings/my_bb2_sdk_conf.json&quot;</span><span class="hl-0">);</span>
+</code></pre>
+            <p>Example JSON in file:</p>
+            <pre><code class="language-JSON"><span class="hl-0">    {</span><br/><span class="hl-0">      </span><span class="hl-7">&quot;environment&quot;</span><span class="hl-0">: </span><span class="hl-4">&quot;SANDBOX&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">      </span><span class="hl-7">&quot;clientId&quot;</span><span class="hl-0">: </span><span class="hl-4">&quot;foo&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">      </span><span class="hl-7">&quot;clientSecret&quot;</span><span class="hl-0">: </span><span class="hl-4">&quot;bar&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">      </span><span class="hl-7">&quot;callbackUrl&quot;</span><span class="hl-0">: </span><span class="hl-4">&quot;https://www.fake.com/callback&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">      </span><span class="hl-7">&quot;version&quot;</span><span class="hl-0">: </span><span class="hl-6">2</span><span class="hl-0">,</span><br/><span class="hl-0">      </span><span class="hl-7">&quot;retrySettings&quot;</span><span class="hl-0">: {</span><br/><span class="hl-0">        </span><span class="hl-7">&quot;total&quot;</span><span class="hl-0">: </span><span class="hl-6">3</span><span class="hl-0">,</span><br/><span class="hl-0">        </span><span class="hl-7">&quot;backoffFactor&quot;</span><span class="hl-0">: </span><span class="hl-6">5</span><span class="hl-0">,</span><br/><span class="hl-0">        </span><span class="hl-7">&quot;statusForcelist&quot;</span><span class="hl-0">: [</span><span class="hl-6">500</span><span class="hl-0">, </span><span class="hl-6">502</span><span class="hl-0">, </span><span class="hl-6">503</span><span class="hl-0">, </span><span class="hl-6">504</span><span class="hl-0">]</span><br/><span class="hl-0">      }</span><br/><span class="hl-0">    }</span>
+</code></pre>
+
+            <a
+              href="#environments-and-data"
+              id="environments-and-data"
+              style="color: inherit; text-decoration: none"
+            >
+              <h3>Environments and Data</h3>
+            </a>
+            <p>
+              The Blue Button 2.0 API is available in V1 and V2 in a sandbox and
+              production environment.
+            </p>
+            <ul>
+              <li>
+                Sandbox location:
+                <a href="https://sandbox.bluebutton.cms.gov"
+                  >https://sandbox.bluebutton.cms.gov</a
+                >
+              </li>
+              <li>
+                Production location:
+                <a href="https://api.bluebutton.cms.gov"
+                  >https://api.bluebutton.cms.gov</a
+                >
+              </li>
+            </ul>
+            <p>Version data formats:</p>
+            <ul>
+              <li>V1: FHIR STU2</li>
+              <li>V2: FHIR R4</li>
+            </ul>
+            <p>
+              Sample configuration JSON with default version and environment:
+            </p>
+            <pre><code class="language-JSON"><span class="hl-0">{</span><br/><span class="hl-0">  </span><span class="hl-7">&quot;clientId&quot;</span><span class="hl-0">: </span><span class="hl-4">&quot;your_client_id&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-7">&quot;clientSecret&quot;</span><span class="hl-0">: </span><span class="hl-4">&quot;your_client_secret&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-7">&quot;callbackUrl&quot;</span><span class="hl-0">: </span><span class="hl-4">&quot;https://www.example.com/&quot;</span><br/><span class="hl-0">}</span>
+</code></pre>
+            <p>
+              If needed, you can set your application&#39;s target environment
+              and API version.
+            </p>
+            <p>Example:</p>
+            <pre><code class="language-JSON"><span class="hl-0">{</span><br/><span class="hl-0">  </span><span class="hl-7">&quot;clientId&quot;</span><span class="hl-0">: </span><span class="hl-4">&quot;your_client_id&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-7">&quot;clientSecret&quot;</span><span class="hl-0">: </span><span class="hl-4">&quot;your_client_secret&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-7">&quot;callbackUrl&quot;</span><span class="hl-0">: </span><span class="hl-4">&quot;https://www.example.com/&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-7">&quot;version&quot;</span><span class="hl-0">: </span><span class="hl-4">&quot;2&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-7">&quot;environment&quot;</span><span class="hl-0">: </span><span class="hl-4">&quot;PRODUCTION&quot;</span><br/><span class="hl-0">}</span>
+</code></pre>
+
+            <a
+              href="#usage-"
+              id="usage-"
+              style="color: inherit; text-decoration: none"
+            >
+              <h2>Usage <a name="usage"></a></h2>
+            </a>
+            <p>
+              The following code shows the SDK used with a Node JS Express
+              server. This code walks through:
+            </p>
+            <ul>
+              <li>Obtaining an access token with scope chosen by a user</li>
+              <li>Passing the token to query for FHIR data</li>
+              <li>Using URL links from the response to page through data</li>
+              <li>
+                Using the SDK paging support to return all data in one call
+              </li>
+            </ul>
+            <pre><code class="language-TypeScript"><span class="hl-8">import</span><span class="hl-0"> </span><span class="hl-5">express</span><span class="hl-0">, { </span><span class="hl-5">Request</span><span class="hl-0">, </span><span class="hl-5">Response</span><span class="hl-0"> } </span><span class="hl-8">from</span><span class="hl-0"> </span><span class="hl-4">&#39;express&#39;</span><span class="hl-0">;</span><br/><span class="hl-8">import</span><span class="hl-0"> { </span><span class="hl-5">BlueButton</span><span class="hl-0"> } </span><span class="hl-8">from</span><span class="hl-0"> </span><span class="hl-4">&#39;cms-bluebutton-sdk&#39;</span><span class="hl-0">;</span><br/><span class="hl-8">import</span><span class="hl-0"> { </span><span class="hl-5">AuthorizationToken</span><span class="hl-0"> } </span><span class="hl-8">from</span><span class="hl-0"> </span><span class="hl-4">&#39;cms-bluebutton-sdk&#39;</span><span class="hl-0">;</span><br/><br/><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">app</span><span class="hl-0"> = </span><span class="hl-3">express</span><span class="hl-0">();</span><br/><br/><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">bb</span><span class="hl-0"> = </span><span class="hl-1">new</span><span class="hl-0"> </span><span class="hl-3">BlueButton</span><span class="hl-0">();</span><br/><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">authData</span><span class="hl-0"> = </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">generateAuthData</span><span class="hl-0">();</span><br/><br/><span class="hl-9">// AuthorizationToken holds access grant info:</span><br/><span class="hl-9">// access token, expire in, expire at, token type, scope, refreh token, etc.</span><br/><span class="hl-9">// The token is associated with current logged in user. For more details,</span><br/><span class="hl-9">// see SDK JS docs.</span><br/><br/><span class="hl-1">let</span><span class="hl-0"> </span><span class="hl-5">authToken</span><span class="hl-0">: </span><span class="hl-10">AuthorizationToken</span><span class="hl-0">;</span><br/><br/><span class="hl-9">// Start authorize flow: response with URL to redirect to Medicare.gov beneficiary login</span><br/><span class="hl-5">app</span><span class="hl-0">.</span><span class="hl-3">get</span><span class="hl-0">(</span><span class="hl-4">&#39;/&#39;</span><span class="hl-0">, (</span><span class="hl-5">req</span><span class="hl-0">, </span><span class="hl-5">res</span><span class="hl-0">) </span><span class="hl-1">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">redirectUrl</span><span class="hl-0"> = </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">generateAuthorizeUrl</span><span class="hl-0">(</span><span class="hl-5">authData</span><span class="hl-0">);</span><br/><span class="hl-0">    </span><span class="hl-5">res</span><span class="hl-0">.</span><span class="hl-3">redirect</span><span class="hl-0">(</span><span class="hl-5">redirectUrl</span><span class="hl-0">);</span><br/><span class="hl-0">})</span><br/><br/><span class="hl-9">// OAuth2.0 call back:Obtain access token, optionally check scope, and fetch data</span><br/><span class="hl-5">app</span><span class="hl-0">.</span><span class="hl-3">get</span><span class="hl-0">(</span><span class="hl-4">&#39;api/bluebutton/callback&#39;</span><span class="hl-0">, </span><span class="hl-1">async</span><span class="hl-0"> (</span><span class="hl-5">req</span><span class="hl-0">: </span><span class="hl-10">Request</span><span class="hl-0">, </span><span class="hl-5">res</span><span class="hl-0">: </span><span class="hl-10">Response</span><span class="hl-0">) </span><span class="hl-1">=&gt;</span><span class="hl-0"> {</span><br/><br/><span class="hl-0">  </span><span class="hl-1">let</span><span class="hl-0"> </span><span class="hl-5">results</span><span class="hl-0"> = {};</span><br/><span class="hl-0">    </span><span class="hl-8">try</span><span class="hl-0"> {</span><br/><span class="hl-0">        </span><span class="hl-5">authToken</span><span class="hl-0"> = </span><span class="hl-8">await</span><span class="hl-0"> </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">getAuthorizationToken</span><span class="hl-0">(</span><span class="hl-5">authData</span><span class="hl-0">, </span><span class="hl-5">req</span><span class="hl-0">.</span><span class="hl-5">query</span><span class="hl-0">.</span><span class="hl-5">code</span><span class="hl-0">, </span><span class="hl-5">req</span><span class="hl-0">.</span><span class="hl-5">query</span><span class="hl-0">.</span><span class="hl-5">state</span><span class="hl-0">, </span><span class="hl-5">req</span><span class="hl-0">.</span><span class="hl-5">query</span><span class="hl-0">.</span><span class="hl-5">error</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-9">// Access token obtained. During authorization, the beneficiary can grant</span><br/><span class="hl-0">        </span><span class="hl-9">// access to his/her demographic data and claims data or only claims data.</span><br/><span class="hl-0">        </span><span class="hl-9">// Check the scope of the current access token:</span><br/><span class="hl-0">        </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">scopes</span><span class="hl-0">: </span><span class="hl-10">string</span><span class="hl-0">[] = </span><span class="hl-5">authToken</span><span class="hl-0">.</span><span class="hl-5">scope</span><span class="hl-0">;</span><br/><span class="hl-0">        </span><span class="hl-9">// iterate scope entries here or check if a permission is in the scope</span><br/><span class="hl-0">        </span><span class="hl-8">if</span><span class="hl-0"> (</span><span class="hl-5">authToken</span><span class="hl-0">.</span><span class="hl-5">scope</span><span class="hl-0">.</span><span class="hl-3">index</span><span class="hl-0">(</span><span class="hl-4">&quot;patient/Patient.read&quot;</span><span class="hl-0">) &gt; -</span><span class="hl-6">1</span><span class="hl-0">) {</span><br/><span class="hl-0">            </span><span class="hl-9">// patient info access granted</span><br/><span class="hl-0">        }</span><br/><br/><span class="hl-0">         </span><span class="hl-9">/**</span><br/><span class="hl-9">        * 1. Access token scope with demographic info:</span><br/><span class="hl-9">        *</span><br/><span class="hl-9">        * scope: [</span><br/><span class="hl-9">        * &quot;patient/Coverage.read&quot;,</span><br/><span class="hl-9">        * &quot;patient/ExplanationOfBenefit.read&quot;,</span><br/><span class="hl-9">        * &quot;patient/Patient.read&quot;,</span><br/><span class="hl-9">        * &quot;profile&quot;,</span><br/><span class="hl-9">        * ]</span><br/><span class="hl-9">        *</span><br/><span class="hl-9">        * 2. Access token scope without demographic info:</span><br/><span class="hl-9">        *</span><br/><span class="hl-9">        * scope: [</span><br/><span class="hl-9">        * &quot;patient/Coverage.read&quot;,</span><br/><span class="hl-9">        * &quot;patient/ExplanationOfBenefit.read&quot;,</span><br/><span class="hl-9">        * ]</span><br/><span class="hl-9">        */</span><br/><br/><span class="hl-0">        </span><span class="hl-9">// Data flow: After access granted,</span><br/><span class="hl-0">        </span><span class="hl-9">// your app logic can fetch the beneficiary&#39;s data in specific ways.</span><br/><span class="hl-0">        </span><span class="hl-9">// Example: download EOB periodically</span><br/><br/><span class="hl-0">        </span><span class="hl-9">// The access token kept in var authToken can expire. </span><br/><span class="hl-0">        </span><span class="hl-9">// SDK FHIR call will detect expiration and refresh the token</span><br/><span class="hl-0">        </span><span class="hl-9">// Example FHIR call:  getExplanationOfBenefitData</span><br/><br/><span class="hl-0">        </span><span class="hl-9">// You can also configure your app to call refreshAuthToken </span><br/><span class="hl-0">        </span><span class="hl-9">// for an access token refresh before the FHIR calls:</span><br/><span class="hl-0">        </span><span class="hl-9">// Example:  authToken = await bb.refreshAuthToken(authToken);</span><br/><br/><span class="hl-0">        </span><span class="hl-5">eobResults</span><span class="hl-0"> = </span><span class="hl-8">await</span><span class="hl-0"> </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">getExplanationOfBenefitData</span><span class="hl-0">(</span><span class="hl-5">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-9">// Note, below assignment is needed to pass on the auth token in case it got updated during the fhir call</span><br/><span class="hl-0">        </span><span class="hl-5">authToken</span><span class="hl-0"> = </span><span class="hl-5">eobResults</span><span class="hl-0">.</span><span class="hl-5">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-5">patientResults</span><span class="hl-0"> = </span><span class="hl-8">await</span><span class="hl-0"> </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">getPatientData</span><span class="hl-0">(</span><span class="hl-5">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-5">authToken</span><span class="hl-0"> = </span><span class="hl-5">patientResults</span><span class="hl-0">.</span><span class="hl-5">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-5">coverageResults</span><span class="hl-0"> = </span><span class="hl-8">await</span><span class="hl-0"> </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">getCoverageData</span><span class="hl-0">(</span><span class="hl-5">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-5">authToken</span><span class="hl-0"> = </span><span class="hl-5">coverageResults</span><span class="hl-0">.</span><span class="hl-5">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-5">profileResults</span><span class="hl-0"> = </span><span class="hl-8">await</span><span class="hl-0"> </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">getProfileData</span><span class="hl-0">(</span><span class="hl-5">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-5">authToken</span><span class="hl-0"> = </span><span class="hl-5">profileResults</span><span class="hl-0">.</span><span class="hl-5">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-9">// Note that above FHIR data calls </span><br/><span class="hl-0">        </span><span class="hl-9">// (getExplanationOfBenefitData, getPatientData, and getCoverageData)</span><br/><span class="hl-0">        </span><span class="hl-9">// send FHIR search requests to Blue Button 2.0 API</span><br/><span class="hl-0">        </span><span class="hl-9">// and the data returned is a FHIR resource bundle of the </span><br/><span class="hl-0">        </span><span class="hl-9">// first 10 resources. Example: If the current beneficiary </span><br/><span class="hl-0">        </span><span class="hl-9">// has 55 ExplanationOfBenefit resources,</span><br/><span class="hl-0">        </span><span class="hl-9">// the call to getExplanationOfBenefitData will return the </span><br/><span class="hl-0">        </span><span class="hl-9">// first 10 of them.</span><br/><span class="hl-0">        </span><span class="hl-9">// To retrive all the ExplanationOfBenefit resources, </span><br/><span class="hl-0">        </span><span class="hl-9">// call getPages: </span><br/><br/><span class="hl-0">        </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">eobbundle</span><span class="hl-0"> = </span><span class="hl-5">eobResults</span><span class="hl-0">.</span><span class="hl-5">response</span><span class="hl-0">?.</span><span class="hl-5">data</span><span class="hl-0">;</span><br/><span class="hl-0">        </span><span class="hl-9">// getPages will navigate from the bundle (eobbundle) and return a list of all</span><br/><span class="hl-0">        </span><span class="hl-9">// the &#39;pages&#39;</span><br/><span class="hl-0">        </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">eobs</span><span class="hl-0"> = </span><span class="hl-8">await</span><span class="hl-0"> </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">getPages</span><span class="hl-0">(</span><span class="hl-5">eobbundle</span><span class="hl-0">, </span><span class="hl-5">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-9">// this is needed to pass on the auth token in case it got updated during the call</span><br/><span class="hl-0">        </span><span class="hl-5">authToken</span><span class="hl-0"> = </span><span class="hl-5">eobs</span><span class="hl-0">.</span><span class="hl-5">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-9">// The app can choose more fine grained control of pagination:</span><br/><span class="hl-0">        </span><span class="hl-9">// Example: fetch 1st page, fetch last page, fetch next page, </span><br/><span class="hl-0">        </span><span class="hl-9">// fetch previous page:</span><br/><span class="hl-0">        </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">firstPgURL</span><span class="hl-0"> = </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">extractPageNavUrl</span><span class="hl-0">(</span><span class="hl-5">eobbundle</span><span class="hl-0">, </span><span class="hl-4">&quot;first&quot;</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-8">if</span><span class="hl-0"> (</span><span class="hl-5">firstPgURL</span><span class="hl-0">) {</span><br/><span class="hl-0">            </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">fistPage</span><span class="hl-0"> = </span><span class="hl-8">await</span><span class="hl-0"> </span><span class="hl-1">this</span><span class="hl-0">.</span><span class="hl-3">getCustomData</span><span class="hl-0">(</span><span class="hl-5">firstPgURL</span><span class="hl-0">, </span><span class="hl-5">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">            </span><span class="hl-9">// pass on token</span><br/><span class="hl-0">            </span><span class="hl-5">authToken</span><span class="hl-0"> = </span><span class="hl-5">firstPage</span><span class="hl-0">.</span><span class="hl-5">token</span><span class="hl-0">;</span><br/><span class="hl-0">            </span><span class="hl-9">// harvest bundle json</span><br/><span class="hl-0">            </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">firstBundle</span><span class="hl-0"> = </span><span class="hl-5">firstPage</span><span class="hl-0">.</span><span class="hl-5">response</span><span class="hl-0">?.</span><span class="hl-5">data</span><span class="hl-0">;</span><br/><span class="hl-0">        }</span><br/><span class="hl-0">        </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">lastPgURL</span><span class="hl-0"> = </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">extractPageNavUrl</span><span class="hl-0">(</span><span class="hl-5">eobbundle</span><span class="hl-0">, </span><span class="hl-4">&quot;last&quot;</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-8">if</span><span class="hl-0"> (</span><span class="hl-5">lastPgURL</span><span class="hl-0">) {</span><br/><span class="hl-0">            </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">lastPage</span><span class="hl-0"> = </span><span class="hl-8">await</span><span class="hl-0"> </span><span class="hl-1">this</span><span class="hl-0">.</span><span class="hl-3">getCustomData</span><span class="hl-0">(</span><span class="hl-5">lastPgURL</span><span class="hl-0">, </span><span class="hl-5">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">            </span><span class="hl-9">// pass on token</span><br/><span class="hl-0">            </span><span class="hl-5">authToken</span><span class="hl-0"> = </span><span class="hl-5">lastPage</span><span class="hl-0">.</span><span class="hl-5">token</span><span class="hl-0">;</span><br/><span class="hl-0">            </span><span class="hl-9">// harvest bundle json</span><br/><span class="hl-0">            </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">lastBundle</span><span class="hl-0"> = </span><span class="hl-5">lastPage</span><span class="hl-0">.</span><span class="hl-5">response</span><span class="hl-0">?.</span><span class="hl-5">data</span><span class="hl-0">;</span><br/><span class="hl-0">        }</span><br/><span class="hl-0">        </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">nextPgURL</span><span class="hl-0"> = </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">extractPageNavUrl</span><span class="hl-0">(</span><span class="hl-5">eobbundle</span><span class="hl-0">, </span><span class="hl-4">&quot;next&quot;</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-8">if</span><span class="hl-0"> (</span><span class="hl-5">nextPgURL</span><span class="hl-0">) {</span><br/><span class="hl-0">            </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">nextPage</span><span class="hl-0"> = </span><span class="hl-8">await</span><span class="hl-0"> </span><span class="hl-1">this</span><span class="hl-0">.</span><span class="hl-3">getCustomData</span><span class="hl-0">(</span><span class="hl-5">nextPgURL</span><span class="hl-0">, </span><span class="hl-5">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">            </span><span class="hl-9">// pass on token</span><br/><span class="hl-0">            </span><span class="hl-5">authToken</span><span class="hl-0"> = </span><span class="hl-5">nextPage</span><span class="hl-0">.</span><span class="hl-5">token</span><span class="hl-0">;</span><br/><span class="hl-0">            </span><span class="hl-9">// harvest bundle json</span><br/><span class="hl-0">            </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">nextBundle</span><span class="hl-0"> = </span><span class="hl-5">nextPage</span><span class="hl-0">.</span><span class="hl-5">response</span><span class="hl-0">?.</span><span class="hl-5">data</span><span class="hl-0">;</span><br/><span class="hl-0">        }</span><br/><span class="hl-0">        </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">prevPgURL</span><span class="hl-0"> = </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">extractPageNavUrl</span><span class="hl-0">(</span><span class="hl-5">eobbundle</span><span class="hl-0">, </span><span class="hl-4">&quot;previous&quot;</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-8">if</span><span class="hl-0"> (</span><span class="hl-5">prevPgURL</span><span class="hl-0">) {</span><br/><span class="hl-0">            </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">prevPage</span><span class="hl-0"> = </span><span class="hl-8">await</span><span class="hl-0"> </span><span class="hl-1">this</span><span class="hl-0">.</span><span class="hl-3">getCustomData</span><span class="hl-0">(</span><span class="hl-5">prevPgURL</span><span class="hl-0">, </span><span class="hl-5">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">            </span><span class="hl-9">// pass on token</span><br/><span class="hl-0">            </span><span class="hl-5">authToken</span><span class="hl-0"> = </span><span class="hl-5">prevPage</span><span class="hl-0">.</span><span class="hl-5">token</span><span class="hl-0">;</span><br/><span class="hl-0">            </span><span class="hl-9">// harvest bundle json</span><br/><span class="hl-0">            </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">prevBundle</span><span class="hl-0"> = </span><span class="hl-5">prevPage</span><span class="hl-0">.</span><span class="hl-5">response</span><span class="hl-0">?.</span><span class="hl-5">data</span><span class="hl-0">;</span><br/><span class="hl-0">        }</span><br/><br/><span class="hl-0">        </span><span class="hl-9">// Get all patient(s) by calling getPages. (Note: This is trivial since</span><br/><span class="hl-0">        </span><span class="hl-9">// there is only 1 patient resource)</span><br/><span class="hl-0">        </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">ptbundle</span><span class="hl-0"> = </span><span class="hl-5">patientResults</span><span class="hl-0">.</span><span class="hl-5">response</span><span class="hl-0">?.</span><span class="hl-5">data</span><span class="hl-0">;</span><br/><span class="hl-0">        </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">pts</span><span class="hl-0"> = </span><span class="hl-8">await</span><span class="hl-0"> </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">getPages</span><span class="hl-0">(</span><span class="hl-5">ptbundle</span><span class="hl-0">, </span><span class="hl-5">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-5">authToken</span><span class="hl-0"> = </span><span class="hl-5">pts</span><span class="hl-0">.</span><span class="hl-5">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-9">// Get all coverages by calling getPages</span><br/><span class="hl-0">        </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">coveragebundle</span><span class="hl-0"> = </span><span class="hl-5">coverageResults</span><span class="hl-0">.</span><span class="hl-5">response</span><span class="hl-0">?.</span><span class="hl-5">data</span><span class="hl-0">;</span><br/><span class="hl-0">        </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">coverages</span><span class="hl-0"> = </span><span class="hl-8">await</span><span class="hl-0"> </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">getPages</span><span class="hl-0">(</span><span class="hl-5">coveragebundle</span><span class="hl-0">, </span><span class="hl-5">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-5">authToken</span><span class="hl-0"> = </span><span class="hl-5">coverages</span><span class="hl-0">.</span><span class="hl-5">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-9">// You can apply getPages on non-bundle resources or bundles </span><br/><span class="hl-0">        </span><span class="hl-9">// without navigation links. In that case, no page navigation </span><br/><span class="hl-0">        </span><span class="hl-9">// occurs and a list of the original resource is returned,</span><br/><span class="hl-0">        </span><span class="hl-9">// Example: The below code calls getPages on a profile result </span><br/><span class="hl-0">        </span><span class="hl-9">// which might not be a bundle resource.</span><br/><span class="hl-0">        </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">pfbundle</span><span class="hl-0"> = </span><span class="hl-5">profileResults</span><span class="hl-0">.</span><span class="hl-5">response</span><span class="hl-0">?.</span><span class="hl-5">data</span><span class="hl-0">;</span><br/><span class="hl-0">        </span><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">pfs</span><span class="hl-0"> = </span><span class="hl-8">await</span><span class="hl-0"> </span><span class="hl-5">bb</span><span class="hl-0">.</span><span class="hl-3">getPages</span><span class="hl-0">(</span><span class="hl-5">pfbundle</span><span class="hl-0">, </span><span class="hl-5">authToken</span><span class="hl-0">);</span><br/><span class="hl-0">        </span><span class="hl-5">authToken</span><span class="hl-0"> = </span><span class="hl-5">pfs</span><span class="hl-0">.</span><span class="hl-5">token</span><span class="hl-0">;</span><br/><br/><span class="hl-0">        </span><span class="hl-9">// getPages return an object of structure:</span><br/><span class="hl-0">        </span><span class="hl-9">// {token: &lt;authToken&gt;, pages: [&lt;bundle of 10 resources&gt;, &lt;bundle of 10 resources&gt;, ...]}</span><br/><span class="hl-0">        </span><span class="hl-5">results</span><span class="hl-0"> = {</span><br/><span class="hl-0">          </span><span class="hl-5">eob:</span><span class="hl-0"> </span><span class="hl-5">eobs</span><span class="hl-0">.</span><span class="hl-5">pages</span><span class="hl-0">,</span><br/><span class="hl-0">          </span><span class="hl-5">patient:</span><span class="hl-0"> </span><span class="hl-5">pts</span><span class="hl-0">.</span><span class="hl-5">pages</span><span class="hl-0">,</span><br/><span class="hl-0">          </span><span class="hl-5">coverage:</span><span class="hl-0"> </span><span class="hl-5">coverages</span><span class="hl-0">.</span><span class="hl-5">pages</span><span class="hl-0">,</span><br/><span class="hl-0">          </span><span class="hl-5">profile:</span><span class="hl-0"> </span><span class="hl-5">pfs</span><span class="hl-0">.</span><span class="hl-5">pages</span><span class="hl-0">,</span><br/><span class="hl-0">        };</span><br/><br/><span class="hl-0">    } </span><span class="hl-8">catch</span><span class="hl-0"> (</span><span class="hl-5">e</span><span class="hl-0">) {</span><br/><span class="hl-0">        </span><span class="hl-5">console</span><span class="hl-0">.</span><span class="hl-3">log</span><span class="hl-0">(</span><span class="hl-5">e</span><span class="hl-0">);</span><br/><span class="hl-0">    }</span><br/><br/><span class="hl-0">    </span><span class="hl-5">res</span><span class="hl-0">.</span><span class="hl-3">json</span><span class="hl-0">(</span><span class="hl-5">results</span><span class="hl-0">)</span><br/><br/><span class="hl-0">});</span>
+</code></pre>
+
+            <a
+              href="#sample-app"
+              id="sample-app"
+              style="color: inherit; text-decoration: none"
+            >
+              <h2>Sample App</h2>
+            </a>
+            <p>
+              For a complete Node JS sample app, see
               <a
                 href="https://github.com/CMSgov/bluebutton-sample-client-nodejs-react"
                 >CMS Blue Button Node JS Sample App</a
-              >
+              >.
             </p>
 
             <a
-              href="#api-versions-and-environments-"
-              id="api-versions-and-environments-"
+              href="#about-the-blue-button-20-api-"
+              id="about-the-blue-button-20-api-"
               style="color: inherit; text-decoration: none"
             >
-              <h2>
-                API Versions and Environments
-                <a name="versions_and_environments"></a>
-              </h2>
+              <h2>About the Blue Button 2.0 API <a name="about"></a></h2>
             </a>
             <p>
-              From two environments: PRODUCTION and SANDBOX, Blue Button API is
-              available in v1 and v2, data served from v1 is in FHIR STU2
-              format, and data from v2 is in FHIR R4 format, an
-              application&#39;s target environment and API version can be set in
-              the SDK configuration as shown by example below:
+              The
+              <a href="https://bluebutton.cms.gov/">Blue Button 2.0 API</a>
+              provides Medicare enrollee claims data to applications using the
+              <a href="https://datatracker.ietf.org/doc/html/rfc6749"
+                >OAuth2.0 authorization flow</a
+              >. We aim to provide a developer-friendly, standards-based API
+              that enables people with Medicare to connect their claims data to
+              the applications, services, and research programs they trust.
             </p>
-            <pre><code><span class="hl-0">{</span><br/><span class="hl-0">  </span><span class="hl-1">&quot;clientId&quot;</span><span class="hl-0">: </span><span class="hl-1">&quot;foo&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-1">&quot;clientSecret&quot;</span><span class="hl-0">: </span><span class="hl-1">&quot;bar&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-1">&quot;callbackUrl&quot;</span><span class="hl-0">: </span><span class="hl-1">&quot;https://www.fake.com/&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-1">&quot;version&quot;</span><span class="hl-0">: </span><span class="hl-1">&quot;2&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-1">&quot;environment&quot;</span><span class="hl-0">: </span><span class="hl-1">&quot;PRODUCTION&quot;</span><br/><span class="hl-0">}</span><br/>
-</code></pre>
+
+            <a
+              href="#license"
+              id="license"
+              style="color: inherit; text-decoration: none"
+            >
+              <h2>License<a name="license"></a></h2>
+            </a>
             <p>
-              The default API version is v2, and default environment is SANDBOX.
+              The CMS Blue Button 2.0 Node SDK is licensed under the Creative
+              Commons Zero v1.0 Universal. For more details, see
+              <a
+                href="https://github.com/CMSgov/cms-bb2-node-sdk/blob/main/LICENSE"
+                >License</a
+              >.
             </p>
-            <p>Web location of the environments:</p>
+
+            <a
+              href="#security"
+              id="security"
+              style="color: inherit; text-decoration: none"
+            >
+              <h2>Security<a name="Security"></a></h2>
+            </a>
             <p>
-              <a href="https://api.bluebutton.cms.gov"
-                >PRODUCTION Environment: https://api.bluebutton.cms.gov</a
+              We do our best to keep our SDKs up to date with vulnerability
+              patching and security testing, but you are responsible for your
+              own review and testing before implementation.
+            </p>
+            <p>
+              To report vulnerabilities, please see the
+              <a href="https://www.cms.gov/vulnerability-disclosure-policy"
+                >CMS Vulnerability Disclosure Policy</a
               >
+              and follow the directions for reporting.
             </p>
+
+            <a
+              href="#help-and-support-"
+              id="help-and-support-"
+              style="color: inherit; text-decoration: none"
+            >
+              <h2>Help and Support <a name="help"></a></h2>
+            </a>
             <p>
-              <a href="https://sandbox.bluebutton.cms.gov"
-                >SANDBOX Environment: https://sandbox.bluebutton.cms.gov</a
-              >
+              Got questions? Need help troubleshooting? Want to propose a new
+              feature? Contact the Blue Button 2.0 team and connect with the
+              community in our
+              <a
+                href="https://groups.google.com/forum/#!forum/Developer-group-for-cms-blue-button-api"
+                >Google Group</a
+              >.
             </p>
           </div>
         </div>
