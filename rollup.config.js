@@ -1,6 +1,7 @@
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
+import json from "@rollup/plugin-json";
 import pkg from "./package.json";
 
 export default [
@@ -13,6 +14,7 @@ export default [
       format: "umd",
     },
     plugins: [
+      json(),
       resolve(),
       commonjs(),
       typescript({
@@ -35,6 +37,7 @@ export default [
       { file: pkg.module, format: "es" },
     ],
     plugins: [
+      json(),
       typescript({
         tsconfig: "./tsconfig.json",
         exclude: ["**/node_modules/**"],
