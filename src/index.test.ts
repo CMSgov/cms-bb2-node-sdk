@@ -3,6 +3,32 @@ import { cwd } from "process";
 import { BlueButton } from ".";
 import { Environments } from ".";
 
+test("expect bb sdk to be created with supported target ENVs", () => {
+  const bb = new BlueButton(
+    `${__dirname}/testConfigs/.bluebutton-config-env-local.json`
+  );
+
+  expect(bb.baseUrl).toBe(`http://localhost:8000`);
+
+  const bb2 = new BlueButton(
+    `${__dirname}/testConfigs/.bluebutton-config-env-sandbox.json`
+  );
+
+  expect(bb2.baseUrl).toBe(`https://sandbox.bluebutton.cms.gov`);
+
+  const bb3 = new BlueButton(
+    `${__dirname}/testConfigs/.bluebutton-config-env-test.json`
+  );
+
+  expect(bb3.baseUrl).toBe(`https://test.bluebutton.cms.gov`);
+
+  const bb4 = new BlueButton(
+    `${__dirname}/testConfigs/.bluebutton-config-env-production.json`
+  );
+
+  expect(bb4.baseUrl).toBe(`https://api.bluebutton.cms.gov`);
+});
+
 test("expect bb sdk to be created with appropriate defaults", () => {
   const CLIENT_ID = "foo";
   const CLIENT_SECRET = "bar";

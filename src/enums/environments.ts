@@ -3,6 +3,7 @@ import { version } from "../../package.json";
 export enum Environments {
   PRODUCTION = "PRODUCTION",
   SANDBOX = "SANDBOX",
+  TEST = "TEST",
   LOCAL = "LOCAL",
 }
 
