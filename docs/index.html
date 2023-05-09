@@ -179,10 +179,7 @@
               <tbody>
                 <tr>
                   <td><code>environment</code></td>
-                  <td>
-                    <code>SANDBOX</code> or <code>PRODUCTION</code> or
-                    <code>TEST</code> or <code>LOCAL</code>
-                  </td>
+                  <td><code>SANDBOX</code> or <code>PRODUCTION</code></td>
                   <td><code>SANDBOX</code></td>
                   <td>Blue Button 2.0 API environment</td>
                 </tr>
@@ -232,8 +229,8 @@
             <p>
               SDK FHIR requests check whether the access token is expired before
               the data endpoint call. By default, an expired token will refresh.
-              To disable token refresh, set
-              <code>token_refresh_on_expire</code> to <code>false</code>.
+              To disable token refresh, set <code>tokenRefreshOnExpire</code> to
+              <code>false</code>.
             </p>
 
             <a
@@ -361,18 +358,6 @@
                 <a href="https://api.bluebutton.cms.gov"
                   >https://api.bluebutton.cms.gov</a
                 >
-              </li>
-              <li>
-                Test location:
-                <a href="https://test.bluebutton.cms.gov"
-                  >https://test.bluebutton.cms.gov</a
-                >
-                (for development testing with internal test server)
-              </li>
-              <li>
-                local location:
-                <a href="http://localhost:8000">http://localhost:8000</a> Note,
-                (for development testing with a local BB2 server)
               </li>
             </ul>
             <p>Version data formats:</p>
