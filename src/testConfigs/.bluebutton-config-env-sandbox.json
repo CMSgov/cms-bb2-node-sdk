@@ -1,0 +1,7 @@
+{
+  "clientId": "foo",
+  "clientSecret": "bar",
+  "callbackUrl": "https://www.fake.com/",
+  "version": "1",
+  "environment": "SANDBOX"
+}

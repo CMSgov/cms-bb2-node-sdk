@@ -61,7 +61,7 @@ Required SDK configuration parameters include:
 
 ### Access Token Refresh on Expire - `tokenRefreshOnExpire`
 
-SDK FHIR requests check whether the access token is expired before the data endpoint call. By default, an expired token will refresh. To disable token refresh, set `token_refresh_on_expire` to `false`.
+SDK FHIR requests check whether the access token is expired before the data endpoint call. By default, an expired token will refresh. To disable token refresh, set `tokenRefreshOnExpire` to `false`.
 
 ### FHIR Requests Retry Settings - `retrySettings`
 
