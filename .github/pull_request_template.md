@@ -7,14 +7,13 @@ This PR template is here to help ensure you're setup for success:
 **JIRA Ticket:**
 [BB2-XXXX](https://jira.cms.gov/browse/BB2-XXXX)
 
-### What Does This PR Do?
 
+### What Does This PR Do?
 <!--
 Add detailed description & discussion of changes here.
 -->
 
 ### What Should Reviewers Watch For?
-
 <!--
 Common items include:
 * Is this likely to address the goals expressed in the user story?
@@ -26,7 +25,6 @@ Common items include:
 -->
 
 If you're reviewing this PR, please check for these things in particular:
-
 <!-- Add some items here -->
 
 ### Validation
@@ -39,9 +37,9 @@ Have you fully verified and tested these changes? Is the acceptance criteria met
 
 Please indicate if this PR does any of the following:
 
-- Adds any new software dependencies
-- Modifies any security controls
-- Adds new transmission or storage of data
-- Any other changes that could possibly affect security?
+* Adds any new software dependencies
+* Modifies any security controls
+* Adds new transmission or storage of data
+* Any other changes that could possibly affect security?
 
-* [ ] Yes, one or more of the above security implications apply. This PR must not be merged without the ISSO or team security engineer's approval.
+- [ ] Yes, one or more of the above security implications apply. This PR must not be merged without the ISSO or team security engineer's approval.
