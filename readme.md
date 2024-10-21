@@ -19,7 +19,7 @@ The Node software development kit (SDK) provides tools and resources for develop
 
 You'll need a sandbox account and sample access token to access data from the Blue Button 2.0 API.
 
-To learn how to create a sandbox account and generate a sample access token, see [Try the API](https://bluebutton.cms.gov/developers/#try-the-api).
+To learn how to create a sandbox account and generate a sample access token, see [Getting started in the developer sandbox](https://bluebutton.cms.gov/developers/#getting-started-in-the-developer-sandbox).
 
 ## Installation <a name="installation"></a>
 
