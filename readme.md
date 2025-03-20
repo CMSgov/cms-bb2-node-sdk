@@ -227,6 +227,7 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         * "patient/ExplanationOfBenefit.read",
         * "patient/Patient.read",
         * "profile",
+        * "openid",
         * ]
         *
         * 2. Access token scope without demographic info:
@@ -234,6 +235,7 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         * scope: [
         * "patient/Coverage.read",
         * "patient/ExplanationOfBenefit.read",
+        * "openid",
         * ]
         */
 
