@@ -215,29 +215,44 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         // Check the scope of the current access token:
         const scopes: string[] = authToken.scope;
         // iterate scope entries here or check if a permission is in the scope
-        if (authToken.scope.index("patient/Patient.read") > -1) {
-            // patient info access granted
+        if (authToken.scope.index("patient/Patient.r") > -1) {
+            // patient read access (patient/Patient.r) granted,
+            // similarly can check patient search permission: patient/Patient.s, or
+            // patient read and search permission: patient/Patient.rs
         }
 
-         /**
-        * 1. Access token scope with demographic info:
-        *
-        * scope: [
-        * "patient/Coverage.read",
-        * "patient/ExplanationOfBenefit.read",
-        * "patient/Patient.read",
-        * "profile",
-        * "openid",
-        * ]
-        *
-        * 2. Access token scope without demographic info:
-        *
-        * scope: [
-        * "patient/Coverage.read",
-        * "patient/ExplanationOfBenefit.read",
-        * "openid",
-        * ]
-        */
+        /** Example scopes (SMART App v2 scopes)
+         * 
+         * 1. Access token scope with demographic info:
+         *
+         * scope: [
+         *  "profile",
+         *  "openid",
+         *  "patient/Patient.r",
+         *  "patient/Patient.s",
+         *  "patient/Patient.rs",
+         *  "patient/ExplanationOfBenefit.r",
+         *  "patient/ExplanationOfBenefit.s",
+         *  "patient/ExplanationOfBenefit.rs",
+         *  "patient/Coverage.r",
+         *  "patient/Coverage.s",
+         *  "patient/Coverage.rs",
+         *  "launch/patient",
+         * ]
+         *
+         * 2. Access token scope without demographic info:
+         *
+         * scope: [
+         *  "openid",
+         *  "patient/ExplanationOfBenefit.r",
+         *  "patient/ExplanationOfBenefit.s",
+         *  "patient/ExplanationOfBenefit.rs",
+         *  "patient/Coverage.r",
+         *  "patient/Coverage.s",
+         *  "patient/Coverage.rs",
+         *  "launch/patient",
+         * ]
+         */
 
         // Data flow: After access granted,
         // your app logic can fetch the beneficiary's data in specific ways.
