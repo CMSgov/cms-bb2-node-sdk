@@ -176,7 +176,7 @@ Example:
 
 The following code shows the SDK used with a Node JS Express server. This code walks through:
 
-- Obtaining an access token with scope chosen by a user
+- Obtaining an access token with scope ([SMART App Launch: Scopes](https://build.fhir.org/ig/HL7/smart-app-launch/scopes-and-launch-context.html#scopes-for-requesting-fhir-resources)) chosen by a user
 - Passing the token to query for FHIR data
 - Using URL links from the response to page through data
 - Using the SDK paging support to return all data in one call
