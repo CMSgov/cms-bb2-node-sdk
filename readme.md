@@ -240,7 +240,7 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
          *  "launch/patient",
          * ]
          *
-         * 2. Access token scope without demographic info:
+         * 2. Access token scope without demographic info (patient/Patient.* profile excluded):
          *
          * scope: [
          *  "openid",
