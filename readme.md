@@ -215,7 +215,7 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         // Check the scope of the current access token:
         const scopes: string[] = authToken.scope;
         // iterate scope entries here or check if a permission is in the scope
-        if (authToken.scope.index("patient/Patient.r") > -1) {
+        if (authToken.scope.index("patient/Patient.r") > -1 or authToken.scope.index("patient/Patient.rs") > -1) {
             // patient read access (patient/Patient.r) granted,
             // similarly can check patient search permission: patient/Patient.s, or
             // patient read and search permission: patient/Patient.rs
