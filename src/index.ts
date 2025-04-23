@@ -27,9 +27,9 @@ export { Errors };
 
 const DEFAULT_CONFIG_FILE_LOCATION = `${cwd()}/.bluebutton-config.json`;
 const LOCAL_BASE_URL = "http://localhost:8000";
-const TEST_BASE_URL = "https://test.bluebutton.cms.gov";
-const SANDBOX_BASE_URL = "https://sandbox.bluebutton.cms.gov";
-const PRODUCTION_BASE_URL = "https://api.bluebutton.cms.gov";
+const TEST_BASE_URL = "https://patient-api.test.connect.medicaid.ncdhhs.gov
+const SANDBOX_BASE_URL = "https://patient-api.sandbox.connect.medicaid.ncdhhs.gov";
+const PRODUCTION_BASE_URL = "https://patient-api.connect.medicaid.ncdhhs.gov";
 
 /**
  * FHIR end point retry configuration
