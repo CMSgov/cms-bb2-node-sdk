@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <title>enums/errors | cms-bluebutton-sdk</title>
+    <title>refreshAuthToken | cms-bluebutton-sdk</title>
     <meta name="description" content="Documentation for cms-bluebutton-sdk" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="../assets/style.css" />
@@ -70,46 +70,96 @@
         <div class="tsd-page-title">
           <ul class="tsd-breadcrumb">
             <li><a href="../modules.html">cms-bluebutton-sdk</a></li>
-            <li><a href="enums_errors.html">enums/errors</a></li>
+            <li><a href="../modules/auth.html">auth</a></li>
+            <li><a href="auth.refreshAuthToken.html">refreshAuthToken</a></li>
           </ul>
-          <h1>Module enums/errors</h1>
+          <h1>Function refreshAuthToken</h1>
         </div>
-        <section class="tsd-panel-group tsd-index-group">
-          <section class="tsd-panel tsd-index-panel">
-            <h3 class="tsd-index-heading uppercase">Index</h3>
-            <section class="tsd-index-section">
-              <h3 class="tsd-index-heading">Enumerations</h3>
-              <div class="tsd-index-list">
-                <a
-                  href="../enums/enums_errors.Errors.html"
-                  class="tsd-index-link tsd-kind-enum tsd-parent-kind-module"
-                  ><svg
-                    class="tsd-kind-icon"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                  >
-                    <rect
-                      fill="var(--color-icon-background)"
-                      stroke="var(--color-ts-enum)"
-                      stroke-width="1.5"
-                      x="1"
-                      y="1"
-                      width="22"
-                      height="22"
-                      rx="6"
-                      id="icon-8-path"
-                    ></rect>
-                    <path
-                      d="M9.45 16V7.24H14.49V8.224H10.518V10.936H14.07V11.908H10.518V15.016H14.49V16H9.45Z"
-                      fill="var(--color-text)"
-                      id="icon-8-text"
-                    ></path></svg
-                  ><span>Errors</span></a
-                >
+        <section class="tsd-panel">
+          <ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+            <li class="tsd-signature" id="refreshAuthToken">
+              refresh<wbr />Auth<wbr />Token<span class="tsd-signature-symbol"
+                >(</span
+              >authToken<span class="tsd-signature-symbol">: </span
+              ><a
+                href="../classes/entities_AuthorizationToken.AuthorizationToken.html"
+                class="tsd-signature-type"
+                data-tsd-kind="Class"
+                >AuthorizationToken</a
+              >, bb<span class="tsd-signature-symbol">: </span
+              ><a
+                href="../classes/index.BlueButton.html"
+                class="tsd-signature-type"
+                data-tsd-kind="Class"
+                >BlueButton</a
+              ><span class="tsd-signature-symbol">)</span
+              ><span class="tsd-signature-symbol">: </span
+              ><span class="tsd-signature-type">Promise</span
+              ><span class="tsd-signature-symbol">&lt;</span
+              ><a
+                href="../classes/entities_AuthorizationToken.AuthorizationToken.html"
+                class="tsd-signature-type"
+                data-tsd-kind="Class"
+                >AuthorizationToken</a
+              ><span class="tsd-signature-symbol">&gt;</span>
+            </li>
+          </ul>
+          <ul class="tsd-descriptions">
+            <li class="tsd-description">
+              <div class="tsd-comment tsd-typography">
+                <p>
+                  Refresh the access token in the given AuthorizationToken
+                  instance
+                </p>
+
+                <h3>Returns</h3>
+                <p>new auth token instance with refreshed access token</p>
               </div>
-            </section>
-          </section>
+              <div class="tsd-parameters">
+                <h4 class="tsd-parameters-title">Parameters</h4>
+                <ul class="tsd-parameter-list">
+                  <li>
+                    <h5>
+                      authToken:
+                      <a
+                        href="../classes/entities_AuthorizationToken.AuthorizationToken.html"
+                        class="tsd-signature-type"
+                        data-tsd-kind="Class"
+                        >AuthorizationToken</a
+                      >
+                    </h5>
+                    <div class="tsd-comment tsd-typography">
+                      <p>auth token instance to be refreshed</p>
+                    </div>
+                  </li>
+                  <li>
+                    <h5>
+                      bb:
+                      <a
+                        href="../classes/index.BlueButton.html"
+                        class="tsd-signature-type"
+                        data-tsd-kind="Class"
+                        >BlueButton</a
+                      >
+                    </h5>
+                    <div class="tsd-comment tsd-typography">
+                      <p>instance of the SDK facade class</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <h4 class="tsd-returns-title">
+                Returns <span class="tsd-signature-type">Promise</span
+                ><span class="tsd-signature-symbol">&lt;</span
+                ><a
+                  href="../classes/entities_AuthorizationToken.AuthorizationToken.html"
+                  class="tsd-signature-type"
+                  data-tsd-kind="Class"
+                  >AuthorizationToken</a
+                ><span class="tsd-signature-symbol">&gt;</span>
+              </h4>
+            </li>
+          </ul>
         </section>
       </div>
       <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -292,25 +342,27 @@
                 <li class="current">
                   <a href="../modules.html">cms-<wbr />bluebutton-<wbr />sdk</a>
                   <ul>
-                    <li class="tsd-kind-module">
-                      <a href="auth.html">auth</a>
+                    <li class="current tsd-kind-module">
+                      <a href="../modules/auth.html">auth</a>
                     </li>
                     <li class="tsd-kind-module">
-                      <a href="entities_AuthorizationToken.html"
+                      <a href="../modules/entities_AuthorizationToken.html"
                         >entities/<wbr />Authorization<wbr />Token</a
                       >
                     </li>
                     <li class="tsd-kind-module">
-                      <a href="enums_environments.html">enums/environments</a>
-                    </li>
-                    <li class="current selected tsd-kind-module">
-                      <a href="enums_errors.html">enums/errors</a>
-                    </li>
-                    <li class="tsd-kind-module">
-                      <a href="index.html">index</a>
+                      <a href="../modules/enums_environments.html"
+                        >enums/environments</a
+                      >
                     </li>
                     <li class="tsd-kind-module">
-                      <a href="resource.html">resource</a>
+                      <a href="../modules/enums_errors.html">enums/errors</a>
+                    </li>
+                    <li class="tsd-kind-module">
+                      <a href="../modules/index.html">index</a>
+                    </li>
+                    <li class="tsd-kind-module">
+                      <a href="../modules/resource.html">resource</a>
                     </li>
                   </ul>
                 </li>
@@ -320,17 +372,136 @@
         </nav>
         <nav class="tsd-navigation secondary menu-sticky">
           <ul>
-            <li class="tsd-kind-enum tsd-parent-kind-module">
-              <a href="../enums/enums_errors.Errors.html" class="tsd-index-link"
+            <li class="tsd-kind-type-alias tsd-parent-kind-module">
+              <a href="../types/auth.AuthData.html" class="tsd-index-link"
                 ><svg
                   class="tsd-kind-icon"
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
                 >
-                  <use href="#icon-8-path"></use>
-                  <use href="#icon-8-text"></use></svg
-                >Errors</a
+                  <rect
+                    fill="var(--color-icon-background)"
+                    stroke="var(--color-ts)"
+                    stroke-width="1.5"
+                    x="1"
+                    y="1"
+                    width="22"
+                    height="22"
+                    rx="6"
+                    id="icon-4194304-path"
+                  ></rect>
+                  <path
+                    d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z"
+                    fill="var(--color-text)"
+                    id="icon-4194304-text"
+                  ></path></svg
+                >Auth<wbr />Data</a
+              >
+            </li>
+            <li class="tsd-kind-type-alias tsd-parent-kind-module">
+              <a href="../types/auth.TokenPostData.html" class="tsd-index-link"
+                ><svg
+                  class="tsd-kind-icon"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <use href="#icon-4194304-path"></use>
+                  <use href="#icon-4194304-text"></use></svg
+                >Token<wbr />Post<wbr />Data</a
+              >
+            </li>
+            <li class="tsd-kind-function tsd-parent-kind-module">
+              <a href="auth.generateAuthData.html" class="tsd-index-link"
+                ><svg
+                  class="tsd-kind-icon"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <rect
+                    fill="var(--color-icon-background)"
+                    stroke="var(--color-ts-function)"
+                    stroke-width="1.5"
+                    x="1"
+                    y="1"
+                    width="22"
+                    height="22"
+                    rx="6"
+                    id="icon-64-path"
+                  ></rect>
+                  <path
+                    d="M9.39 16V7.24H14.55V8.224H10.446V11.128H14.238V12.112H10.47V16H9.39Z"
+                    fill="var(--color-text)"
+                    id="icon-64-text"
+                  ></path></svg
+                >generate<wbr />Auth<wbr />Data</a
+              >
+            </li>
+            <li class="tsd-kind-function tsd-parent-kind-module">
+              <a href="auth.generateAuthorizeUrl.html" class="tsd-index-link"
+                ><svg
+                  class="tsd-kind-icon"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <use href="#icon-64-path"></use>
+                  <use href="#icon-64-text"></use></svg
+                >generate<wbr />Authorize<wbr />Url</a
+              >
+            </li>
+            <li class="tsd-kind-function tsd-parent-kind-module">
+              <a href="auth.generateTokenPostData.html" class="tsd-index-link"
+                ><svg
+                  class="tsd-kind-icon"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <use href="#icon-64-path"></use>
+                  <use href="#icon-64-text"></use></svg
+                >generate<wbr />Token<wbr />Post<wbr />Data</a
+              >
+            </li>
+            <li class="tsd-kind-function tsd-parent-kind-module">
+              <a href="auth.getAccessTokenUrl.html" class="tsd-index-link"
+                ><svg
+                  class="tsd-kind-icon"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <use href="#icon-64-path"></use>
+                  <use href="#icon-64-text"></use></svg
+                >get<wbr />Access<wbr />Token<wbr />Url</a
+              >
+            </li>
+            <li class="tsd-kind-function tsd-parent-kind-module">
+              <a href="auth.getAuthorizationToken.html" class="tsd-index-link"
+                ><svg
+                  class="tsd-kind-icon"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <use href="#icon-64-path"></use>
+                  <use href="#icon-64-text"></use></svg
+                >get<wbr />Authorization<wbr />Token</a
+              >
+            </li>
+            <li class="current tsd-kind-function tsd-parent-kind-module">
+              <a href="auth.refreshAuthToken.html" class="tsd-index-link"
+                ><svg
+                  class="tsd-kind-icon"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <use href="#icon-64-path"></use>
+                  <use href="#icon-64-text"></use></svg
+                >refresh<wbr />Auth<wbr />Token</a
               >
             </li>
           </ul>
