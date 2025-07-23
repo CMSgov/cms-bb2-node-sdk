@@ -66,7 +66,7 @@
   },
   "dependencies": {
     "@microsoft/api-extractor": "^7.19.5",
-    "axios": "^1.7.4",
+    "axios": "^1.8.3",
     "babel-jest": "^27.5.1",
     "moment": "^2.29.4",
     "typedoc": "^0.23.0"
