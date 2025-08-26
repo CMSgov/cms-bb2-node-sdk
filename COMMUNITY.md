@@ -13,7 +13,7 @@ Roles to include, but not limited to: Project Owner, Technical Lead, Developers/
 | Maintainer | Jimmy Fagan | Nava PBC |
 | Maintainer | Shivam Tiwari | ICF |
 | Maintainer | Brandon Wang | ICF |
-| Maintainer | Connor Lewellyn | Nava BC |
+| Maintainer | Connor Lewellyn | Nava PBC |
 
 <!-- TODO: A CODEOWNERS.md file is available in .github to define individuals responsible for specific parts of the codebase. Provide a reference to this file if used:
 
@@ -29,20 +29,12 @@ The members of cms-bb2-node-sdk community are responsible for guiding its develo
 ### Maintainers:
 
 - @jimmyfagan
-
-<!-- TODO: List the individuals who are the maintainers. What groups/domains are maintainers a part of? Does your project have domains/areas that are maintained by specific people? List @USERNAMES directly, or any @ALIASES for groups/teams. -->
+- @clewellyn-nava
 
 ### Approvers:
 
-- @jimmyfagan
-
-<!-- TODO: Who are the project approvers? List out @USERNAMES where possible so they can be tagged in issues/PRs directly. -->
-
 ### Reviewers:
 
-- @jimmyfagan
-
-<!-- TODO: Who are the project reviewers? List out @USERNAMES where possible so they can be tagged in issues/PRs directly. -->
 
 | Roles      | Responsibilities                               | Requirements                                                                      | Defined by                                                |
 | ---------- | :--------------------------------------------- | :-------------------------------------------------------------------------------- | :-------------------------------------------------------- |
@@ -65,13 +57,10 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
 <!-- readme: contributors -start -->
 <!-- readme: contributors -end -->
 
-<!--
 ### Alumni
 
-TODO: Who are the past maintainers or contributors who previously played significant roles in this project who are no longer actively involved? Consider including their roles and dates for context.
-
 We'd like to acknowledge the following individuals for their past contributions of this project:
--->
+
 
 ## cms-bb2-node-sdk Open Source Community Guidelines
 
@@ -103,7 +92,6 @@ When participating in cms-bb2-node-sdk open source community conversations and s
   - your superpower, and how you hope to use it for cms-bb2-node-sdk
 - Embrace a culture of learning, and educate each other. We are all entering this conversation from different starting points and with different backgrounds. There are no dumb questions.
 - Take space and give space. We strive to create an equitable environment in which all are welcome and able to participate. We hope individuals feel comfortable voicing their opinions and providing contributions and will do our best to recognize and make space for individuals who may be struggling to find space here. Likewise, we expect individuals to recognize when they are taking up significant space and take a step back to allow room for others.
-<!-- TODO: Add if your repo has a community chat - Be present when joining synchronous conversations such as our community chat. Why be here if you're not going to _be here_? -->
 - Be respectful.
 - Default to positive. Assume others' contributions are legitimate and valuable and that they are made with good intention.
 

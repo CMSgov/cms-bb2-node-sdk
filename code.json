@@ -1,0 +1,51 @@
+{
+  "name": "cms-bb2-node-sdk",
+  "description": "The Node software development kit (SDK) provides tools and resources for developers integrating with the CMS Blue Button 2.0 (BB2.0) API.",
+  "status": "Production",
+  "permissions": {
+    "licenses": [
+      {
+        "name": "CC0-1.0",
+        "URL": "https://github.com/CMSgov/cms-bb2-node-sdk/blob/main/LICENSE"
+      }
+    ],
+    "usageType": [
+      "openSource"
+    ]
+  },
+  "organization": "Centers for Medicare & Medicaid Services",
+  "repositoryURL": "https://github.com/CMSgov/cms-bb2-node-sdk",
+  "repositoryVisibility": "public",
+  "vcs": "git",
+  "laborHours": 15885,
+  "reuseFrequency": {
+    "forks": 2
+  },
+  "languages": [
+    "TypeScript",
+    "JavaScript",
+    "Shell",
+    "Node"
+  ],
+  "maintenance": "internal",
+  "contractNumber": [
+    "0"
+  ],
+  "date": {
+    "created": "2022-01-20T22:05:55Z",
+    "lastModified": "2025-07-29T15:50:55Z",
+    "metaDataLastUpdated": "2025-08-26T13:49:23.014Z"
+  },
+  "tags": [
+    "sdk",
+    "bluebutton",
+    "node",
+    "javascript"
+  ],
+  "contact": {
+    "email": "jimmyfagan@navapbc.com",
+    "name": "Jimmy Fagan"
+  },
+  "feedbackMechanism": "https://github.com/CMSgov/cms-bb2-node-sdk/issues",
+  "AIUseCaseID": "0"
+}

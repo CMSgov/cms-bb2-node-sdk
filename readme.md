@@ -1,10 +1,25 @@
-# Node SDK for Blue Button 2.0 API
+Node SDK for Blue Button 2.0 API
+=====================================================
+
+## About the Project
 
 The Node software development kit (SDK) provides tools and resources for developers integrating with the [CMS Blue Button 2.0 (BB2.0) API](https://bluebutton.cms.gov/developers/).
 
+### Agency Mission
+
+The Centers for Medicare & Medicaid Services (CMS) is working to enable Medicare beneficiaries to securely share their health data with applications of their choice through standards-based APIs.
+
+## Core Team
+
+A list of core team members responsible for the code and documentation in this repository can be found in [COMMUNITY.md](COMMUNITY.md).
+
+# Development and Software Delivery Lifecycle
+
+The following guide is for members of the project team who have access to the repository as well as code contributors. The main difference between internal and external contributions is that external contributors will need to fork the project and will not be able to merge their own pull requests. For more information on contributing, see: [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 # Table of contents
 
-- [Prerequisites](#prerequisites)
+- [Setup](#setup)
 - [Installation](#installation)
 - [Configuration Parameters](#configuration-parameters)
 - [Configuration Methods](#configuration-methods)
@@ -15,7 +30,8 @@ The Node software development kit (SDK) provides tools and resources for develop
 - [Security](#security)
 - [Help and Support](#help)
 
-## Prerequisites <a name="prerequisites"></a>
+
+## Setup <a name="setup"></a>
 
 You'll need a sandbox account and sample access token to access data from the Blue Button 2.0 API.
 
