@@ -13,11 +13,26 @@ The Centers for Medicare & Medicaid Services (CMS) is working to enable Medicare
 
 A list of core team members responsible for the code and documentation in this repository can be found in [COMMUNITY.md](COMMUNITY.md).
 
+## Repository Structure
+
+<!--TREE START--><!--TREE END-->
+
+**Main Directories**
+- `docs/`
+- `src/`
+
+**Documentation Index:**
+- `README.md` - This file, containing setup and usage instructions
+- `CONTRIBUTING.md` - Guidelines for contributing to the project
+- `COMMUNITY.md` - Community guidelines and code of conduct
+- `SECURITY.md` - Security and vulnerability disclosure policies
+- `LICENSE` - Apache 2.0 license
+
 # Development and Software Delivery Lifecycle
 
 The following guide is for members of the project team who have access to the repository as well as code contributors. The main difference between internal and external contributions is that external contributors will need to fork the project and will not be able to merge their own pull requests. For more information on contributing, see: [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-# Table of contents
+# Table of Contents
 
 - [Setup](#setup)
 - [Installation](#installation)
@@ -29,7 +44,6 @@ The following guide is for members of the project team who have access to the re
 - [License](#license)
 - [Security](#security)
 - [Help and Support](#help)
-
 
 ## Setup <a name="setup"></a>
 
@@ -77,7 +91,7 @@ Required SDK configuration parameters include:
 
 ### Access Token Refresh on Expire - `tokenRefreshOnExpire`
 
-SDK FHIR requests check whether the access token is expired before the data endpoint call. By default, an expired token will refresh. To disable token refresh, set `tokenRefreshOnExpire` to `false`.
+SDK FHIR requests check whether the access token is expired before the data endpoint call. By default, an expired token will refresh (`tokenRefreshOnExpire` is true). To disable token refresh, set `tokenRefreshOnExpire` to `false`.
 
 **Note:** If an application’s authorization for accessing user data has expired, the corresponding access token will not be able to be refreshed; see [here](https://bluebutton.cms.gov/developers/#expired-data-access-grant) for more details.
 
@@ -126,8 +140,6 @@ Example:
 ### JSON config file
 
 The configuration is in JSON format and stored in a local file. The default location is the current working directory with file name: `.bluebutton-config.json`
-
-By default, `tokenRefreshOnExpire` is true.
 
 Example code:
 
