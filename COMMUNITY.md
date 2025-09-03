@@ -4,10 +4,6 @@ cms-bb2-node-sdk is supported by a dedicated team of individuals fulfilling vari
 
 ## Project Members
 
-<!-- TODO: Who are the points of contact in your project who are responsible/accountable for the project? This can often be an engineering or design manager or leader, who may or may not be the primary maintainers of the project.
-
-Roles to include, but not limited to: Project Owner, Technical Lead, Developers/Contributors, Community Manager, Security Team, Policy Advisor, Contracting Officer's Representative, Compliance Officer, Procurement Officer -->
-
 | Role   | Name    | Affiliation    |
 | :----- | :------ | :------------- |
 | Maintainer | Jimmy Fagan | Nava PBC |
@@ -15,10 +11,7 @@ Roles to include, but not limited to: Project Owner, Technical Lead, Developers/
 | Maintainer | Brandon Wang | ICF |
 | Maintainer | Connor Lewellyn | Nava PBC |
 
-<!-- TODO: A CODEOWNERS.md file is available in .github to define individuals responsible for specific parts of the codebase. Provide a reference to this file if used:
-
 See [CODEOWNERS.md](.github/CODEOWNERS.md) for a list of those responsible for the code and documentation in this repository.
--->
 
 See [Community Guidelines](#cms-bb2-node-sdk-open-source-community-guidelines) on principles and guidelines for participating in this open source project.
 
@@ -30,11 +23,12 @@ The members of cms-bb2-node-sdk community are responsible for guiding its develo
 
 - @jimmyfagan
 - @clewellyn-nava
+- @bwang-icf
+- @stiwarisemanticbits
 
 ### Approvers:
 
 ### Reviewers:
-
 
 | Roles      | Responsibilities                               | Requirements                                                                      | Defined by                                                |
 | ---------- | :--------------------------------------------- | :-------------------------------------------------------------------------------- | :-------------------------------------------------------- |
@@ -42,11 +36,6 @@ The members of cms-bb2-node-sdk community are responsible for guiding its develo
 | reviewer   | review contributions from other members        | history of review and authorship in a sub-project                                 | COMMUNITY file reviewer entry, and GitHub Org Triage Team |
 | approver   | approve accepting contributions                | highly experienced and active reviewer + contributor to a sub-project             | COMMUNITY file approver entry and GitHub Triage Team      |
 | maintainer | set direction and priorities for a sub-project | demonstrated responsibility and excellent technical judgement for the sub-project | COMMUNITY file owner entry and GitHub Org Admin Team      |
-
-<!-- TODO: If the repository's release process is outlined in CONTRIBUTING.md, provide a reference to it:
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for more details on the release process.
--->
 
 ## Contributors
 

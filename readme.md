@@ -1,49 +1,70 @@
 Node SDK for Blue Button 2.0 API
 =====================================================
 
-## About the Project
+## Project Description
 
 The Node software development kit (SDK) provides tools and resources for developers integrating with the [CMS Blue Button 2.0 (BB2.0) API](https://bluebutton.cms.gov/developers/).
 
-### Agency Mission
+## About the Project
+
+The [Blue Button 2.0 API](https://bluebutton.cms.gov/) provides Medicare enrollee claims data to applications using the [OAuth2.0 authorization flow](https://datatracker.ietf.org/doc/html/rfc6749). We aim to provide a developer-friendly, standards-based API that enables people with Medicare to connect their claims data to the applications, services, and research programs they trust.
+
+## Project Vision
+
+The Node SDK helps third-party partners to develop applications that integrate with BlueButton in Javascript/Typescript
+
+<!-- ## Project Mission -->
+
+## Agency Mission
 
 The Centers for Medicare & Medicaid Services (CMS) is working to enable Medicare beneficiaries to securely share their health data with applications of their choice through standards-based APIs.
+
+<!-- ## Team Mission -->
 
 ## Core Team
 
 A list of core team members responsible for the code and documentation in this repository can be found in [COMMUNITY.md](COMMUNITY.md).
 
-## Repository Structure
+## Documentation Index:
 
-<!--TREE START--><!--TREE END-->
-
-**Main Directories**
-- `docs/`
-- `src/`
-
-**Documentation Index:**
 - `README.md` - This file, containing setup and usage instructions
 - `CONTRIBUTING.md` - Guidelines for contributing to the project
 - `COMMUNITY.md` - Community guidelines and code of conduct
 - `SECURITY.md` - Security and vulnerability disclosure policies
-- `LICENSE` - Apache 2.0 license
+- `LICENSE` - Creative Commons Zero v1.0 Universal
 
-# Development and Software Delivery Lifecycle
+### Table of Contents
 
-The following guide is for members of the project team who have access to the repository as well as code contributors. The main difference between internal and external contributions is that external contributors will need to fork the project and will not be able to merge their own pull requests. For more information on contributing, see: [CONTRIBUTING.md](./CONTRIBUTING.md).
-
-# Table of Contents
-
+- [Local Development](#local-dev)
 - [Setup](#setup)
 - [Installation](#installation)
 - [Configuration Parameters](#configuration-parameters)
 - [Configuration Methods](#configuration-methods)
 - [Usage](#usage)
 - [Sample App](#sample-app)
-- [About](#about)
+- [Policies](#policies)
 - [License](#license)
-- [Security](#security)
 - [Help and Support](#help)
+
+## Repository Structure
+
+```
+├── docs
+│   ├── assets
+│   ├── classes
+│   ├── enums
+│   ├── functions
+│   ├── modules
+│   ├── types
+│   └── variables
+├── src
+│   ├── entities
+│   ├── enums
+│   ├── fixtures
+│   └── testConfigs
+```
+
+# Local Development <a name="local-dev"></a>
 
 ## Setup <a name="setup"></a>
 
@@ -403,20 +424,35 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
 
 For a complete Node JS sample app, see [CMS Blue Button Node JS Sample App](https://github.com/CMSgov/bluebutton-sample-client-nodejs-react).
 
-## About the Blue Button 2.0 API <a name="about"></a>
+# Policies <a name="policies"></a>
 
-The [Blue Button 2.0 API](https://bluebutton.cms.gov/) provides Medicare enrollee claims data to applications using the [OAuth2.0 authorization flow](https://datatracker.ietf.org/doc/html/rfc6749). We aim to provide a developer-friendly, standards-based API that enables people with Medicare to connect their claims data to the applications, services, and research programs they trust.
+## Development and Software Delivery Lifecycle
 
-## License<a name="license"></a>
+The following guide is for members of the project team who have access to the repository as well as code contributors. The main difference between internal and external contributions is that external contributors will need to fork the project and will not be able to merge their own pull requests. For more information on contributing, see: [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-The CMS Blue Button 2.0 Node SDK is licensed under the Creative Commons Zero v1.0 Universal. For more details, see [License](https://github.com/CMSgov/cms-bb2-node-sdk/blob/main/LICENSE).
+## Constributing
 
-## Security<a name="Security"></a>
+Thank you for considering contributing to an Open Source project of the US Government! For more information about our contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-We do our best to keep our SDKs up to date with vulnerability patching and security testing, but you are responsible for your own review and testing before implementation.
+## Branching Model
 
-To report vulnerabilities, please see the [CMS Vulnerability Disclosure Policy](https://www.cms.gov/vulnerability-disclosure-policy) and follow the directions for reporting.
+This project follows standard GitHub flow practices:
 
-## Help and Support <a name="help"></a>
+* Make changes in feature branches and merge to `main` frequently
+* Pull-requests are reviewed before merging
+* Tests should be written for changes introduced
+* Each change should be deployable to production
+
+## Governance
+
+For more information about our governance, see [GOVERNANCE.md](GOVERNANCE.md).
+
+## Public domain <a name="license"></a>
+
+This project is in the public domain within the United States, and copyright and related rights in the work worldwide are waived through the [CC0 1.0 Universal public domain dedication](https://creativecommons.org/publicdomain/zero/1.0/) as indicated in [LICENSE](LICENSE).
+
+All contributions to this project will be released under the CC0 dedication. By submitting a pull request or issue, you are agreeing to comply with this waiver of copyright interest.
+
+## Feedback <a name="feedback"></a>
 
 Got questions? Need help troubleshooting? Want to propose a new feature? Contact the Blue Button 2.0 team and connect with the community in our [Google Group](https://groups.google.com/forum/#!forum/Developer-group-for-cms-blue-button-api).

@@ -48,14 +48,6 @@ Yarn with TypeScript
 yarn add --dev @types/cms-bluebutton-sdk
 ```
 
-### Coding Style and Linters
-
-**Style Guidelines:**
-- Write clear, self-documenting code with appropriate comments
-
-**Linting:**
-- Each application has its own linting guidelines
-
 ### Workflow and Branching
 
 We follow standard GitHub Flow practices:
@@ -68,6 +60,14 @@ We follow standard GitHub Flow practices:
 6. **Work with repo maintainers** to get your change reviewed
 7. **Wait for your change to be merged** into `main`
 8. **Delete your feature branch** after successful merge
+
+### Coding Style and Linters
+
+**Style Guidelines:**
+- Write clear, self-documenting code with appropriate comments
+
+**Linting:**
+- Each application has its own linting guidelines
 
 ### Writing Issues
 
@@ -105,7 +105,6 @@ As concisely as possible, describe the observed behavior.
 - Reference any related issues
 - Ensure all tests pass
 - Include screenshots for UI changes
-
 
 ## Documentation
 
