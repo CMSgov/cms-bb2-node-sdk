@@ -13,5 +13,5 @@ description = "whitelist public and test secrets"
 regexes = [
   '''jV3knA4xmZ1enK8Rg1Lub5hmIsc9Ad''',
   '''66ClP4JCjpdxmkC6bEKYQFLOWXnraJ''',
-  '''oS6oQdL3pHZnQQJGFu7GOMMZARzAwZzU252B1XpMCgjYMDNrrwJRz14VlKrNoAO4YsvxklTnezJJv0T9RSV0upXXPuZBP5itKKO5NnyaB8iCqiytGEgrDklQDbZd1nHO'''
+  '''oS6oQdL3pHZnQQJGFu7GOMMZARzAwZzU252B1XpMCgjYMDNrrwJRz14VlKrNoAO4YsvxklTnezJJv0T9RSV0upXXPuZBP5itKKO5NnyaB8iCqiytGEgrDklQDbZd1nHO''',
 ].
