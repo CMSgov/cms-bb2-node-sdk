@@ -99,17 +99,17 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
                 </a>
             </td>
             <td align="center">
-                <a href="https://github.com/stiwarisemanticbits">
-                    <img src="https://avatars.githubusercontent.com/u/57143602?v=4" width="100;" alt="stiwarisemanticbits"/>
-                    <br />
-                    <sub><b>Shivam Tiwari</b></sub>
-                </a>
-            </td>
-            <td align="center">
                 <a href="https://github.com/clewellyn-nava">
                     <img src="https://avatars.githubusercontent.com/u/224594471?v=4" width="100;" alt="clewellyn-nava"/>
                     <br />
                     <sub><b>Connor Lewellyn</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/stiwarisemanticbits">
+                    <img src="https://avatars.githubusercontent.com/u/57143602?v=4" width="100;" alt="stiwarisemanticbits"/>
+                    <br />
+                    <sub><b>Shivam Tiwari</b></sub>
                 </a>
             </td>
             <td align="center">
