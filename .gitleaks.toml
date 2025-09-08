@@ -1,0 +1,17 @@
+title = "BB2-NODE-SDK Gitleaks Config"
+
+[extend]
+# useDefault will extend the base configuration with the default gitleaks config:
+# https://github.com/zricethezav/gitleaks/blob/master/config/gitleaks.toml
+useDefault = true
+
+[allowlist]
+# Recommended practice is to add your secrets to a regexes array, 
+# not to a commits array.
+regexTarget = "match"
+description = "whitelist public and test secrets"
+regexes = [
+  '''jV3knA4xmZ1enK8Rg1Lub5hmIsc9Ad''',
+  '''66ClP4JCjpdxmkC6bEKYQFLOWXnraJ''',
+  '''oS6oQdL3pHZnQQJGFu7GOMMZARzAwZzU252B1XpMCgjYMDNrrwJRz14VlKrNoAO4YsvxklTnezJJv0T9RSV0upXXPuZBP5itKKO5NnyaB8iCqiytGEgrDklQDbZd1nHO''',
+]
