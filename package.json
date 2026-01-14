@@ -71,5 +71,8 @@
     "cms-bluebutton-sdk": "^1.0.5",
     "moment": "^2.29.4",
     "typedoc": "^0.23.0"
+  },
+  "overrides": {
+    "inflight": "npm:inflight-lru@^1.0.0"
   }
 }
