@@ -70,6 +70,7 @@
     "babel-jest": "^27.5.1",
     "cms-bluebutton-sdk": "^1.0.5",
     "moment": "^2.29.4",
-    "typedoc": "^0.23.0"
+    "typedoc": "^0.23.0",
+    "yarn": "^1.22.22"
   }
 }

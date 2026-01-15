@@ -58,8 +58,6 @@ test("expect auth method generateTokenPostData() function", () => {
     client_id: "foo",
     client_secret: "bar",
     code: "test-code",
-    code_challenge: AuthData.codeChallenge,
-    code_verifier: AuthData.verifier,
     grant_type: "authorization_code",
     redirect_uri: "http://localhost/callback/",
   };
