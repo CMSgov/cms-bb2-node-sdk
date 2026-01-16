@@ -39,9 +39,11 @@ function generateRandomState(): string {
 }
 
 /**
- * Complex type holding state
+ * Complex type holding PKCE verifier, code challenge, and state
  */
 export type AuthData = {
+  codeChallenge: string;
+  verifier: string;
   state: string;
 };
 
@@ -51,11 +53,14 @@ export type TokenPostData = {
   code?: string;
   grant_type: string;
   redirect_uri: string;
+  code_verifier: string;
 };
 
 export function generateAuthData(): AuthData {
   const PkceData = generatePkceData();
   return {
+    codeChallenge: PkceData.codeChallenge,
+    verifier: PkceData.verifier,
     state: generateRandomState(),
   };
 }
@@ -68,9 +73,11 @@ export function generateAuthorizeUrl(
   bb: BlueButton,
   AuthData: AuthData
 ): string {
+  const pkceParams = `code_challenge_method=S256&code_challenge=${AuthData.codeChallenge}`;
+
   return `${getAuthorizationUrl(bb)}?client_id=${bb.clientId}&redirect_uri=${
     bb.callbackUrl
-  }&state=${AuthData.state}&response_type=code`;
+  }&state=${AuthData.state}&response_type=code&${pkceParams}`;
 }
 
 //  Generates post data for call to access token URL
@@ -85,6 +92,7 @@ export function generateTokenPostData(
     code: callbackCode,
     grant_type: "authorization_code",
     redirect_uri: bb.callbackUrl,
+    code_verifier: authData.verifier,
   };
 }
 
@@ -101,6 +109,14 @@ function validateCallbackRequestQueryParams(
 
   if (!callbackCode) {
     throw new Error(Errors.CALLBACK_ACCESS_CODE_MISSING);
+  }
+
+  if (!callbackState) {
+    throw new Error(Errors.CALLBACK_STATE_MISSING);
+  }
+
+  if (callbackState != authData.state) {
+    throw new Error(Errors.CALLBACK_STATE_DOES_NOT_MATCH);
   }
 }
 
