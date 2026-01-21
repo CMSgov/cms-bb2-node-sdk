@@ -144,8 +144,10 @@ Note that publishing package 'private' is a npm option that requires payment.
 
    Build the project using the instructions above:
 
+   ```
    yarn build
    yarn build:types
+   ```
 
    The yarn build:types is to create the index.d.ts, which is used for type checking throughout the project. While during startup, it may not error out, there
    can be issues during runtime. It is to ensure that the types of everything used in the project are consistent.
@@ -162,9 +164,21 @@ Note that publishing package 'private' is a npm option that requires payment.
    In the sample-client, you will then create a folder within the server folder location. Name the folder something like node-sdk.
    Copy the entire contents of the dist folder into the newly created node-sdk folder.
    Put the .js files into a new dist folder within the node-sdk folder.
-
    Back in this repo (cms-bb2-node-sdk) copy the package.json into the sample client's node-sdk folder.
    This entire process is to allow the sdk to be locally referenced while inside the Docker container. Ideally, there would be a more elegant way to do this.
+
+   The folder structure will look like this:
+
+   ```
+    server
+    └───node-sdk
+    │   │   index.d.ts
+    │   │   package.json (THIS IS THE ONE FROM THIS SDK REPO)
+    │   └───dist
+    │       │   cms-bluebutton-sdk.umd.js
+    │       │   ms-bluebutton-sdk.esm.js
+    │       │   cms-bluebutton-sdk.cjs.js
+   ```
 
    Within the sample client in the server folder, there is another package.json (Note: NOT the one in node-sdk) This package.json will have
 
