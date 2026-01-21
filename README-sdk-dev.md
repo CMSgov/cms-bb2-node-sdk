@@ -142,7 +142,7 @@ Note that publishing package 'private' is a npm option that requires payment.
 
    This process should definitely be reworked for a better dev experience. Currently there are a lot of manual steps.
 
-   Build the project using the instructions above:
+   Build the project using the instructions below:
 
    ```
    yarn build
