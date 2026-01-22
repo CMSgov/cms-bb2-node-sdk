@@ -54,7 +54,6 @@ export type TokenPostData = {
   grant_type: string;
   redirect_uri: string;
   code_verifier: string;
-  code_challenge: string;
 };
 
 export function generateAuthData(): AuthData {
@@ -94,7 +93,6 @@ export function generateTokenPostData(
     grant_type: "authorization_code",
     redirect_uri: bb.callbackUrl,
     code_verifier: authData.verifier,
-    code_challenge: authData.codeChallenge,
   };
 }
 
