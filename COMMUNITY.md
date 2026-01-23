@@ -98,11 +98,20 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
                     <sub><b>sb-benohe</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/oragame">
                     <img src="https://avatars.githubusercontent.com/u/22204906?v=4" width="100;" alt="oragame"/>
                     <br />
                     <sub><b>Don Seymour</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/jimmyfagan">
+                    <img src="https://avatars.githubusercontent.com/u/90421499?v=4" width="100;" alt="jimmyfagan"/>
+                    <br />
+                    <sub><b>jimmyfagan</b></sub>
                 </a>
             </td>
             <td align="center">
