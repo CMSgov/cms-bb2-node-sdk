@@ -92,6 +92,13 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
 		</tr>
 		<tr>
             <td align="center">
+                <a href="https://github.com/clewellyn-nava">
+                    <img src="https://avatars.githubusercontent.com/u/224594471?v=4" width="100;" alt="clewellyn-nava"/>
+                    <br />
+                    <sub><b>Connor Lewellyn</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/sb-benohe">
                     <img src="https://avatars.githubusercontent.com/u/71290292?v=4" width="100;" alt="sb-benohe"/>
                     <br />
@@ -106,10 +113,10 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
                 </a>
             </td>
             <td align="center">
-                <a href="https://github.com/clewellyn-nava">
-                    <img src="https://avatars.githubusercontent.com/u/224594471?v=4" width="100;" alt="clewellyn-nava"/>
+                <a href="https://github.com/JamesDemeryNava">
+                    <img src="https://avatars.githubusercontent.com/u/226581456?v=4" width="100;" alt="JamesDemeryNava"/>
                     <br />
-                    <sub><b>Connor Lewellyn</b></sub>
+                    <sub><b>James Demery</b></sub>
                 </a>
             </td>
             <td align="center">
