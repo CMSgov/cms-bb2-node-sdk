@@ -64,7 +64,7 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@microsoft/api-extractor": "^7.57.6",
+    "@microsoft/api-extractor": "^7.57.7",
     "axios": "^1.13.6",
     "babel-jest": "^27.5.1",
     "cms-bluebutton-sdk": "^1.0.7",
@@ -74,6 +74,7 @@
   "overrides": {
     "inflight": "npm:inflight-lru@^1.0.0",
     "ajv": "^8.18.0",
-    "@isaacs/brace-expansion": "^5.0.1"
+    "@isaacs/brace-expansion": "^5.0.1",
+    "minimatch": "^10.2.3"
   }
 }
