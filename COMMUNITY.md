@@ -48,6 +48,13 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
 	<tbody>
 		<tr>
             <td align="center">
+                <a href="https://github.com/bwang-icf">
+                    <img src="https://avatars.githubusercontent.com/u/178809349?v=4" width="100;" alt="bwang-icf"/>
+                    <br />
+                    <sub><b>bwang-icf</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/JFU-NAVA-PBC">
                     <img src="https://avatars.githubusercontent.com/u/135686833?v=4" width="100;" alt="JFU-NAVA-PBC"/>
                     <br />
@@ -59,13 +66,6 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
                     <img src="https://avatars.githubusercontent.com/u/84713593?v=4" width="100;" alt="ajshred"/>
                     <br />
                     <sub><b>Adrian Jones</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/bwang-icf">
-                    <img src="https://avatars.githubusercontent.com/u/178809349?v=4" width="100;" alt="bwang-icf"/>
-                    <br />
-                    <sub><b>bwang-icf</b></sub>
                 </a>
             </td>
             <td align="center">
@@ -92,17 +92,17 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
 		</tr>
 		<tr>
             <td align="center">
-                <a href="https://github.com/sb-benohe">
-                    <img src="https://avatars.githubusercontent.com/u/71290292?v=4" width="100;" alt="sb-benohe"/>
-                    <br />
-                    <sub><b>sb-benohe</b></sub>
-                </a>
-            </td>
-            <td align="center">
                 <a href="https://github.com/clewellyn-nava">
                     <img src="https://avatars.githubusercontent.com/u/224594471?v=4" width="100;" alt="clewellyn-nava"/>
                     <br />
                     <sub><b>Connor Lewellyn</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/sb-benohe">
+                    <img src="https://avatars.githubusercontent.com/u/71290292?v=4" width="100;" alt="sb-benohe"/>
+                    <br />
+                    <sub><b>sb-benohe</b></sub>
                 </a>
             </td>
             <td align="center">
