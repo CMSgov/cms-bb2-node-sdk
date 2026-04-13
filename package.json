@@ -1,6 +1,6 @@
 {
   "name": "cms-bluebutton-sdk",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "An sdk used for interacting with the CMS Blue Button 2.0 API",
   "main": "dist/cms-bluebutton-sdk.cjs.js",
   "module": "dist/cms-bluebutton-sdk.esm.js",
@@ -67,7 +67,7 @@
     "@microsoft/api-extractor": "^7.57.7",
     "axios": "^1.15.0",
     "babel-jest": "^27.5.1",
-    "cms-bluebutton-sdk": "^1.0.7",
+    "cms-bluebutton-sdk": "^1.0.8",
     "moment": "^2.29.4",
     "typedoc": "^0.23.0"
   },
@@ -76,5 +76,8 @@
     "ajv": "^8.18.0",
     "@isaacs/brace-expansion": "^5.0.1",
     "minimatch": "^10.2.3"
+  },
+  "resolutions": {
+    "test-exclude/minimatch": "^9.0.4"
   }
 }
