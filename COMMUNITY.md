@@ -48,6 +48,13 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
 	<tbody>
 		<tr>
             <td align="center">
+                <a href="https://github.com/bwang-icf">
+                    <img src="https://avatars.githubusercontent.com/u/178809349?v=4" width="100;" alt="bwang-icf"/>
+                    <br />
+                    <sub><b>bwang-icf</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/JFU-NAVA-PBC">
                     <img src="https://avatars.githubusercontent.com/u/135686833?v=4" width="100;" alt="JFU-NAVA-PBC"/>
                     <br />
@@ -62,54 +69,10 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
                 </a>
             </td>
             <td align="center">
-                <a href="https://github.com/bwang-icf">
-                    <img src="https://avatars.githubusercontent.com/u/178809349?v=4" width="100;" alt="bwang-icf"/>
-                    <br />
-                    <sub><b>bwang-icf</b></sub>
-                </a>
-            </td>
-            <td align="center">
                 <a href="https://github.com/dtisza1">
                     <img src="https://avatars.githubusercontent.com/u/36048547?v=4" width="100;" alt="dtisza1"/>
                     <br />
                     <sub><b>David Tisza</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/gmaciolek">
-                    <img src="https://avatars.githubusercontent.com/u/3953849?v=4" width="100;" alt="gmaciolek"/>
-                    <br />
-                    <sub><b>Gretchen Maciolek</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/jimmyfagan">
-                    <img src="https://avatars.githubusercontent.com/u/90421499?v=4" width="100;" alt="jimmyfagan"/>
-                    <br />
-                    <sub><b>jimmyfagan</b></sub>
-                </a>
-            </td>
-		</tr>
-		<tr>
-            <td align="center">
-                <a href="https://github.com/sb-benohe">
-                    <img src="https://avatars.githubusercontent.com/u/71290292?v=4" width="100;" alt="sb-benohe"/>
-                    <br />
-                    <sub><b>sb-benohe</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/clewellyn-nava">
-                    <img src="https://avatars.githubusercontent.com/u/224594471?v=4" width="100;" alt="clewellyn-nava"/>
-                    <br />
-                    <sub><b>Connor Lewellyn</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/oragame">
-                    <img src="https://avatars.githubusercontent.com/u/22204906?v=4" width="100;" alt="oragame"/>
-                    <br />
-                    <sub><b>Don Seymour</b></sub>
                 </a>
             </td>
             <td align="center">
@@ -120,10 +83,54 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
                 </a>
             </td>
             <td align="center">
+                <a href="https://github.com/gmaciolek">
+                    <img src="https://avatars.githubusercontent.com/u/3953849?v=4" width="100;" alt="gmaciolek"/>
+                    <br />
+                    <sub><b>Gretchen Maciolek</b></sub>
+                </a>
+            </td>
+		</tr>
+		<tr>
+            <td align="center">
+                <a href="https://github.com/jimmyfagan">
+                    <img src="https://avatars.githubusercontent.com/u/90421499?v=4" width="100;" alt="jimmyfagan"/>
+                    <br />
+                    <sub><b>jimmyfagan</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/clewellyn-nava">
+                    <img src="https://avatars.githubusercontent.com/u/224594471?v=4" width="100;" alt="clewellyn-nava"/>
+                    <br />
+                    <sub><b>Connor Lewellyn</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/sb-benohe">
+                    <img src="https://avatars.githubusercontent.com/u/71290292?v=4" width="100;" alt="sb-benohe"/>
+                    <br />
+                    <sub><b>sb-benohe</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/oragame">
+                    <img src="https://avatars.githubusercontent.com/u/22204906?v=4" width="100;" alt="oragame"/>
+                    <br />
+                    <sub><b>Don Seymour</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/stiwarisemanticbits">
                     <img src="https://avatars.githubusercontent.com/u/57143602?v=4" width="100;" alt="stiwarisemanticbits"/>
                     <br />
                     <sub><b>Shivam Tiwari</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/ryan-morosa">
+                    <img src="https://avatars.githubusercontent.com/u/253099523?v=4" width="100;" alt="ryan-morosa"/>
+                    <br />
+                    <sub><b>ryan-morosa</b></sub>
                 </a>
             </td>
 		</tr>
