@@ -65,7 +65,7 @@
   },
   "dependencies": {
     "@microsoft/api-extractor": "^7.57.7",
-    "axios": "^1.15.0",
+    "axios": "^1.16.0",
     "babel-jest": "^27.5.1",
     "cms-bluebutton-sdk": "^1.0.8",
     "moment": "^2.29.4",
