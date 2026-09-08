@@ -249,6 +249,25 @@ export class BlueButton {
   }
 
   /**
+   * Returns the CARIN Digital Insurance Card (C4DIC) FHIR resources as a FHIR Bundle
+   * for the current (authorized) beneficiary. This endpoint is only available on BB2 v3.
+   * @param authToken - AuthorizationToken with access token info
+   * @param config - extra request parameters
+   * @returns authToken and Fhir Bundle of C4DIC resources
+   */
+  async getInsuranceCardData(
+    authToken: AuthorizationToken,
+    config: AxiosRequestConfig = {}
+  ) {
+    return await getFhirResourceByPath(
+      `${this.baseUrl}/v3/${FhirResourceType.InsuranceCard}`,
+      authToken,
+      this,
+      config
+    );
+  }
+
+  /**
    * Returns the resource(s) for the current (authorized) beneficiary as identified by the url path
    * @param path - url path for the resurce(s)
    * @param authToken - AuthorizationToken with access token info

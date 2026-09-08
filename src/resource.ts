@@ -11,6 +11,7 @@ export enum FhirResourceType {
   Coverage = "fhir/Coverage/",
   Profile = "connect/userinfo",
   ExplanationOfBenefit = "fhir/ExplanationOfBenefit/",
+  InsuranceCard = "fhir/Patient/$generate-insurance-card",
 }
 
 export function sleep(time: number) {
