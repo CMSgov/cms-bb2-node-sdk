@@ -42,6 +42,11 @@ const BB2_EOB_URL = `${String(bb.baseUrl)}/v${
 
 const BB2_PROFILE_URL = `${String(bb.baseUrl)}/v${bb.version}/connect/userinfo`;
 
+// insurance card endpoint is only available on v3, regardless of the SDK's configured version
+const BB2_INSURANCE_CARD_URL = `${String(
+  bb.baseUrl
+)}/v3/fhir/Patient/$generate-insurance-card`;
+
 const eob = { status: 200, data: { resource: "EOB" } };
 
 const coverage = { status: 200, data: { resource: "Coverage" } };
@@ -49,6 +54,8 @@ const coverage = { status: 200, data: { resource: "Coverage" } };
 const patient = { status: 200, data: { resource: "Patient" } };
 
 const profile = { status: 200, data: { resource: "Profile" } };
+
+const insuranceCard = { status: 200, data: { resource: "InsuranceCard" } };
 
 // fabricate what retry logic expects
 const MOCK_RETRYABLE_RESPONSE = {
@@ -187,6 +194,23 @@ test("fhir query for user profile returns a successful response", async () => {
   expect(response.response?.data).toEqual(profile.data);
   expect(response.token).toEqual(AUTH_TOKEN_MOCK);
   expect(mockedAxios.get).toHaveBeenCalledWith(BB2_PROFILE_URL, HEADER_W_TOKEN);
+  expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+});
+
+test("fhir query for insurance card data returns a successful response", async () => {
+  mockedAxios.get.mockImplementation(() => {
+    return Promise.resolve(insuranceCard);
+  });
+
+  const response = await bb.getInsuranceCardData(AUTH_TOKEN_MOCK);
+
+  expect(response.response?.status).toEqual(200);
+  expect(response.response?.data).toEqual(insuranceCard.data);
+  expect(response.token).toEqual(AUTH_TOKEN_MOCK);
+  expect(mockedAxios.get).toHaveBeenCalledWith(
+    BB2_INSURANCE_CARD_URL,
+    HEADER_W_TOKEN
+  );
   expect(mockedAxios.post).toHaveBeenCalledTimes(0);
 });
 

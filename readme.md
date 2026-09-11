@@ -1,5 +1,4 @@
-Node SDK for Blue Button 2.0 API
-=====================================================
+# Node SDK for Blue Button 2.0 API
 
 ## Project Description
 
@@ -271,7 +270,7 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
         }
 
         /** Example scopes (SMART App v2 scopes)
-         * 
+         *
          * 1. Access token scope with demographic info:
          *
          * scope: [
@@ -327,6 +326,11 @@ app.get('api/bluebutton/callback', async (req: Request, res: Response) => {
 
         profileResults = await bb.getProfileData(authToken);
         authToken = profileResults.token;
+
+        // The CARIN Digital Insurance Card (C4DIC) resources are only available on BB2 v3;
+        // the SDK issues this request against v3 regardless of the configured version.
+        insuranceCardResults = await bb.getInsuranceCardData(authToken);
+        authToken = insuranceCardResults.token;
 
         // Note that above FHIR data calls
         // (getExplanationOfBenefitData, getPatientData, and getCoverageData)
@@ -438,10 +442,10 @@ Thank you for considering contributing to an Open Source project of the US Gover
 
 This project follows standard GitHub flow practices:
 
-* Make changes in feature branches and merge to `main` frequently
-* Pull-requests are reviewed before merging
-* Tests should be written for changes introduced
-* Each change should be deployable to production
+- Make changes in feature branches and merge to `main` frequently
+- Pull-requests are reviewed before merging
+- Tests should be written for changes introduced
+- Each change should be deployable to production
 
 ## Governance
 
