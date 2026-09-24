@@ -3542,7 +3542,7 @@ let level = filter.matchesAny(genericMatchContext, [
 ]) ? "medium" : "low";
 let _ = filter.setConfidence(level);
 
-let isExampleUsedInDocumentation = matchesAny(finding["secret"], [
+let isCommonExampleValue = matchesAny(finding["secret"], [
   `^TSjqiZCdJwGyytGjz2GzziPfHTJ6z2$`,
   `^wDimPGoA8vwXP51kie71vpsy9l17HN$`,
   `^VD1VaT4IfjXAMlZTS9E4RVXZlkhYG7$`,
@@ -3550,11 +3550,14 @@ let isExampleUsedInDocumentation = matchesAny(finding["secret"], [
   `^4nGzmTX0WkKgKL2De8ZfbShm6UKW8D$`,
   `^66ClP4JCjpdxmkC6bEKYQFLOWXnraJ$`,
   `^jV3knA4xmZ1enK8Rg1Lub5hmIsc9Ad$`,
+  `^sj27kLVRk2sQeLqSKFte5T5pgKM78U$`,
+  `^QjqsforutTRf8IV8Z0GT7KcAZb4099$`,
+  `^sj27kLVRk2sQeLqSKFte5T5pgKM78U-refrehed$`,
 ]);
 
 // big ol expression to filter out FPs
 entropy(finding["secret"]) <= 3.5
-|| isExampleUsedInDocumentation
+|| isCommonExampleValue
 || filter.failsTokenEfficiency(finding["secret"])
 || matchesAny(finding["secret"], [`^[a-zA-Z_.-]+$`])
 || (containsAny(finding["secret"], [
@@ -11214,7 +11217,7 @@ let isEncryptedValue = filter.matchesAny(finding["line"], [
   `\bsha\d{3}-.*\b`,
 ]);
 
-let isExampleUsedInDocumentation = matchesAny(finding["secret"], [
+let isCommonExampleValue = matchesAny(finding["secret"], [
   `^TSjqiZCdJwGyytGjz2GzziPfHTJ6z2$`,
   `^wDimPGoA8vwXP51kie71vpsy9l17HN$`,
   `^VD1VaT4IfjXAMlZTS9E4RVXZlkhYG7$`,
@@ -11222,13 +11225,16 @@ let isExampleUsedInDocumentation = matchesAny(finding["secret"], [
   `^4nGzmTX0WkKgKL2De8ZfbShm6UKW8D$`,
   `^66ClP4JCjpdxmkC6bEKYQFLOWXnraJ$`,
   `^jV3knA4xmZ1enK8Rg1Lub5hmIsc9Ad$`,
+  `^sj27kLVRk2sQeLqSKFte5T5pgKM78U$`,
+  `^QjqsforutTRf8IV8Z0GT7KcAZb4099$`,
+  `^sj27kLVRk2sQeLqSKFte5T5pgKM78U-refrehed$`,
 ]);
 
 !isMixedCase
 || isEncryptedValue
 || entropy(finding["secret"]) <= 3.0
 || failsTokenEfficiency(finding["secret"])
-|| isExampleUsedInDocumentation
+|| isCommonExampleValue
 '''
 
 # ──────────────────────────────────────────────────────────────────────────────
