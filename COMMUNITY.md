@@ -92,6 +92,13 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
 		</tr>
 		<tr>
             <td align="center">
+                <a href="https://github.com/annamontare-nava">
+                    <img src="https://avatars.githubusercontent.com/u/267455234?v=4" width="100;" alt="annamontare-nava"/>
+                    <br />
+                    <sub><b>annamontare-nava</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/jimmyfagan">
                     <img src="https://avatars.githubusercontent.com/u/90421499?v=4" width="100;" alt="jimmyfagan"/>
                     <br />
@@ -126,6 +133,8 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
                     <sub><b>Shivam Tiwari</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/ryan-morosa">
                     <img src="https://avatars.githubusercontent.com/u/253099523?v=4" width="100;" alt="ryan-morosa"/>
